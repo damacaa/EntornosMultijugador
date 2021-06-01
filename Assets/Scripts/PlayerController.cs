@@ -51,6 +51,7 @@ public class PlayerController : NetworkBehaviour
 
     public event OnSpeedChangeDelegate OnSpeedChangeEvent;
 
+    private _InputController _input; //call our own action controller
     #endregion Variables
 
     #region Unity Callbacks
@@ -59,13 +60,14 @@ public class PlayerController : NetworkBehaviour
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         m_PlayerInfo = GetComponent<PlayerInfo>();
+        _input = new _InputController();
     }
 
     public void Update()
     {
-        InputAcceleration = Input.GetAxis("Vertical");
-        InputSteering = Input.GetAxis(("Horizontal"));
-        InputBrake = Input.GetAxis("Jump");
+        InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
+        InputSteering = _input.Player.Steering.ReadValue<float>();
+        InputBrake = _input.Player.Jump.ReadValue<float>();
         Speed = m_Rigidbody.velocity.magnitude;
     }
 
@@ -129,7 +131,6 @@ public class PlayerController : NetworkBehaviour
     }
 
     #endregion
-
     #region Methods
 
     // crude traction control that reduces the power to wheel if the car is wheel spinning too much
@@ -216,5 +217,18 @@ public class PlayerController : NetworkBehaviour
         CurrentRotation = transform.eulerAngles.y;
     }
 
+//enables o not the controller when object attached to it is activated or desactivated 
+    private void OnEnable()
+    {
+        _input.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _input.Disable();
+    }
+
     #endregion
+
+
 }

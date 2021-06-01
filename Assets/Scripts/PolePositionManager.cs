@@ -19,12 +19,15 @@ public class PolePositionManager : NetworkBehaviour
         if (_networkManager == null) _networkManager = FindObjectOfType<MyNetworkManager>();
         if (_circuitController == null) _circuitController = FindObjectOfType<CircuitController>();
 
+        //ELIMINAMOS LA GENERACION DE ESFERAS INNECESARIAS
+
         _debuggingSpheres = new GameObject[_networkManager.maxConnections];
         for (int i = 0; i < _networkManager.maxConnections; ++i)
         {
             _debuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
+
     }
 
     private void Update()
@@ -66,7 +69,7 @@ public class PolePositionManager : NetworkBehaviour
         {
             arcLengths[i] = ComputeCarArcLength(i);
         }
-        
+
         _players.Sort(new PlayerInfoComparer(arcLengths));
 
         string myRaceOrder = "";
