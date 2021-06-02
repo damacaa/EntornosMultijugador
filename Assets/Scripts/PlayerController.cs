@@ -27,8 +27,6 @@ public class PlayerController : NetworkBehaviour
     private float InputSteering { get; set; }
     private float InputBrake { get; set; }
 
-    private PlayerInfo m_PlayerInfo;
-
     private Rigidbody m_Rigidbody;
     private float m_SteerHelper = 0.8f;
 
@@ -59,7 +57,6 @@ public class PlayerController : NetworkBehaviour
     public void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
-        m_PlayerInfo = GetComponent<PlayerInfo>();
         _input = new _InputController();
     }
 
@@ -69,6 +66,8 @@ public class PlayerController : NetworkBehaviour
         InputSteering = _input.Player.Steering.ReadValue<float>();
         InputBrake = _input.Player.Jump.ReadValue<float>();
         Speed = m_Rigidbody.velocity.magnitude;
+
+        ActionTriggered();// looks if an action has been triggered 
     }
 
     public void FixedUpdate()
@@ -157,7 +156,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-// this is used to add more grip in relation to speed
+    // this is used to add more grip in relation to speed
     private void AddDownForce()
     {
         foreach (var axleInfo in axleInfos)
@@ -174,8 +173,8 @@ public class PlayerController : NetworkBehaviour
             m_Rigidbody.velocity = topSpeed * m_Rigidbody.velocity.normalized;
     }
 
-// finds the corresponding visual wheel
-// correctly applies the transform
+    // finds the corresponding visual wheel
+    // correctly applies the transform
     public void ApplyLocalPositionToVisuals(WheelCollider col)
     {
         if (col.transform.childCount == 0)
@@ -206,7 +205,7 @@ public class PlayerController : NetworkBehaviour
             }
         }
 
-// this if is needed to avoid gimbal lock problems that will make the car suddenly shift direction
+        // this if is needed to avoid gimbal lock problems that will make the car suddenly shift direction
         if (Mathf.Abs(CurrentRotation - transform.eulerAngles.y) < 10f)
         {
             var turnAdjust = (transform.eulerAngles.y - CurrentRotation) * m_SteerHelper;
@@ -217,7 +216,7 @@ public class PlayerController : NetworkBehaviour
         CurrentRotation = transform.eulerAngles.y;
     }
 
-//enables o not the controller when object attached to it is activated or desactivated 
+    //enables o not the controller when object attached to it is activated or desactivated 
     private void OnEnable()
     {
         _input.Enable();
@@ -228,7 +227,31 @@ public class PlayerController : NetworkBehaviour
         _input.Disable();
     }
 
+    //get input Controller 
+    public _InputController GetInput()
+    {
+        return _input;
+    }
     #endregion
 
 
+    //NUEVO
+
+    //if we collide and we are not able to continue playing the car flips
+    [Server]
+    private void ResetRot()
+    {
+        Debug.Log("COCHE MAL"); //aqui deberia rotar el coche 
+    }
+
+    [Command]
+    public void CmdResetRot()
+    {
+        ResetRot();
+    }
+    //checks if the player has done an action and if done executes it on the server
+    void ActionTriggered()
+    {
+        _input.Player.Restart.performed += ctx => CmdResetRot();
+    }
 }

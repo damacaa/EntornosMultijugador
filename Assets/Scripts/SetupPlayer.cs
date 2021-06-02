@@ -75,6 +75,11 @@ public class SetupPlayer : NetworkBehaviour
         }
     }
 
+    private void Update()
+    {
+
+    }
+
     void OnSpeedChangeEventHandler(float speed)
     {
         _uiManager.UpdateSpeed((int)speed * 5); // 5 for visualization purpose (km/h)
@@ -85,20 +90,41 @@ public class SetupPlayer : NetworkBehaviour
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
     }
 
+    #region ServerFunctions
+    //change name function 
     [Server]
     private void ChangeName()
     {
         _name = _uiManager.GetPlayerName();
     }
-
     [Command]
-    public void CmdChangeName() //funcion de cambio de nombre 
+    public void CmdChangeName()
     {
         ChangeName();
     }
 
-    public string GetName() //funcion de cambio de nombre 
+    //change id function 
+    [Server]
+    private void ChangeID()
+    {
+        _id = NetworkServer.connections.Count - 1;
+    }
+    [Command]
+    public void CmdChangeID()
+    {
+        ChangeID();
+    }
+
+
+    #endregion ServerFunctions
+
+    #region ClientMethods
+
+    public string GetName()
     {
         return _name;
     }
+ 
+    #endregion Client Methods
+
 }
