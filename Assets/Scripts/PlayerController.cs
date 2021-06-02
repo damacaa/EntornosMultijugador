@@ -156,6 +156,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    [Server]
     // this is used to add more grip in relation to speed
     private void AddDownForce()
     {
@@ -175,6 +176,7 @@ public class PlayerController : NetworkBehaviour
 
     // finds the corresponding visual wheel
     // correctly applies the transform
+
     public void ApplyLocalPositionToVisuals(WheelCollider col)
     {
         if (col.transform.childCount == 0)
@@ -216,6 +218,12 @@ public class PlayerController : NetworkBehaviour
         CurrentRotation = transform.eulerAngles.y;
     }
 
+
+    #endregion
+
+
+    //NUEVO
+
     //enables o not the controller when object attached to it is activated or desactivated 
     private void OnEnable()
     {
@@ -232,10 +240,6 @@ public class PlayerController : NetworkBehaviour
     {
         return _input;
     }
-    #endregion
-
-
-    //NUEVO
 
     //if we collide and we are not able to continue playing the car flips
     [Server]

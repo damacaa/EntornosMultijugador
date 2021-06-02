@@ -89,7 +89,7 @@ public class @_InputController : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""0e821cf4-796a-4e9a-abbe-12cdb14f34c4"",
                     ""path"": ""<Keyboard>/z"",
-                    ""interactions"": """",
+                    ""interactions"": ""Press(behavior=1)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Restart"",

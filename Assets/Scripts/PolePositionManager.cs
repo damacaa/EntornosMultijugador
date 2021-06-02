@@ -21,7 +21,7 @@ public class PolePositionManager : NetworkBehaviour
 
         //ELIMINAMOS LA GENERACION DE ESFERAS INNECESARIAS
 
-        _debuggingSpheres = new GameObject[_networkManager.maxConnections];
+        _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
         for (int i = 0; i < _networkManager.maxConnections; ++i)
         {
             _debuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);

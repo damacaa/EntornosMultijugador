@@ -5,6 +5,20 @@ using UnityEngine;
 
 public class MyNetworkManager : NetworkManager
 {
+    List<SetupPlayer> players;
+
+    public new void Start()
+    {
+        players = new List<SetupPlayer>();
+       
+#if UNITY_SERVER
+            if (autoStartServerBuild)
+            {
+                StartServer();
+            }
+#endif
+    }
+
     #region client
     public override void OnClientConnect(NetworkConnection conn)
     {
@@ -28,6 +42,7 @@ public class MyNetworkManager : NetworkManager
         SetupPlayer player = conn.identity.GetComponent<SetupPlayer>();
         player.CmdChangeName();
         Debug.Log(player.GetName()); //coge el nombre del espacio creado en el HUD inicial para meter el nombre del jugador
+        players.Add(player);
     }
 
     #endregion server

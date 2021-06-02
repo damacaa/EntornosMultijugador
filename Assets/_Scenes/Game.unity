@@ -338,7 +338,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 10, y: -152}
+  m_AnchoredPosition: {x: -80, y: -152}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &644407269
@@ -830,7 +830,7 @@ MonoBehaviour:
   onlineScene: 
   transport: {fileID: 2140735090}
   networkAddress: localhost
-  maxConnections: 100
+  maxConnections: 4
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
@@ -838,7 +838,11 @@ MonoBehaviour:
     type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 1508097745644926054, guid: 8cb0f194315f5874797b12dac7f6cdfb, type: 3}
+  - {fileID: 1508097745644926054, guid: 5072a857a53abd84fb1d73c8f2020806, type: 3}
+  - {fileID: 1508097745644926054, guid: 8f070dfe7fbc3e244b4a1ad0c0034c14, type: 3}
+  - {fileID: 1508097745644926054, guid: 24b6af07c4b82434db1948349caef327, type: 3}
 --- !u!4 &2140735093
 Transform:
   m_ObjectHideFlags: 0
