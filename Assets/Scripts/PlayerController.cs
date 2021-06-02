@@ -156,7 +156,6 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    [Server]
     // this is used to add more grip in relation to speed
     private void AddDownForce()
     {
