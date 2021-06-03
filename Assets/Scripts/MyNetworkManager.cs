@@ -45,6 +45,7 @@ public class MyNetworkManager : NetworkManager
             car = spawnPrefabs[3];
         }
         playerPrefab = car;
+
         Debug.Log("Jugador Conectado al servidor");
     }
 
