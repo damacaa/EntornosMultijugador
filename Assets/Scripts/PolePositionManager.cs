@@ -15,9 +15,78 @@ public class PolePositionManager : NetworkBehaviour
     private CircuitController _circuitController;
     private GameObject[] _debuggingSpheres;
 
-    public delegate void OnRankingChangeDelegate(string newVal);
 
+
+
+
+
+    #region Variables de Tiempo
+    //Tiempo de la vuelta actual
+    [SyncVar] private float lapTime = 0;
+    //Tiempo Total de la carrera
+    [SyncVar] private float totalTime = 0;
+
+    #endregion
+
+    #region Comprobaciones
+    //Variable que indica si el localPlayer esta yendo en direccion contraria
+    private bool goingBackwards = false;
+
+    public bool GoingBackwards
+    {
+        get { return goingBackwards; }
+        set
+        {
+            if (OnGoingBackwardsChangeEvent != null && goingBackwards != value)
+                OnGoingBackwardsChangeEvent(value);
+
+            goingBackwards = value;
+        }
+    }
+
+    //Variable que indica si el localPlayer se ha chocado
+    private bool hasCrashed = false;
+
+    public bool HasCrashed
+    {
+        get { return hasCrashed; }
+        set
+        {
+            if (OnHasCrashedChangeEvent != null && hasCrashed != value)
+                OnHasCrashedChangeEvent(value);
+
+            hasCrashed = value;
+        }
+    }
+
+    //Boolean que indica si ha empezado la carrera
+    private bool hasRaceStarted = false;
+    //Boolean que indica si ha acabado la carrera
+    private bool hasRaceEnded = false;
+
+
+
+    #endregion
+
+    #region Eventos
+
+    public delegate void OnRaceStartDelegate(bool newVal);
+    public event OnRaceStartDelegate OnRaceStartEvent;
+
+    public delegate void OnRaceEndDelegate(bool newVal);
+    public event OnRaceEndDelegate OnRaceEndEvent;
+
+    public delegate void OnGoingBackwardsChangeDelegate(bool newVal);
+    public event OnGoingBackwardsChangeDelegate OnGoingBackwardsChangeEvent;
+
+    public delegate void OnHasCrashedChangeDelegate(bool newVal);
+    public event OnHasCrashedChangeDelegate OnHasCrashedChangeEvent;
+
+    public delegate void OnRankingChangeDelegate(string newVal);
     public event OnRankingChangeDelegate OnRankingChangeEvent;
+
+
+    #endregion
 
     private void Awake()
     {

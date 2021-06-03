@@ -105,6 +105,7 @@ public class SetupPlayer : NetworkBehaviour
         _name = _uiManager.GetPlayerName();
 
     }
+
     [Command]
     public void CmdChangeName()
     {
