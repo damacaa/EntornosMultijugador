@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text textSpeed;
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
+    [SerializeField] private Text textTime;
 
     private void Awake()
     {
@@ -42,6 +43,13 @@ public class UIManager : MonoBehaviour
     {
         textSpeed.text = "Speed " + speed + " Km/h";
     }
+    
+    public void UpdateLap(int lap)
+    {
+        textSpeed.text = "Lap " + lap + " Km/h";
+    }
+
+
 
     private void ActivateMainMenu()
     {

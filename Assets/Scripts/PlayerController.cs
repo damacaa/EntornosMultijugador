@@ -49,6 +49,11 @@ public class PlayerController : NetworkBehaviour
 
     public event OnSpeedChangeDelegate OnSpeedChangeEvent;
 
+
+    public delegate void OnLapChangeDelegate(int newVal);
+
+    public event OnLapChangeDelegate OnLapChangeEvent;
+
     private _InputController _input; //call our own action controller
     #endregion Variables
 
