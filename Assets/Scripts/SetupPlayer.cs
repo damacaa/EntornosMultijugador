@@ -69,6 +69,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
+            _playerInfo.Name = _name;
             _playerController.enabled = true;
             _playerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
             _playerController.OnLapChangeEvent += OnLapChangeEventHandler;
@@ -102,7 +103,9 @@ public class SetupPlayer : NetworkBehaviour
     private void ChangeName()
     {
         _name = _uiManager.GetPlayerName();
+
     }
+
     [Command]
     public void CmdChangeName()
     {
