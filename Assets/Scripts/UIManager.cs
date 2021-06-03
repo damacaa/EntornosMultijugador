@@ -25,6 +25,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
     [SerializeField] private Text textTime;
+    [SerializeField] private Text crashedWarning;
+    [SerializeField] private Text backwardWarning;
 
     private int circuitLaps;
 
@@ -57,6 +59,15 @@ public class UIManager : MonoBehaviour
         textPosition.text = ranking;
     }
 
+    public void ShowCrashedWarning(bool hasCrashed)
+    {
+        crashedWarning.transform.parent.gameObject.SetActive(hasCrashed);
+    }
+
+    public void ShowBackwardsWarning(bool goingBackwards)
+    {
+        backwardWarning.transform.parent.gameObject.SetActive(goingBackwards);
+    }
 
 
     private void ActivateMainMenu()
