@@ -37,8 +37,8 @@ public class PolePositionManager : NetworkBehaviour
         get { return goingBackwards; }
         set
         {
-            if (OnGoingBackwardsChangeEvent != null && goingBackwards != value)
-                OnGoingBackwardsChangeEvent(value);
+            if (OnGoingBackwardsEvent != null && goingBackwards != value)
+                OnGoingBackwardsEvent(value);
 
             goingBackwards = value;
         }
@@ -52,8 +52,8 @@ public class PolePositionManager : NetworkBehaviour
         get { return hasCrashed; }
         set
         {
-            if (OnHasCrashedChangeEvent != null && hasCrashed != value)
-                OnHasCrashedChangeEvent(value);
+            if (OnHasCrashedEvent != null && hasCrashed != value)
+                OnHasCrashedEvent(value);
 
             hasCrashed = value;
         }
@@ -76,11 +76,11 @@ public class PolePositionManager : NetworkBehaviour
     public delegate void OnRaceEndDelegate(bool newVal);
     public event OnRaceEndDelegate OnRaceEndEvent;
 
-    public delegate void OnGoingBackwardsChangeDelegate(bool newVal);
-    public event OnGoingBackwardsChangeDelegate OnGoingBackwardsChangeEvent;
+    public delegate void OnGoingBackwardsDelegate(bool newVal);
+    public event OnGoingBackwardsDelegate OnGoingBackwardsEvent;
 
-    public delegate void OnHasCrashedChangeDelegate(bool newVal);
-    public event OnHasCrashedChangeDelegate OnHasCrashedChangeEvent;
+    public delegate void OnHasCrashedDelegate(bool newVal);
+    public event OnHasCrashedDelegate OnHasCrashedEvent;
 
     public delegate void OnRankingChangeDelegate(string newVal);
     public event OnRankingChangeDelegate OnRankingChangeEvent;
@@ -110,6 +110,8 @@ public class PolePositionManager : NetworkBehaviour
         {
         }*/
         this.OnRankingChangeEvent += OnRankingChangeEventHandler;
+        this.OnHasCrashedEvent += OnHasCrashedEventHandler;
+        this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
     }
 
     private void Update()
@@ -167,6 +169,16 @@ public class PolePositionManager : NetworkBehaviour
     void OnRankingChangeEventHandler(string ranking)
     {
         _uiManager.UpdateRanking(ranking);
+    }
+
+    void OnHasCrashedEventHandler(bool hasCrashed)
+    {
+        _uiManager.ShowCrashedWarning(hasCrashed);
+    }
+
+    void OnGoingBackwardsEventHandler(bool goingBackwards)
+    {
+        _uiManager.ShowBackwardsWarning(goingBackwards);
     }
 
     float ComputeCarArcLength(int id)
