@@ -33,6 +33,26 @@ public class PlayerController : NetworkBehaviour
 
     private float m_CurrentSpeed = 0;
 
+    private bool crashed = false;
+    private bool goingBackwards = false;
+    private float arcLength;
+    public float ArcLength
+    {
+        get { return arcLength; }
+        set
+        {
+            float d = value - arcLength;
+            goingBackwards = d < 0 && d > -100f;
+            if (goingBackwards)
+            {
+                Debug.Log(arcLength + " --> " + value);
+                BackwardsTimeout = 0.1f;
+            }
+            arcLength = value;
+        }
+    }
+    private float BackwardsTimeout = 0;
+
     private float Speed
     {
         get { return m_CurrentSpeed; }
@@ -67,11 +87,33 @@ public class PlayerController : NetworkBehaviour
 
     public void Update()
     {
-        InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
-        InputSteering = _input.Player.Steering.ReadValue<float>();
-        InputBrake = _input.Player.Jump.ReadValue<float>();
-        Speed = m_Rigidbody.velocity.magnitude;
-        ActionTriggered();// looks if an action has been triggered 
+        if (isClient)
+        {
+            InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
+            InputSteering = _input.Player.Steering.ReadValue<float>();
+            InputBrake = _input.Player.Jump.ReadValue<float>();
+            Speed = m_Rigidbody.velocity.magnitude;
+            ActionTriggered();// looks if an action has been triggered 
+
+            float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
+            crashed = r > 90 && r < 270;
+
+            //Replace with UI
+            if (BackwardsTimeout > 0f || crashed)
+            {
+                GetComponentInChildren<MeshRenderer>().material.color = Color.red;
+                BackwardsTimeout -= Time.deltaTime;
+            }
+            else
+            {
+                GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
+            }
+
+            if (crashed && Input.GetKeyDown(KeyCode.F))
+            {
+                CmdReset();
+            }
+        }
     }
 
     public void FixedUpdate()
@@ -81,11 +123,11 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
     #region Methods
-    
+
     [Command]
     public void auxControlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
-        controlMovement( InputSteering,  InputAcceleration,  InputBrake);
+        controlMovement(InputSteering, InputAcceleration, InputBrake);
     }
 
 
@@ -99,7 +141,7 @@ public class PlayerController : NetworkBehaviour
         float steering = maxSteeringAngle * InputSteering;
 
         //Evita que el coche se deslice
-        if (InputAcceleration == 0 && InputSteering == 0)
+        if (InputAcceleration == 0 && InputSteering == 0 && !crashed)
         {
             this.m_Rigidbody.freezeRotation = true;
         }
@@ -118,7 +160,7 @@ public class PlayerController : NetworkBehaviour
 
             if (axleInfo.motor)
             {
-                
+
                 if (InputAcceleration > float.Epsilon)
                 {
                     axleInfo.leftWheel.motorTorque = forwardMotorTorque;
@@ -158,6 +200,16 @@ public class PlayerController : NetworkBehaviour
         SpeedLimiter();
         AddDownForce();
         TractionControl();
+
+        //ShowInCient(transform);
+    }
+
+    [ClientRpc]
+    void ShowInCient(Transform t)
+    {
+        Debug.Log("Showing"+t.transform.position);
+        transform.position = t.position;
+        transform.rotation = t.rotation;
     }
 
 
@@ -268,19 +320,32 @@ public class PlayerController : NetworkBehaviour
 
     //if we collide and we are not able to continue playing the car flips
     [Server]
-    private void ResetRot()
+    private void Reset()
     {
-        Debug.Log("COCHE MAL"); //aqui deberia rotar el coche 
+        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche 
+        transform.position = transform.position + Vector3.up - m_Rigidbody.velocity;
+        m_Rigidbody.velocity = Vector3.zero;
     }
 
     [Command]
-    public void CmdResetRot()
+    public void CmdReset()
     {
-        ResetRot();
+        Debug.Log("Digo al server que resetee");
+        Reset();
     }
+
     //checks if the player has done an action and if done executes it on the server
     void ActionTriggered()
     {
-        _input.Player.Restart.performed += ctx => CmdResetRot();
+        _input.Player.Restart.performed += ctx => CmdReset();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isServer && collision.relativeVelocity.magnitude > 10f)
+        {
+            Debug.Log("Server: " + collision.gameObject.name);
+            Reset();
+        }
     }
 }

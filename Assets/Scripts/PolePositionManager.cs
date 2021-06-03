@@ -114,10 +114,12 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Update()
     {
-        if (_players.Count == 0)
-            return;
-
-        UpdateRaceProgress();
+        if (isServer)
+        {
+            if (_players.Count == 0)
+                return;
+            UpdateRaceProgress();
+        }
     }
 
     public void AddPlayer(PlayerInfo player)
@@ -142,6 +144,7 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    [Server]
     public void UpdateRaceProgress()
     {
         // Update car arc-lengths
@@ -149,7 +152,10 @@ public class PolePositionManager : NetworkBehaviour
 
         for (int i = 0; i < _players.Count; ++i)
         {
-            arcLengths[i] = ComputeCarArcLength(i);
+            float l = ComputeCarArcLength(i); //Distancia restante hasta la meta
+
+            _players[i].controller.ArcLength = l;
+            arcLengths[i] = l;
         }
 
         _players.Sort(new PlayerInfoComparer(arcLengths));
@@ -159,14 +165,12 @@ public class PolePositionManager : NetworkBehaviour
         {
             myRaceOrder += player.Name + " ";
         }
-
-        Debug.Log("El orden de carrera es: " + myRaceOrder);
-        OnRankingChangeEvent(myRaceOrder);
     }
 
     void OnRankingChangeEventHandler(string ranking)
     {
         _uiManager.UpdateRanking(ranking);
+        //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
     float ComputeCarArcLength(int id)
