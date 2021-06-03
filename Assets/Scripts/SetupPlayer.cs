@@ -12,6 +12,7 @@ public class SetupPlayer : NetworkBehaviour
 {
     [SyncVar] private int _id;
     [SyncVar] private string _name;
+    [SerializeField] private GameObject _carBody;
 
     private UIManager _uiManager;
     private MyNetworkManager _networkManager;
@@ -96,34 +97,6 @@ public class SetupPlayer : NetworkBehaviour
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
     }
 
-    #region ServerFunctions
-    //change name function 
-    [Server]
-    private void ChangeName()
-    {
-        _name = _uiManager.GetPlayerName();
-    }
-    [Command]
-    public void CmdChangeName()
-    {
-        ChangeName();
-    }
-
-    //change id function 
-    [Server]
-    private void ChangeID()
-    {
-        _id = NetworkServer.connections.Count - 1;
-    }
-    [Command]
-    public void CmdChangeID()
-    {
-        ChangeID();
-    }
-
-
-    #endregion ServerFunctions
-
     #region ClientMethods
 
     public string GetName()
@@ -136,5 +109,16 @@ public class SetupPlayer : NetworkBehaviour
     public UIManager GetUi()
     {
         return _uiManager;
+    }
+
+    [Command]
+    public void CmdSetCarColor(Color newColor)
+    {
+        _carBody.GetComponent<MeshRenderer>().materials[1].color= newColor;
+    }
+
+    public Material GetCarColor()
+    {
+        return _carBody.GetComponent<MeshRenderer>().materials[1];
     }
 }

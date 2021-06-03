@@ -91,4 +91,25 @@ public class UIManager : MonoBehaviour
     {
         return carColor.text;
     }
+
+    //gets car color
+    public int GetCar() {
+        int car = 0;
+        var color = GetCarColor();
+        if (color == "Verde")
+        {
+            car =1;
+        }
+        else if (color == "Amarillo")
+        {
+            car =2;
+        }
+        else if (color == "Blanco")
+        {
+            car =3;
+        }
+        return car;
+    }
+
+
 }

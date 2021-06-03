@@ -12,7 +12,7 @@ public class PlayerInfo : MonoBehaviour
     public int CurrentPosition { get; set; }
 
     public int CurrentLap { get; set; }
-
+    
     public override string ToString()
     {
         return Name;

@@ -6,13 +6,13 @@ using UnityEngine.SceneManagement;
 
 public class MyNetworkManager : NetworkManager
 {
-    [SerializeField] private Transform [] StartingPositions;
-    [SerializeField] private Material[] coloresCoches;
+    [SerializeField] private Transform[] StartingPositions;
+    [SerializeField] private Color[] coloresCoches;
 
     public new void Start()
     {
 
-       
+
 #if UNITY_SERVER
             if (autoStartServerBuild)
             {
@@ -22,32 +22,7 @@ public class MyNetworkManager : NetworkManager
     }
 
     #region client
-    public override void OnClientConnect(NetworkConnection conn)
-    {
-        base.OnClientConnect(conn);
 
-        SetupPlayer _playerInfo = conn.identity.GetComponent<SetupPlayer>();
-        UIManager hudInicial = _playerInfo.GetUi();
-
-        //get car color
-        GameObject car = spawnPrefabs[0];
-        var color = hudInicial.GetCarColor();
-        if (color == "Verde")
-        {
-            car = spawnPrefabs[1];
-        }
-        else if (color == "Amarillo")
-        {
-            car = spawnPrefabs[2];
-        }
-        else if (color == "Blanco")
-        {
-            car = spawnPrefabs[3];
-        }
-        playerPrefab = car;
-
-        Debug.Log("Jugador Conectado al servidor");
-    }
 
     public override void OnClientDisconnect(NetworkConnection conn)
     {
@@ -71,6 +46,30 @@ public class MyNetworkManager : NetworkManager
     {
         base.OnServerAddPlayer(conn);
 
+        SetupPlayer player = conn.identity.gameObject.GetComponent<SetupPlayer>();
+        int colorIdx = player.GetUi().GetCar();
+        if (colorIdx == 0)
+        {
+            Color color = Color.red;
+            player.CmdSetCarColor(color);
+        }
+        if (colorIdx == 1)
+        {
+            Color color = Color.green;
+            player.CmdSetCarColor(color);
+        }
+        if (colorIdx == 2)
+        {
+            Color color = Color.yellow;
+            player.CmdSetCarColor(color);
+
+        }
+        if (colorIdx == 3)
+        {
+            Color color = Color.white;
+            player.CmdSetCarColor(color);
+        }
+        //Debug.Log(player.GetCarColor());
         //GameObject player;
         //player = Instantiate(spawnPrefabs[1], Vector3.zero, Quaternion.identity) as GameObject;
         //NetworkServer.AddPlayerForConnection(conn, player);
