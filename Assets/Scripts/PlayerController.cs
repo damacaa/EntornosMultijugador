@@ -66,7 +66,7 @@ public class PlayerController : NetworkBehaviour
         InputSteering = _input.Player.Steering.ReadValue<float>();
         InputBrake = _input.Player.Jump.ReadValue<float>();
         Speed = m_Rigidbody.velocity.magnitude;
-        //ActionTriggered();// looks if an action has been triggered 
+        ActionTriggered();// looks if an action has been triggered 
     }
 
     public void FixedUpdate()
@@ -86,6 +86,16 @@ public class PlayerController : NetworkBehaviour
 
         float steering = maxSteeringAngle * InputSteering;
 
+        //Evita que el coche se deslice
+        if (InputAcceleration == 0 && InputSteering == 0)
+        {
+            this.m_Rigidbody.freezeRotation = true;
+        }
+        else
+        {
+            this.m_Rigidbody.freezeRotation = false;
+        }
+
         foreach (AxleInfo axleInfo in axleInfos)
         {
             if (axleInfo.steering)
@@ -96,6 +106,7 @@ public class PlayerController : NetworkBehaviour
 
             if (axleInfo.motor)
             {
+                
                 if (InputAcceleration > float.Epsilon)
                 {
                     axleInfo.leftWheel.motorTorque = forwardMotorTorque;

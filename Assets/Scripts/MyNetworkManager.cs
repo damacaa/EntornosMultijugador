@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MyNetworkManager : NetworkManager
 {
@@ -25,6 +26,13 @@ public class MyNetworkManager : NetworkManager
         Debug.Log("Jugador Conectado al servidor");
     }
 
+    public override void OnClientDisconnect(NetworkConnection conn)
+    {
+        base.OnClientDisconnect(conn);
+        Debug.Log("Jugador Desconectado al servidor");
+        SceneManager.LoadSceneAsync(0);
+    }
+
     #endregion client
 
     #region server
@@ -33,6 +41,9 @@ public class MyNetworkManager : NetworkManager
         base.OnServerConnect(conn);
         Debug.Log("Jugador Conectado y creado servidor");
     }
+
+
+
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
