@@ -46,10 +46,12 @@ public class MyNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
-        //base.OnServerAddPlayer(conn);
-        GameObject player;
-        player = Instantiate(spawnPrefabs[1], Vector3.zero, Quaternion.identity) as GameObject;
-        NetworkServer.AddPlayerForConnection(conn, player);
+        base.OnServerAddPlayer(conn);
+
+        //Set name choosen as the players name
+        SetupPlayer player = conn.identity.GetComponent<SetupPlayer>();
+        player.CmdChangeName();
+        Debug.Log(player.GetName()); //coge el nombre del espacio creado en el HUD inicial para meter el nombre del jugador
     }
 
     #endregion server
