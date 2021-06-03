@@ -71,13 +71,20 @@ public class PlayerController : NetworkBehaviour
 
     public void FixedUpdate()
     {
-        controlMovement(InputSteering, InputAcceleration, InputBrake);
+        auxControlMovement(InputSteering, InputAcceleration, InputBrake);
     }
 
     #endregion
     #region Methods
     
     [Command]
+    public void auxControlMovement(float InputSteering, float InputAcceleration, float InputBrake)
+    {
+        controlMovement( InputSteering,  InputAcceleration,  InputBrake);
+    }
+
+
+    [ClientRpc]
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
@@ -148,7 +155,7 @@ public class PlayerController : NetworkBehaviour
         TractionControl();
     }
 
-    [Server]
+    [ClientRpc]
     // crude traction control that reduces the power to wheel if the car is wheel spinning too much
     private void TractionControl()
     {
@@ -174,7 +181,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     
-    [Server]
+    [ClientRpc]
     // this is used to add more grip in relation to speed
     private void AddDownForce()
     {
@@ -186,7 +193,7 @@ public class PlayerController : NetworkBehaviour
     }
 
 
-    [Server]
+    [ClientRpc]
     private void SpeedLimiter()
     {
         float speed = m_Rigidbody.velocity.magnitude;
@@ -195,7 +202,7 @@ public class PlayerController : NetworkBehaviour
     }
 
 
-    [Server]
+    [Client]
     // finds the corresponding visual wheel
     // correctly applies the transform
     public void ApplyLocalPositionToVisuals(WheelCollider col)
@@ -214,7 +221,7 @@ public class PlayerController : NetworkBehaviour
         myTransform.rotation = rotation;
     }
 
-    [Server]
+    [ClientRpc]
     private void SteerHelper()
     {
         foreach (var axleInfo in axleInfos)
