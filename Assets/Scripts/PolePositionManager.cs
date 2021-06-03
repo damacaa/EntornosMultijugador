@@ -9,16 +9,21 @@ public class PolePositionManager : NetworkBehaviour
 {
     public int numPlayers;
     private MyNetworkManager _networkManager;
+    private UIManager _uiManager;
 
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>(4);
     private CircuitController _circuitController;
     private GameObject[] _debuggingSpheres;
 
+    public delegate void OnRankingChangeDelegate(string newVal);
+
+    public event OnRankingChangeDelegate OnRankingChangeEvent;
+
     private void Awake()
     {
         if (_networkManager == null) _networkManager = FindObjectOfType<MyNetworkManager>();
         if (_circuitController == null) _circuitController = FindObjectOfType<CircuitController>();
-
+        if (_uiManager==null) _uiManager = FindObjectOfType<UIManager>();
         //ELIMINAMOS LA GENERACION DE ESFERAS INNECESARIAS
 
         _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
@@ -28,6 +33,14 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
+    }
+
+    private void Start()
+    {
+       /* if (isLocalPlayer)
+        {
+        }*/
+        this.OnRankingChangeEvent += OnRankingChangeEventHandler;
     }
 
     private void Update()
@@ -54,7 +67,7 @@ public class PolePositionManager : NetworkBehaviour
 
         public override int Compare(PlayerInfo x, PlayerInfo y)
         {
-            if (_arcLengths[x.ID] < _arcLengths[y.ID])
+            if (_arcLengths[x.ID] > _arcLengths[y.ID])
                 return 1;
             else return -1;
         }
@@ -79,6 +92,12 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         Debug.Log("El orden de carrera es: " + myRaceOrder);
+        OnRankingChangeEvent(myRaceOrder);
+    }
+
+    void OnRankingChangeEventHandler(string ranking)
+    {
+        _uiManager.UpdateRanking(ranking);
     }
 
     float ComputeCarArcLength(int id)

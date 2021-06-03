@@ -26,9 +26,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text textPosition;
     [SerializeField] private Text textTime;
 
+    private int circuitLaps;
+
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
+        circuitLaps = FindObjectOfType<CircuitController>().circuitLaps;
     }
 
     private void Start()
@@ -46,7 +49,12 @@ public class UIManager : MonoBehaviour
     
     public void UpdateLap(int lap)
     {
-        textSpeed.text = "Lap " + lap + " Km/h";
+        textLaps.text = "Lap " + lap + "/" + circuitLaps;
+    }
+    
+    public void UpdateRanking(string ranking)
+    {
+        textPosition.text = ranking;
     }
 
 
