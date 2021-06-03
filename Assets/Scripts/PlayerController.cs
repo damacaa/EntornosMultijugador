@@ -66,11 +66,19 @@ public class PlayerController : NetworkBehaviour
         InputSteering = _input.Player.Steering.ReadValue<float>();
         InputBrake = _input.Player.Jump.ReadValue<float>();
         Speed = m_Rigidbody.velocity.magnitude;
-
-        ActionTriggered();// looks if an action has been triggered 
+        //ActionTriggered();// looks if an action has been triggered 
     }
 
     public void FixedUpdate()
+    {
+        controlMovement(InputAcceleration, InputSteering, InputBrake, Speed);
+    }
+
+    #endregion
+    #region Methods
+
+    [Command]
+    void controlMovement(float InputAcceleration, float InputSteering, float InputBrake, float Speed)
     {
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
@@ -129,9 +137,7 @@ public class PlayerController : NetworkBehaviour
         TractionControl();
     }
 
-    #endregion
-    #region Methods
-
+    [ClientRpc]
     // crude traction control that reduces the power to wheel if the car is wheel spinning too much
     private void TractionControl()
     {
@@ -156,6 +162,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
     // this is used to add more grip in relation to speed
     private void AddDownForce()
     {
@@ -166,6 +173,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
     private void SpeedLimiter()
     {
         float speed = m_Rigidbody.velocity.magnitude;
@@ -173,9 +181,9 @@ public class PlayerController : NetworkBehaviour
             m_Rigidbody.velocity = topSpeed * m_Rigidbody.velocity.normalized;
     }
 
+    [Server]
     // finds the corresponding visual wheel
     // correctly applies the transform
-
     public void ApplyLocalPositionToVisuals(WheelCollider col)
     {
         if (col.transform.childCount == 0)
@@ -192,6 +200,7 @@ public class PlayerController : NetworkBehaviour
         myTransform.rotation = rotation;
     }
 
+    [ClientRpc]
     private void SteerHelper()
     {
         foreach (var axleInfo in axleInfos)
@@ -216,8 +225,6 @@ public class PlayerController : NetworkBehaviour
 
         CurrentRotation = transform.eulerAngles.y;
     }
-
-
     #endregion
 
 
