@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class MyNetworkManager : NetworkManager
 {
+    [SerializeField] private Transform [] StartingPositions;
+    [SerializeField] private Material[] coloresCoches;
 
     public new void Start()
     {
@@ -23,6 +25,26 @@ public class MyNetworkManager : NetworkManager
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
+
+        SetupPlayer _playerInfo = conn.identity.GetComponent<SetupPlayer>();
+        UIManager hudInicial = _playerInfo.GetUi();
+
+        //get car color
+        GameObject car = spawnPrefabs[0];
+        var color = hudInicial.GetCarColor();
+        if (color == "Verde")
+        {
+            car = spawnPrefabs[1];
+        }
+        else if (color == "Amarillo")
+        {
+            car = spawnPrefabs[2];
+        }
+        else if (color == "Blanco")
+        {
+            car = spawnPrefabs[3];
+        }
+        playerPrefab = car;
         Debug.Log("Jugador Conectado al servidor");
     }
 
@@ -46,10 +68,13 @@ public class MyNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
-        //base.OnServerAddPlayer(conn);
-        GameObject player;
-        player = Instantiate(spawnPrefabs[1], Vector3.zero, Quaternion.identity) as GameObject;
-        NetworkServer.AddPlayerForConnection(conn, player);
+        base.OnServerAddPlayer(conn);
+
+        //GameObject player;
+        //player = Instantiate(spawnPrefabs[1], Vector3.zero, Quaternion.identity) as GameObject;
+        //NetworkServer.AddPlayerForConnection(conn, player);
+
+
     }
 
     #endregion server

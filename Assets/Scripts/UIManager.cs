@@ -17,8 +17,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button buttonServer;
     [SerializeField] private InputField inputFieldIP;
     [SerializeField] private InputField playerName;
+    [SerializeField] private Text carColor;
 
-    [Header("In-Game HUD")] [SerializeField]
+    [Header("In-Game HUD")]
+    [SerializeField]
     private GameObject inGameHUD;
 
     [SerializeField] private Text textSpeed;
@@ -43,13 +45,11 @@ public class UIManager : MonoBehaviour
     {
         textSpeed.text = "Speed " + speed + " Km/h";
     }
-    
+
     public void UpdateLap(int lap)
     {
         textSpeed.text = "Lap " + lap + " Km/h";
     }
-
-
 
     private void ActivateMainMenu()
     {
@@ -85,5 +85,10 @@ public class UIManager : MonoBehaviour
     public string GetPlayerName()
     {
         return playerName.text;
+    }
+
+    public string GetCarColor()
+    {
+        return carColor.text;
     }
 }

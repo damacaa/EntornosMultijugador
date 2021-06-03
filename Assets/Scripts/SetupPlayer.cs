@@ -130,7 +130,11 @@ public class SetupPlayer : NetworkBehaviour
     {
         return _name;
     }
- 
+
     #endregion Client Methods
 
+    public UIManager GetUi()
+    {
+        return _uiManager;
+    }
 }
