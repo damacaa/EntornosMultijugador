@@ -17,7 +17,7 @@ public class CheckpointManager : MonoBehaviour
 
     private void Awake()
     {
-        Transform checkpointsTransform = transform.Find("Checkpoints");
+        Transform checkpointsTransform = transform;
         checkpointList = new List<Checkpoint>();
         foreach (Transform checkpointTransform in checkpointsTransform)
         {
@@ -25,6 +25,15 @@ public class CheckpointManager : MonoBehaviour
             checkpoint.SetCheckpointManager(this);
             checkpointList.Add(checkpoint);
         }
+
+        //Seinicia en el menu por lo qeu no hay transform de los jugadores aun
+        playerTransformList = new List<Transform>();
+        PlayerController[] players = FindObjectsOfType<PlayerController>();
+        foreach (PlayerController player in players)
+        {
+            playerTransformList.Add(player.transform);
+        }
+
         nextCheckpointIndexList = new List<int>();
         foreach (Transform playerTransform in playerTransformList)
         {
@@ -39,6 +48,7 @@ public class CheckpointManager : MonoBehaviour
         if (checkpointList.IndexOf(c) == nextCheckpointIndex)
         {
             //es el siguiente checkpoint
+            Debug.Log("Correcto");
             nextCheckpointIndex = (nextCheckpointIndex + 1) % checkpointList.Count;
             OnPlayerCorrectCheckpointEvent?.Invoke();
         }

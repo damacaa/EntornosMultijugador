@@ -8,7 +8,8 @@ public class Checkpoint : MonoBehaviour
     private CheckpointManager checkpointManager;
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<PlayerController>(out PlayerController playerController))
+
+        if (other.gameObject.TryGetComponent<PlayerController>(out PlayerController playerController))
         {
             checkpointManager.PlayersThroughCheckpoint(this,other.transform);
         }
