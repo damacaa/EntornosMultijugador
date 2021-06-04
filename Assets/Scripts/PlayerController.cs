@@ -29,8 +29,6 @@ public class PlayerController : NetworkBehaviour
 
     private Rigidbody m_Rigidbody;
     private float m_SteerHelper = 0.8f;
-
-
     private float m_CurrentSpeed = 0;
 
 
@@ -56,7 +54,9 @@ public class PlayerController : NetworkBehaviour
         set
         {
             float d = value - distToFinish;
-            goingBackwards = d < 0 && d > -100f;
+            float threshhold = 0.002f;
+            Debug.Log(d);
+            goingBackwards = d < -threshhold && d > -100f;
             if (goingBackwards)
             {
                 //Debug.Log(distToFinish + " --> " + value);
@@ -170,7 +170,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     #endregion
-    #region Methods
+    #region Movimiento
     [Command]
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
@@ -237,6 +237,7 @@ public class PlayerController : NetworkBehaviour
 
         controlMovementInClient(InputSteering, InputAcceleration, InputBrake);
     }
+
 
     [ClientRpc]
     void controlMovementInClient(float InputSteering, float InputAcceleration, float InputBrake)

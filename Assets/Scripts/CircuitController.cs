@@ -39,7 +39,6 @@ public class CircuitController : MonoBehaviour
 
     public Vector3 GetSegment(int idx)
     {
-        //Debug.Log(idx);
         return _pathPos[idx + 1] - _pathPos[idx];
     }
 
