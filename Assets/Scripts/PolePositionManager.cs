@@ -166,11 +166,12 @@ public class PolePositionManager : NetworkBehaviour
         player.MaxCheckPoints = _circuitController.checkpoints.Count;
         _players.Add(player);
 
+
+        //PREGUNTAR ESTO
         if (isServer)
         {
             player.transform.position = startingPoints[_players.Count - 1].position;
             player.transform.rotation = startingPoints[_players.Count - 1].rotation;
-            _uiManager.AddPlayerToRoom(player, _players.Count - 1);
         }
     }
 

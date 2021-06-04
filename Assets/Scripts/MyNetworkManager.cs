@@ -49,18 +49,6 @@ public class MyNetworkManager : NetworkManager
         base.OnServerAddPlayer(conn);
  
     }
-
-    public override void OnStartHost()
-    {
-        base.OnStartHost();
-        _uiManager.ActivateHostOptions();
-    }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        _uiManager.ActivateClientOptions();
-    }
     #endregion server
 
 
