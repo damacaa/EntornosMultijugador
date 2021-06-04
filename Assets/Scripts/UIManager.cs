@@ -34,7 +34,7 @@ public class UIManager : NetworkBehaviour
     [Header("Client Wait HUD")]
     [SerializeField]
     private GameObject clientWait;
-    [SyncVar (hook = nameof(UpdateNames))] private string[] playerNamesList;
+    private SyncList<string> playerNamesList;
     [SerializeField] private Text[] playerNames;
     [SerializeField] private Button playButtonClient;
     [SerializeField] private Text carColorClient;
@@ -56,7 +56,7 @@ public class UIManager : NetworkBehaviour
         buttonClient.onClick.AddListener(() => ActivateClientWaitHUD());
         buttonServer.onClick.AddListener(() => StartServer());
         playButtonClient.onClick.AddListener(() => ButtonPlay());
-        playerNamesList = new string[4];
+        playerNamesList = new SyncList<string>();
         ActivateMainMenu();
     }
 
@@ -165,7 +165,7 @@ public class UIManager : NetworkBehaviour
 
     public void UpdateNames(string[] old, string[] newList)
     {
-        for (int i=0; i < playerNamesList.Length; i++)
+        for (int i=0; i < playerNamesList.Count; i++)
         {
             playerNames[i].text = newList[i];
         }
