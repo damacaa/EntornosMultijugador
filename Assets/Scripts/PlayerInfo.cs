@@ -12,6 +12,7 @@ public class PlayerInfo : MonoBehaviour
     public int CurrentPosition { get; set; }
 
     public int CurrentLap { get; set; }
+    public int CheckPoints { get; set; }
 
     public PlayerController controller;
 
@@ -23,5 +24,23 @@ public class PlayerInfo : MonoBehaviour
     private void Awake()
     {
         controller = gameObject.GetComponent<PlayerController>();
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.tag == "Finish")
+        {
+            if (CheckPoints > 0)
+            {
+                CheckPoints = 0;
+                CurrentLap++;
+                Debug.Log(name + " vuelta " + CurrentLap);
+            }
+        }
+
+        if (collision.gameObject.tag == "CheckPoint")
+        {
+            CheckPoints++;
+        }
     }
 }

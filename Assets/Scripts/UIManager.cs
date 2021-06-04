@@ -131,7 +131,6 @@ public class UIManager : MonoBehaviour
         {
             car =3;
         }
-        Debug.Log(car);
         return car;
     }
 
