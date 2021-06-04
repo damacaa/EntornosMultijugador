@@ -83,21 +83,14 @@ public class PolePositionManager : NetworkBehaviour
             startingPoints[i] = sp[i].gameObject.transform;
         }
 
-        racing = true;
+        racing = false;
     }
 
-    private void Start()
-    {
-        if (isServer)
-        {
-            racing = false;
-            StartCoroutine(DelayStart(3f));
-        }
-    }
 
+    public bool waiting = true;
     private void Update()
     {
-        if (_players.Count == laps)
+        if (_players.Count == 0)
             return;
 
         if (racing)
@@ -115,13 +108,18 @@ public class PolePositionManager : NetworkBehaviour
                 totalTime += Time.deltaTime;
             }
         }
+        else if (waiting)
+        {
+            waiting = false;
+            ResetPlayers();
+        }
     }
 
     private bool CheckFinish()
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            if (_players[i].CurrentLap == laps - 1)
+            if (_players[i].CurrentLap == laps + 1)
             {
                 Debug.Log("Vencedor: " + _players[i].name);
                 totalTime = 0;
@@ -139,6 +137,9 @@ public class PolePositionManager : NetworkBehaviour
             _players[i].CurrentLap = 0;
             _players[i].LastCheckPoint = 0;
             _players[i].controller.ResetToStart(startingPoints[i]);
+            _players[i].controller.DistToFinish = ComputeCarArcLength(i);
+            _players[i].controller.InitialDistToFinish = _players[i].controller.DistToFinish;
+
             StartCoroutine(DelayStart(3f));
         }
     }
@@ -213,7 +214,6 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         RpcUpdateUIRaceProgress(myRaceOrder);
-
     }
 
 
@@ -235,21 +235,31 @@ public class PolePositionManager : NetworkBehaviour
         float carDist;
         Vector3 carProj;
 
-        float minArcL =
-            this._circuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
+        float minArcL = this._circuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
+
+        /*if (carDist > 15)
+        {
+            this._players[id].transform.position = carProj;
+            minArcL = this._circuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
+        }*/
+
+        this._players[id].Segment = segIdx;
 
         //Esto no hace falta cuando quitemos las bolas
         this._debuggingSpheres[id].transform.position = carProj;
 
-        if (this._players[id].CurrentLap == 0)
+        if (_players[id].CurrentLap == 0)
         {
-            minArcL -= _circuitController.CircuitLength;
+            minArcL -= _circuitController.CircuitLength * (laps + 1);
         }
         else
         {
-            minArcL += _circuitController.CircuitLength *
-                       (_players[id].CurrentLap - 1);
+            minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap + 1);
         }
+        //minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap);
+        //Debug.Log(_circuitController.CircuitLength * (_players[id].CurrentLap- laps));
+
+
 
         return minArcL;
     }

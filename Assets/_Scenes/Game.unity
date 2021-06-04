@@ -1379,7 +1379,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   numPlayers: 0
+  laps: 2
+  isPractice: 1
   racing: 0
+  waiting: 1
 --- !u!4 &1839589614
 Transform:
   m_ObjectHideFlags: 0
@@ -1738,7 +1741,7 @@ PrefabInstance:
     - target: {fileID: 3251817753832546121, guid: 2356b61abd7af864eadff2e62f8c8586,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -41.14
+      value: -31.14
       objectReference: {fileID: 0}
     - target: {fileID: 3251817754173437327, guid: 2356b61abd7af864eadff2e62f8c8586,
         type: 3}
@@ -1819,6 +1822,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3251817754351065421, guid: 2356b61abd7af864eadff2e62f8c8586,
+        type: 3}
+      propertyPath: circuitLaps
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3251817754351065421, guid: 2356b61abd7af864eadff2e62f8c8586,
         type: 3}
@@ -2014,6 +2022,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415909394493063712, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415909394493063712, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6415909394493063714, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}

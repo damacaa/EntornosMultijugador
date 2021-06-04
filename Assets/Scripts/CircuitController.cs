@@ -40,7 +40,7 @@ public class CircuitController : MonoBehaviour
         _totalLength = _cumArcLength[_cumArcLength.Length - 1];
 
         int spacing = 2; //Spawnea u checkpoint cada x puntos
-        for (int i = 1; i < (_pathPos.Length - 1) / spacing; i++)
+        for (int i = 0; i < (_pathPos.Length - 1) / spacing; i++)
         {
             GameObject gO = GameObject.Instantiate(checkpointPrefab, _pathPos[i * spacing], Quaternion.LookRotation(_pathPos[(i + 1) * spacing] - _pathPos[i * spacing]));
             Checkpoint cP = gO.GetComponent<Checkpoint>();

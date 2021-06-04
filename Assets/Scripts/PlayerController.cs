@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEditor;
 
 /*
 	Documentation: https://mirror-networking.com/docs/Guides/NetworkBehaviour.html
@@ -32,18 +33,7 @@ public class PlayerController : NetworkBehaviour
     private float m_CurrentSpeed = 0;
 
 
-    private bool goingBackwards = false;
-    /*public bool GoingBackwards
-    {
-        get { return goingBackwards; }
-        set
-        {
-            if (OnGoingBackwardsEvent != null && goingBackwards != value)
-                OnGoingBackwardsEvent(value);
-
-            goingBackwards = value;
-        }
-    }*/
+    public bool goingBackwards = false;
 
     private UIManager _uiManager;
 
@@ -55,7 +45,6 @@ public class PlayerController : NetworkBehaviour
         {
             float d = value - distToFinish;
             float threshhold = 0.002f;
-            Debug.Log(d);
             goingBackwards = d < -threshhold && d > -100f;
             if (goingBackwards)
             {
@@ -65,6 +54,7 @@ public class PlayerController : NetworkBehaviour
             distToFinish = value;
         }
     }
+    public float InitialDistToFinish;
     private float BackwardsTimeout = 0;
 
 
@@ -144,14 +134,16 @@ public class PlayerController : NetworkBehaviour
             Crashed = r > 90 && r < 270;
 
             //Replace with UI
-            if (BackwardsTimeout > 0f || Crashed)
+            if (BackwardsTimeout > 0f )
             {
+                goingBackwards = true;
                 GetComponentInChildren<MeshRenderer>().material.color = Color.red;
                 BackwardsTimeout -= Time.deltaTime;
                 OnGoingBackwardsEventHandler(true);
             }
             else
             {
+                goingBackwards = false;
                 GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
                 OnGoingBackwardsEventHandler(false);
             }
