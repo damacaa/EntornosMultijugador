@@ -116,8 +116,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         return _uiManager;
     }
-    
-    #region ServerMethods
+
     //change name function 
 
     void ChangeName(string oldName, string newName)
