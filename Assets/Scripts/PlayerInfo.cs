@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerInfo : MonoBehaviour
@@ -16,6 +17,20 @@ public class PlayerInfo : MonoBehaviour
     public int MaxCheckPoints;
 
     public PlayerController controller;
+    public float InitialDistToFinish = 0;
+
+    private int segment;
+    public int Segment
+    {
+        get { return segment; }
+        set
+        {
+            if (value != segment)
+            {
+                segment = value;
+            }
+        }
+    }
 
     public override string ToString()
     {
@@ -29,23 +44,28 @@ public class PlayerInfo : MonoBehaviour
 
     private void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.tag == "Finish")
-        {
-            if (LastCheckPoint >= MaxCheckPoints)
-            {
-                LastCheckPoint = 0;
-                CurrentLap++;
-                Debug.Log(name + " vuelta " + CurrentLap);
-            }
-        }
-
         if (collision.gameObject.tag == "CheckPoint")
         {
             int id = collision.gameObject.GetComponent<Checkpoint>().id;
-            if (id - LastCheckPoint == 1)
+            if (id == 0)
             {
-                LastCheckPoint = id;
+                //Meta
+                if (LastCheckPoint == MaxCheckPoints - 1)
+                {
+                    LastCheckPoint = 0;
+                    CurrentLap++;
+                    Debug.Log(name + " vuelta " + CurrentLap);
+                }
             }
+            else if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
+            //
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
+        Handles.Label(transform.position + transform.right + Vector3.up, CurrentLap.ToString());
+        Handles.Label(transform.position + transform.right + 2 * Vector3.up, segment.ToString());
     }
 }

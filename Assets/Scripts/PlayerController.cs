@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEditor;
 
 /*
 	Documentation: https://mirror-networking.com/docs/Guides/NetworkBehaviour.html
@@ -32,7 +33,7 @@ public class PlayerController : NetworkBehaviour
     private float m_CurrentSpeed = 0;
 
 
-    private bool goingBackwards = false;
+    public bool goingBackwards = false;
 
     private UIManager _uiManager;
 
@@ -50,14 +51,11 @@ public class PlayerController : NetworkBehaviour
                 //Debug.Log(distToFinish + " --> " + value);
                 BackwardsTimeout = 0.1f;//Tiempo que se mantiene en pantalla el aviso de marcha atrás
             }
-            
-            if (value< 2)
-            {
-                Debug.Log(value);
-            }
+
             distToFinish = value;
         }
     }
+    public float InitialDistToFinish;
     private float BackwardsTimeout = 0;
 
 
@@ -133,19 +131,21 @@ public class PlayerController : NetworkBehaviour
             Crashed = r > 90 && r < 270;
 
             //Replace with UI
-            if (BackwardsTimeout > 0f || Crashed)
+            if (BackwardsTimeout > 0f )
             {
+                goingBackwards = true;
                 GetComponentInChildren<MeshRenderer>().material.color = Color.red;
                 BackwardsTimeout -= Time.deltaTime;
                 OnGoingBackwardsEventHandler(true);
             }
             else
             {
+                goingBackwards = false;
                 GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
                 OnGoingBackwardsEventHandler(false);
             }
 
-            
+
 
         }
     }
@@ -344,7 +344,7 @@ public class PlayerController : NetworkBehaviour
 
     //NUEVO
 
-    //enables o not the controller when object attached to it is activated or desactivated 
+    //enables o not the controller when object attached to it is activated or desactivated
     private void OnEnable()
     {
         _input.Enable();
@@ -355,7 +355,7 @@ public class PlayerController : NetworkBehaviour
         _input.Disable();
     }
 
-    //get input Controller 
+    //get input Controller
     public _InputController GetInput()
     {
         return _input;
@@ -375,7 +375,7 @@ public class PlayerController : NetworkBehaviour
     //if we collide and we are not able to continue playing the car flips
     private void Reset()
     {
-        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche 
+        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche
         transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
     }
 

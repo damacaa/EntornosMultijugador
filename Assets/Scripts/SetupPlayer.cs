@@ -63,6 +63,7 @@ public class SetupPlayer : NetworkBehaviour
         }
 
         string nameFromUI = _uiManager.GetPlayerName();
+        if(nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
         CmdChangeName(nameFromUI);
     }
 
