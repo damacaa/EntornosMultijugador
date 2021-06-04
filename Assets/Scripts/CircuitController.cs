@@ -72,10 +72,12 @@ public class CircuitController : MonoBehaviour
             float dotProd = Vector3.Dot(carVec, pathVec);
 
             if (dotProd < 0)
-                continue;
+                dotProd = 0f;
+                //continue;
 
             if (dotProd > segLength)
-                continue; // Passed
+                dotProd = 1f;
+                //continue; // Passed
 
             Vector3 proj = _pathPos[i] + dotProd * pathVec;
             float dist = (posIn - proj).magnitude;
@@ -110,4 +112,5 @@ public class CircuitController : MonoBehaviour
 
         return minArcL;
     }
+
 }

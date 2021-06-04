@@ -33,21 +33,10 @@ public class PlayerController : NetworkBehaviour
 
 
     private bool goingBackwards = false;
-    /*public bool GoingBackwards
-    {
-        get { return goingBackwards; }
-        set
-        {
-            if (OnGoingBackwardsEvent != null && goingBackwards != value)
-                OnGoingBackwardsEvent(value);
-
-            goingBackwards = value;
-        }
-    }*/
 
     private UIManager _uiManager;
 
-    private float distToFinish;
+    public float distToFinish;
     public float DistToFinish
     {
         get { return distToFinish; }
@@ -55,12 +44,16 @@ public class PlayerController : NetworkBehaviour
         {
             float d = value - distToFinish;
             float threshhold = 0.002f;
-            Debug.Log(d);
             goingBackwards = d < -threshhold && d > -100f;
             if (goingBackwards)
             {
                 //Debug.Log(distToFinish + " --> " + value);
                 BackwardsTimeout = 0.1f;//Tiempo que se mantiene en pantalla el aviso de marcha atrás
+            }
+            
+            if (value< 2)
+            {
+                Debug.Log(value);
             }
             distToFinish = value;
         }
@@ -100,11 +93,7 @@ public class PlayerController : NetworkBehaviour
 
 
     public delegate void OnLapChangeDelegate(int newVal);
-
     public event OnLapChangeDelegate OnLapChangeEvent;
-
-    /*public delegate void OnGoingBackwardsDelegate(bool newVal);
-    public event OnGoingBackwardsDelegate OnGoingBackwardsEvent;*/
 
     public delegate void OnHasCrashedDelegate(bool newVal);
     public event OnHasCrashedDelegate OnHasCrashedEvent;
