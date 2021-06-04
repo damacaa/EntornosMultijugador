@@ -33,25 +33,54 @@ public class PlayerController : NetworkBehaviour
 
     private float m_CurrentSpeed = 0;
 
-    private bool crashed = false;
+
     private bool goingBackwards = false;
-    private float arcLength;
-    public float ArcLength
+    /*public bool GoingBackwards
     {
-        get { return arcLength; }
+        get { return goingBackwards; }
         set
         {
-            float d = value - arcLength;
+            if (OnGoingBackwardsEvent != null && goingBackwards != value)
+                OnGoingBackwardsEvent(value);
+
+            goingBackwards = value;
+        }
+    }*/
+
+    private UIManager _uiManager;
+
+    private float distToFinish;
+    public float DistToFinish
+    {
+        get { return distToFinish; }
+        set
+        {
+            float d = value - distToFinish;
             goingBackwards = d < 0 && d > -100f;
             if (goingBackwards)
             {
-                Debug.Log(arcLength + " --> " + value);
-                BackwardsTimeout = 0.1f;
+                //Debug.Log(distToFinish + " --> " + value);
+                BackwardsTimeout = 0.1f;//Tiempo que se mantiene en pantalla el aviso de marcha atrás
             }
-            arcLength = value;
+            distToFinish = value;
         }
     }
     private float BackwardsTimeout = 0;
+
+
+    //Variable que indica si el localPlayer se ha chocado
+    private bool crashed = false;
+    public bool Crashed
+    {
+        get { return crashed; }
+        set
+        {
+            if (OnHasCrashedEvent != null && crashed != value)
+                OnHasCrashedEvent(value);
+
+            crashed = value;
+        }
+    }
 
     private float Speed
     {
@@ -74,6 +103,12 @@ public class PlayerController : NetworkBehaviour
 
     public event OnLapChangeDelegate OnLapChangeEvent;
 
+    /*public delegate void OnGoingBackwardsDelegate(bool newVal);
+    public event OnGoingBackwardsDelegate OnGoingBackwardsEvent;*/
+
+    public delegate void OnHasCrashedDelegate(bool newVal);
+    public event OnHasCrashedDelegate OnHasCrashedEvent;
+
     private _InputController _input; //call our own action controller
     #endregion Variables
 
@@ -83,6 +118,13 @@ public class PlayerController : NetworkBehaviour
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         _input = new _InputController();
+        if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
+    }
+
+    private void Start()
+    {
+        //this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
+        this.OnHasCrashedEvent += OnHasCrashedEventHandler;
     }
 
     public void Update()
@@ -96,20 +138,22 @@ public class PlayerController : NetworkBehaviour
             ActionTriggered();// looks if an action has been triggered 
 
             float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
-            crashed = r > 90 && r < 270;
+            Crashed = r > 90 && r < 270;
 
             //Replace with UI
-            if (BackwardsTimeout > 0f || crashed)
+            if (BackwardsTimeout > 0f || Crashed)
             {
                 GetComponentInChildren<MeshRenderer>().material.color = Color.red;
                 BackwardsTimeout -= Time.deltaTime;
+                OnGoingBackwardsEventHandler(true);
             }
             else
             {
                 GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
+                OnGoingBackwardsEventHandler(false);
             }
 
-            if (crashed && Input.GetKeyDown(KeyCode.F))
+            if (Crashed)
             {
                 CmdReset();
             }
@@ -118,7 +162,10 @@ public class PlayerController : NetworkBehaviour
 
     public void FixedUpdate()
     {
-        auxControlMovement(InputSteering, InputAcceleration, InputBrake);
+        if (isClient)
+        {
+            controlMovement(InputSteering, InputAcceleration, InputBrake);
+        }
     }
 
     #endregion
@@ -130,8 +177,7 @@ public class PlayerController : NetworkBehaviour
         controlMovement(InputSteering, InputAcceleration, InputBrake);
     }
 
-
-    [ClientRpc]
+    [Command]
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
@@ -141,7 +187,7 @@ public class PlayerController : NetworkBehaviour
         float steering = maxSteeringAngle * InputSteering;
 
         //Evita que el coche se deslice
-        if (InputAcceleration == 0 && InputSteering == 0 && !crashed)
+        if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
         {
             this.m_Rigidbody.freezeRotation = true;
         }
@@ -201,17 +247,40 @@ public class PlayerController : NetworkBehaviour
         AddDownForce();
         TractionControl();
 
-        //ShowInCient(transform);
+        controlMovementInClient(InputSteering, InputAcceleration, InputBrake);
     }
 
     [ClientRpc]
-    void ShowInCient(Transform t)
+    void controlMovementInClient(float InputSteering, float InputAcceleration, float InputBrake)
     {
-        Debug.Log("Showing"+t.transform.position);
-        transform.position = t.position;
-        transform.rotation = t.rotation;
-    }
+        if (true)
+        {
 
+            float steering = maxSteeringAngle * InputSteering;
+
+            //Evita que el coche se deslice
+            if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
+            {
+                this.m_Rigidbody.freezeRotation = true;
+            }
+            else
+            {
+                this.m_Rigidbody.freezeRotation = false;
+            }
+
+            foreach (AxleInfo axleInfo in axleInfos)
+            {
+                if (axleInfo.steering)
+                {
+                    axleInfo.leftWheel.steerAngle = steering;
+                    axleInfo.rightWheel.steerAngle = steering;
+                }
+
+                ApplyLocalPositionToVisuals(axleInfo.leftWheel);
+                ApplyLocalPositionToVisuals(axleInfo.rightWheel);
+            }
+        }
+    }
 
     // crude traction control that reduces the power to wheel if the car is wheel spinning too much
     private void TractionControl()
@@ -347,5 +416,15 @@ public class PlayerController : NetworkBehaviour
             Debug.Log("Server: " + collision.gameObject.name);
             Reset();
         }
+    }
+
+    void OnHasCrashedEventHandler(bool hasCrashed)
+    {
+        _uiManager.ShowCrashedWarning(hasCrashed);
+    }
+
+    void OnGoingBackwardsEventHandler(bool goingBackwards)
+    {
+        _uiManager.ShowBackwardsWarning(goingBackwards);
     }
 }

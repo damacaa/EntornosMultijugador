@@ -15,11 +15,6 @@ public class PolePositionManager : NetworkBehaviour
     private CircuitController _circuitController;
     private GameObject[] _debuggingSpheres;
 
-
-
-
-
-
     #region Variables de Tiempo
     //Tiempo de la vuelta actual
     [SyncVar] private float lapTime = 0;
@@ -32,40 +27,10 @@ public class PolePositionManager : NetworkBehaviour
     //Variable que indica si el localPlayer esta yendo en direccion contraria
     private bool goingBackwards = false;
 
-    public bool GoingBackwards
-    {
-        get { return goingBackwards; }
-        set
-        {
-            if (OnGoingBackwardsEvent != null && goingBackwards != value)
-                OnGoingBackwardsEvent(value);
-
-            goingBackwards = value;
-        }
-    }
-
-    //Variable que indica si el localPlayer se ha chocado
-    private bool hasCrashed = false;
-
-    public bool HasCrashed
-    {
-        get { return hasCrashed; }
-        set
-        {
-            if (OnHasCrashedEvent != null && hasCrashed != value)
-                OnHasCrashedEvent(value);
-
-            hasCrashed = value;
-        }
-    }
-
     //Boolean que indica si ha empezado la carrera
     private bool hasRaceStarted = false;
     //Boolean que indica si ha acabado la carrera
     private bool hasRaceEnded = false;
-
-
-
     #endregion
 
     #region Eventos
@@ -75,12 +40,6 @@ public class PolePositionManager : NetworkBehaviour
 
     public delegate void OnRaceEndDelegate(bool newVal);
     public event OnRaceEndDelegate OnRaceEndEvent;
-
-    public delegate void OnGoingBackwardsDelegate(bool newVal);
-    public event OnGoingBackwardsDelegate OnGoingBackwardsEvent;
-
-    public delegate void OnHasCrashedDelegate(bool newVal);
-    public event OnHasCrashedDelegate OnHasCrashedEvent;
 
     public delegate void OnRankingChangeDelegate(string newVal);
     public event OnRankingChangeDelegate OnRankingChangeEvent;
@@ -110,8 +69,6 @@ public class PolePositionManager : NetworkBehaviour
         {
         }*/
         this.OnRankingChangeEvent += OnRankingChangeEventHandler;
-        this.OnHasCrashedEvent += OnHasCrashedEventHandler;
-        this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
     }
 
     private void Update()
@@ -156,7 +113,7 @@ public class PolePositionManager : NetworkBehaviour
         {
             float l = ComputeCarArcLength(i); //Distancia restante hasta la meta
 
-            _players[i].controller.ArcLength = l;
+            _players[i].controller.DistToFinish = l;
             arcLengths[i] = l;
         }
 
@@ -175,15 +132,7 @@ public class PolePositionManager : NetworkBehaviour
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
-    void OnHasCrashedEventHandler(bool hasCrashed)
-    {
-        _uiManager.ShowCrashedWarning(hasCrashed);
-    }
-
-    void OnGoingBackwardsEventHandler(bool goingBackwards)
-    {
-        _uiManager.ShowBackwardsWarning(goingBackwards);
-    }
+    
 
     float ComputeCarArcLength(int id)
     {
