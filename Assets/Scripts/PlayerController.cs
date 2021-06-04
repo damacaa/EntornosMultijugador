@@ -52,10 +52,6 @@ public class PlayerController : NetworkBehaviour
                 BackwardsTimeout = 0.1f;//Tiempo que se mantiene en pantalla el aviso de marcha atrás
             }
 
-            if (value< 2)
-            {
-                Debug.Log(value);
-            }
             distToFinish = value;
         }
     }
