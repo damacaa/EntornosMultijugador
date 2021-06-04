@@ -33,6 +33,55 @@ public class PlayerController : NetworkBehaviour
 
     private float m_CurrentSpeed = 0;
 
+
+    private bool goingBackwards = false;
+    /*public bool GoingBackwards
+    {
+        get { return goingBackwards; }
+        set
+        {
+            if (OnGoingBackwardsEvent != null && goingBackwards != value)
+                OnGoingBackwardsEvent(value);
+
+            goingBackwards = value;
+        }
+    }*/
+
+    private UIManager _uiManager;
+
+    private float distToFinish;
+    public float DistToFinish
+    {
+        get { return distToFinish; }
+        set
+        {
+            float d = value - distToFinish;
+            goingBackwards = d < 0 && d > -100f;
+            if (goingBackwards)
+            {
+                //Debug.Log(distToFinish + " --> " + value);
+                BackwardsTimeout = 0.1f;//Tiempo que se mantiene en pantalla el aviso de marcha atrás
+            }
+            distToFinish = value;
+        }
+    }
+    private float BackwardsTimeout = 0;
+
+
+    //Variable que indica si el localPlayer se ha chocado
+    private bool crashed = false;
+    public bool Crashed
+    {
+        get { return crashed; }
+        set
+        {
+            if (OnHasCrashedEvent != null && crashed != value)
+                OnHasCrashedEvent(value);
+
+            crashed = value;
+        }
+    }
+
     private float Speed
     {
         get { return m_CurrentSpeed; }
@@ -54,7 +103,15 @@ public class PlayerController : NetworkBehaviour
 
     public event OnLapChangeDelegate OnLapChangeEvent;
 
+    /*public delegate void OnGoingBackwardsDelegate(bool newVal);
+    public event OnGoingBackwardsDelegate OnGoingBackwardsEvent;*/
+
+    public delegate void OnHasCrashedDelegate(bool newVal);
+    public event OnHasCrashedDelegate OnHasCrashedEvent;
+
     private _InputController _input; //call our own action controller
+
+    PolePositionManager _polePosition;
     #endregion Variables
 
     #region Unity Callbacks
@@ -63,35 +120,62 @@ public class PlayerController : NetworkBehaviour
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         _input = new _InputController();
+        if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
+        if (_polePosition == null) _polePosition = FindObjectOfType<PolePositionManager>();
+    }
+
+    private void Start()
+    {
+        //this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
+        this.OnHasCrashedEvent += OnHasCrashedEventHandler;
+        _input.Player.Restart.performed += ctx => CmdReset();
     }
 
     public void Update()
     {
-        InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
-        InputSteering = _input.Player.Steering.ReadValue<float>();
-        InputBrake = _input.Player.Jump.ReadValue<float>();
-        Speed = m_Rigidbody.velocity.magnitude;
-        ActionTriggered();// looks if an action has been triggered 
+        if (isClient)
+        {
+            InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
+            InputSteering = _input.Player.Steering.ReadValue<float>();
+            InputBrake = _input.Player.Jump.ReadValue<float>();
+            Speed = m_Rigidbody.velocity.magnitude;
+
+            float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
+            Crashed = r > 90 && r < 270;
+
+            //Replace with UI
+            if (BackwardsTimeout > 0f || Crashed)
+            {
+                GetComponentInChildren<MeshRenderer>().material.color = Color.red;
+                BackwardsTimeout -= Time.deltaTime;
+                OnGoingBackwardsEventHandler(true);
+            }
+            else
+            {
+                GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
+                OnGoingBackwardsEventHandler(false);
+            }
+
+            
+
+        }
     }
 
     public void FixedUpdate()
     {
-        auxControlMovement(InputSteering, InputAcceleration, InputBrake);
+        if (isClient)
+        {
+            controlMovement(InputSteering, InputAcceleration, InputBrake);
+        }
     }
 
     #endregion
     #region Methods
-    
     [Command]
-    public void auxControlMovement(float InputSteering, float InputAcceleration, float InputBrake)
-    {
-        controlMovement( InputSteering,  InputAcceleration,  InputBrake);
-    }
-
-
-    [ClientRpc]
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
+        if (!_polePosition.racing) { return; }
+
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
         InputBrake = Mathf.Clamp(InputBrake, 0, 1);
@@ -99,14 +183,14 @@ public class PlayerController : NetworkBehaviour
         float steering = maxSteeringAngle * InputSteering;
 
         //Evita que el coche se deslice
-        if (InputAcceleration == 0 && InputSteering == 0)
+        /*if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
         {
             this.m_Rigidbody.freezeRotation = true;
         }
         else
         {
             this.m_Rigidbody.freezeRotation = false;
-        }
+        }*/
 
         foreach (AxleInfo axleInfo in axleInfos)
         {
@@ -118,7 +202,7 @@ public class PlayerController : NetworkBehaviour
 
             if (axleInfo.motor)
             {
-                
+
                 if (InputAcceleration > float.Epsilon)
                 {
                     axleInfo.leftWheel.motorTorque = forwardMotorTorque;
@@ -158,8 +242,37 @@ public class PlayerController : NetworkBehaviour
         SpeedLimiter();
         AddDownForce();
         TractionControl();
+
+        controlMovementInClient(InputSteering, InputAcceleration, InputBrake);
     }
 
+    [ClientRpc]
+    void controlMovementInClient(float InputSteering, float InputAcceleration, float InputBrake)
+    {
+        float steering = maxSteeringAngle * InputSteering;
+
+        //Evita que el coche se deslice
+        /*if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
+        {
+            this.m_Rigidbody.freezeRotation = true;
+        }
+        else
+        {
+            this.m_Rigidbody.freezeRotation = false;
+        }*/
+
+        foreach (AxleInfo axleInfo in axleInfos)
+        {
+            if (axleInfo.steering)
+            {
+                axleInfo.leftWheel.steerAngle = steering;
+                axleInfo.rightWheel.steerAngle = steering;
+            }
+
+            ApplyLocalPositionToVisuals(axleInfo.leftWheel);
+            ApplyLocalPositionToVisuals(axleInfo.rightWheel);
+        }
+    }
 
     // crude traction control that reduces the power to wheel if the car is wheel spinning too much
     private void TractionControl()
@@ -266,21 +379,47 @@ public class PlayerController : NetworkBehaviour
         return _input;
     }
 
-    //if we collide and we are not able to continue playing the car flips
-    [Server]
-    private void ResetRot()
-    {
-        Debug.Log("COCHE MAL"); //aqui deberia rotar el coche 
-    }
 
     [Command]
-    public void CmdResetRot()
+    public void CmdReset()
     {
-        ResetRot();
+        Debug.Log("Digo al server que resetee");
+        if (Crashed)
+        {
+            Reset();
+        }
     }
-    //checks if the player has done an action and if done executes it on the server
-    void ActionTriggered()
+
+    //if we collide and we are not able to continue playing the car flips
+    private void Reset()
     {
-        _input.Player.Restart.performed += ctx => CmdResetRot();
+        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche 
+        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+    }
+
+    public void ResetToStart(Transform t)
+    {
+        m_Rigidbody.velocity = Vector3.zero;
+        transform.position = t.position;
+        transform.rotation = t.rotation;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (isServer && collision.relativeVelocity.magnitude > 10f)
+        {
+            Debug.Log("Server: " + collision.gameObject.name);
+            Reset();
+        }
+    }
+
+    void OnHasCrashedEventHandler(bool hasCrashed)
+    {
+        _uiManager.ShowCrashedWarning(hasCrashed);
+    }
+
+    void OnGoingBackwardsEventHandler(bool goingBackwards)
+    {
+        _uiManager.ShowBackwardsWarning(goingBackwards);
     }
 }

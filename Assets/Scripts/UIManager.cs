@@ -105,6 +105,7 @@ public class UIManager : MonoBehaviour
 
     public string GetPlayerName()
     {
+        //return "Patata";
         return playerName.text;
     }
 

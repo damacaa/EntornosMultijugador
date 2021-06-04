@@ -21,7 +21,6 @@ public class SetupPlayer : NetworkBehaviour
     private PlayerInfo _playerInfo;
     private PolePositionManager _polePositionManager;
 
-
     #region Start & Stop Callbacks
 
     /// <summary>
@@ -54,13 +53,17 @@ public class SetupPlayer : NetworkBehaviour
     /// </summary>
     public override void OnStartLocalPlayer()
     {
-
-        int colorId= _uiManager.GetCarSelected();
-        CmdChangeColor(colorId);
+        int colorId = _uiManager.GetCarSelected();
+        if (isClient)
+        {
+            CmdChangeColor(colorId);
+        }
 
         string nameFromUI = _uiManager.GetPlayerName();
+        if (isClient) { Debug.Log("Client "+nameFromUI); }
+        if (isServer) { Debug.Log("Server "+nameFromUI); }
+        
         CmdChangeName(nameFromUI);
-
     }
 
     #endregion
@@ -122,13 +125,12 @@ public class SetupPlayer : NetworkBehaviour
     void ChangeName(string oldName, string newName)
     {
         _playerInfo.Name = newName;
-    } 
+    }
 
     [Command]
     public void CmdChangeName(string newName)
     {
         _name = newName;
-
     }
 
 
@@ -149,13 +151,13 @@ public class SetupPlayer : NetworkBehaviour
         int colorIdx = id;
         if (colorIdx == 0)
         {
-           _carColor = Color.red;
+            _carColor = Color.red;
 
         }
         if (colorIdx == 1)
         {
             _carColor = Color.green;
-      
+
         }
         if (colorIdx == 2)
         {

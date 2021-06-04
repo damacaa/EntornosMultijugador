@@ -14,10 +14,7 @@ public class PolePositionManager : NetworkBehaviour
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>(4);
     private CircuitController _circuitController;
     private GameObject[] _debuggingSpheres;
-
-
-
-
+    private Transform[] startingPoints;
 
     #region Variables de Tiempo
     //Tiempo de la vuelta actual
@@ -31,40 +28,10 @@ public class PolePositionManager : NetworkBehaviour
     //Variable que indica si el localPlayer esta yendo en direccion contraria
     private bool goingBackwards = false;
 
-    public bool GoingBackwards
-    {
-        get { return goingBackwards; }
-        set
-        {
-            if (OnGoingBackwardsEvent != null && goingBackwards != value)
-                OnGoingBackwardsEvent(value);
-
-            goingBackwards = value;
-        }
-    }
-
-    //Variable que indica si el localPlayer se ha chocado
-    private bool hasCrashed = false;
-
-    public bool HasCrashed
-    {
-        get { return hasCrashed; }
-        set
-        {
-            if (OnHasCrashedEvent != null && hasCrashed != value)
-                OnHasCrashedEvent(value);
-
-            hasCrashed = value;
-        }
-    }
-
     //Boolean que indica si ha empezado la carrera
-    private bool hasRaceStarted = false;
+    [SyncVar]public bool racing = false;
     //Boolean que indica si ha acabado la carrera
     private bool hasRaceEnded = false;
-
-
-
     #endregion
 
     #region Eventos
@@ -74,12 +41,6 @@ public class PolePositionManager : NetworkBehaviour
 
     public delegate void OnRaceEndDelegate(bool newVal);
     public event OnRaceEndDelegate OnRaceEndEvent;
-
-    public delegate void OnGoingBackwardsDelegate(bool newVal);
-    public event OnGoingBackwardsDelegate OnGoingBackwardsEvent;
-
-    public delegate void OnHasCrashedDelegate(bool newVal);
-    public event OnHasCrashedDelegate OnHasCrashedEvent;
 
     public delegate void OnRankingChangeDelegate(string newVal);
     public event OnRankingChangeDelegate OnRankingChangeEvent;
@@ -91,7 +52,7 @@ public class PolePositionManager : NetworkBehaviour
     {
         if (_networkManager == null) _networkManager = FindObjectOfType<MyNetworkManager>();
         if (_circuitController == null) _circuitController = FindObjectOfType<CircuitController>();
-        if (_uiManager==null) _uiManager = FindObjectOfType<UIManager>();
+        if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
         //ELIMINAMOS LA GENERACION DE ESFERAS INNECESARIAS
 
         _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
@@ -101,16 +62,27 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
+        NetworkStartPosition[] sp = GameObject.FindObjectsOfType<NetworkStartPosition>();
+        startingPoints = new Transform[sp.Length];
+        for (int i = 0; i < sp.Length; i++)
+        {
+            startingPoints[i] = sp[i].gameObject.transform;
+        }
+
+        racing = true;
     }
 
     private void Start()
     {
-       /* if (isLocalPlayer)
-        {
-        }*/
+        ResetPlayer();
+        /* if (isLocalPlayer)
+         {
+         }*/
         //this.OnRankingChangeEvent += OnRankingChangeEventHandler;
-        this.OnHasCrashedEvent += OnHasCrashedEventHandler;
-        this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
+        //this.OnHasCrashedEvent += OnHasCrashedEventHandler;
+        //this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
+
+
     }
 
     private void Update()
@@ -118,7 +90,57 @@ public class PolePositionManager : NetworkBehaviour
         if (_players.Count == 0)
             return;
 
-        UpdateRaceProgress();
+        if (isServer)
+        {
+            if (racing)
+            {
+                UpdateRaceProgress();
+                if (CheckFinish())
+                {
+                    racing = false;
+                    Finish();
+                    ResetPlayer();
+                }
+
+                totalTime += Time.deltaTime;
+            }
+        }
+    }
+
+    private bool CheckFinish()
+    {
+        for (int i = 0; i < _players.Count; ++i)
+        {
+            if (_players[i].CurrentLap == 1 || totalTime > 3f)
+            {
+                totalTime = 0;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [Server]
+    private void ResetPlayer()
+    {
+        for (int i = 0; i < _players.Count; ++i)
+        {
+            _players[i].controller.ResetToStart(startingPoints[i]);
+            StartCoroutine(DelayStart(3f));
+        }
+    }
+
+    IEnumerator DelayStart(float t)
+    {
+        yield return new WaitForSeconds(t);
+        racing = true;
+        yield return null;
+    }
+
+    [ClientRpc]
+    private void Finish()
+    {
+        Debug.Log("Fin");
     }
 
     public void AddPlayer(PlayerInfo player)
@@ -143,7 +165,7 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
-    
+
     public void UpdateRaceProgress()
     {
         // Update car arc-lengths
@@ -151,7 +173,10 @@ public class PolePositionManager : NetworkBehaviour
 
         for (int i = 0; i < _players.Count; ++i)
         {
-            arcLengths[i] = ComputeCarArcLength(i);
+            float l = ComputeCarArcLength(i); //Distancia restante hasta la meta
+
+            _players[i].controller.DistToFinish = l;
+            arcLengths[i] = l;
         }
 
         _players.Sort(new PlayerInfoComparer(arcLengths));
@@ -162,28 +187,23 @@ public class PolePositionManager : NetworkBehaviour
             myRaceOrder += player.Name + " ";
         }
 
-        Debug.Log("El orden de carrera es: " + myRaceOrder);
-        OnRankingChangeEvent(myRaceOrder);
+        //Debug.Log(myRaceOrder);
+
+        OnRankingChangeEventHandler(myRaceOrder);
     }
 
-    /*void OnRankingChangeEventHandler(string ranking)
+    void OnRankingChangeEventHandler(string ranking)
     {
         _uiManager.UpdateRanking(ranking);
-    }*/
-
-    void OnHasCrashedEventHandler(bool hasCrashed)
-    {
-        _uiManager.ShowCrashedWarning(hasCrashed);
+        //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
-    void OnGoingBackwardsEventHandler(bool goingBackwards)
-    {
-        _uiManager.ShowBackwardsWarning(goingBackwards);
-    }
+
+
 
     float ComputeCarArcLength(int id)
     {
-        // Compute the projection of the car position to the closest circuit 
+        // Compute the projection of the car position to the closest circuit
         // path segment and accumulate the arc-length along of the car along
         // the circuit.
         Vector3 carPos = this._players[id].transform.position;

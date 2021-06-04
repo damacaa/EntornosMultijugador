@@ -6,9 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class MyNetworkManager : NetworkManager
 {
-    [SerializeField] private Transform[] StartingPositions;
-    [SerializeField] private Color[] coloresCoches;
-
     public new void Start()
     {
 
@@ -48,7 +45,6 @@ public class MyNetworkManager : NetworkManager
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
-
         //Set name choosen as the players name
         SetupPlayer player = conn.identity.GetComponent<SetupPlayer>();
         //player.CmdChangeName();
