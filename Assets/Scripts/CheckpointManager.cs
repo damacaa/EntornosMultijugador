@@ -22,7 +22,7 @@ public class CheckpointManager : MonoBehaviour
         foreach (Transform checkpointTransform in checkpointsTransform)
         {
             Checkpoint checkpoint = checkpointTransform.GetComponent<Checkpoint>();
-            checkpoint.SetCheckpointManager(this);
+            //checkpoint.SetCheckpointManager(this);
             checkpointList.Add(checkpoint);
         }
 
@@ -41,7 +41,7 @@ public class CheckpointManager : MonoBehaviour
         }
     }
 
-    public void PlayersThroughCheckpoint(Checkpoint c,Transform playerTransform)
+    public void PlayersThroughCheckpoint(Checkpoint c, Transform playerTransform)
     {
         int nextCheckpointIndex = nextCheckpointIndexList[playerTransformList.IndexOf(playerTransform)];
 
@@ -57,6 +57,11 @@ public class CheckpointManager : MonoBehaviour
             //no es el siguiente checkpoint
             OnPlayerWrongCheckpointEvent?.Invoke();
         }
+    }
+
+    public int Count
+    {
+        get { return checkpointList.Count; }
     }
 }
 

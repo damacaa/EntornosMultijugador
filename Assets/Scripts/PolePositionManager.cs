@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class PolePositionManager : NetworkBehaviour
 {
-    
     private MyNetworkManager _networkManager;
     private UIManager _uiManager;
 
@@ -17,8 +16,9 @@ public class PolePositionManager : NetworkBehaviour
     [Header("RaceStartingPositions")]
     private Transform[] startingPoints;
 
-    [SyncVar]public int numPlayers = 4;
-    [SyncVar]public int maxLaps = 3;
+    [SyncVar] public int numPlayers = 4;
+    [SyncVar] public int laps = 3;
+    int currentPlayers;
 
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
     private readonly List<PlayerInfo> _order = new List<PlayerInfo>();
@@ -26,7 +26,7 @@ public class PolePositionManager : NetworkBehaviour
     public bool isPractice = true;
 
     [Header("RaceProgress")]
-    [SyncVar]string myRaceOrder = "";
+    [SyncVar] string myRaceOrder = "";
     //Boolean que indica si ha empezado la carrera
     [SyncVar] public bool racing = false;
 
@@ -97,7 +97,7 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Update()
     {
-        if (_players.Count == 0)
+        if (_players.Count == laps)
             return;
 
         if (racing)
@@ -121,7 +121,7 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            if (_players[i].CurrentLap == maxLaps-1)
+            if (_players[i].CurrentLap == laps - 1)
             {
                 Debug.Log("Vencedor: " + _players[i].name);
                 totalTime = 0;
@@ -134,9 +134,10 @@ public class PolePositionManager : NetworkBehaviour
     [Server]
     private void ResetPlayers()
     {
-        Debug.Log("Reseting" + _players.Count + " players");
         for (int i = 0; i < _players.Count; ++i)
         {
+            _players[i].CurrentLap = 0;
+            _players[i].LastCheckPoint = 0;
             _players[i].controller.ResetToStart(startingPoints[i]);
             StartCoroutine(DelayStart(3f));
         }
@@ -162,6 +163,8 @@ public class PolePositionManager : NetworkBehaviour
 
     public void AddPlayer(PlayerInfo player)
     {
+        currentPlayers++;
+        player.MaxCheckPoints = _circuitController.checkpoints.Count;
         _players.Add(player);
     }
 
@@ -203,12 +206,14 @@ public class PolePositionManager : NetworkBehaviour
         for (int i = 0; i < _players.Count; i++)
         {
             myRaceOrder += _players[i].Name;
-            if (i < _players.Count-1)
+            if (i < _players.Count - 1)
             {
                 myRaceOrder += '\n';
             }
         }
+
         RpcUpdateUIRaceProgress(myRaceOrder);
+
     }
 
 
@@ -218,9 +223,6 @@ public class PolePositionManager : NetworkBehaviour
         _uiManager.UpdateRanking(newRanking);
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
-
-
-
 
     float ComputeCarArcLength(int id)
     {
