@@ -49,11 +49,10 @@ public class MyNetworkManager : NetworkManager
     {
         base.OnServerAddPlayer(conn);
 
-        //Gets the color selected un initialHUD represented as a number and according to it
-        //Changes the player Color
-        SetupPlayer player = conn.identity.gameObject.GetComponent<SetupPlayer>();
-
-
+        //Set name choosen as the players name
+        SetupPlayer player = conn.identity.GetComponent<SetupPlayer>();
+        //player.CmdChangeName();
+        //Debug.Log(player.GetName()); //coge el nombre del espacio creado en el HUD inicial para meter el nombre del jugador
     }
 
     #endregion server

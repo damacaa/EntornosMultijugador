@@ -11,15 +11,16 @@ using Random = System.Random;
 public class SetupPlayer : NetworkBehaviour
 {
     [SyncVar] private int _id;
-    [SyncVar] private string _name;
     [SerializeField] private GameObject _carBody;
     [SyncVar(hook = nameof(ColorUpdate))] private Color _carColor = Color.black;
+    [SyncVar(hook = nameof(ChangeName))] private string _name;
 
     private UIManager _uiManager;
     private MyNetworkManager _networkManager;
     private PlayerController _playerController;
     private PlayerInfo _playerInfo;
     private PolePositionManager _polePositionManager;
+
 
     #region Start & Stop Callbacks
 
@@ -53,8 +54,13 @@ public class SetupPlayer : NetworkBehaviour
     /// </summary>
     public override void OnStartLocalPlayer()
     {
+
         int colorId= _uiManager.GetCarSelected();
         CmdChangeColor(colorId);
+
+        string nameFromUI = _uiManager.GetPlayerName();
+        CmdChangeName(nameFromUI);
+
     }
 
     #endregion
@@ -76,6 +82,7 @@ public class SetupPlayer : NetworkBehaviour
             _playerController.enabled = true;
             _playerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
             _playerController.OnLapChangeEvent += OnLapChangeEventHandler;
+            _polePositionManager.OnRankingChangeEvent += OnRankingChangeEventHandler;
             ConfigureCamera();
         }
     }
@@ -95,23 +102,34 @@ public class SetupPlayer : NetworkBehaviour
         _uiManager.UpdateLap(lap);
     }
 
+    void OnRankingChangeEventHandler(string ranking)
+    {
+        _uiManager.UpdateRanking(ranking);
+    }
+
     void ConfigureCamera()
     {
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
     }
 
-    #region ClientMethods
-
-    public string GetName()
-    {
-        return _name;
-    }
-
-    #endregion Client Methods
-
     public UIManager GetUi()
     {
         return _uiManager;
+    }
+    
+    #region ServerMethods
+    //change name function 
+
+    void ChangeName(string oldName, string newName)
+    {
+        _playerInfo.Name = newName;
+    } 
+
+    [Command]
+    public void CmdChangeName(string newName)
+    {
+        _name = newName;
+
     }
 
 

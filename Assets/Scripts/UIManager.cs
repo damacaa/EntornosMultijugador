@@ -27,10 +27,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
     [SerializeField] private Text textTime;
+    [SerializeField] private Text crashedWarning;
+    [SerializeField] private Text backwardWarning;
+
+    private int circuitLaps;
 
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
+        circuitLaps = FindObjectOfType<CircuitController>().circuitLaps;
     }
 
     private void Start()
@@ -48,7 +53,23 @@ public class UIManager : MonoBehaviour
 
     public void UpdateLap(int lap)
     {
-        textSpeed.text = "Lap " + lap + " Km/h";
+        textLaps.text = "Lap " + lap + "/" + circuitLaps;
+    }
+    
+    public void UpdateRanking(string ranking)
+    {
+        textPosition.text = ranking;
+    }
+
+
+    public void ShowCrashedWarning(bool hasCrashed)
+    {
+        crashedWarning.transform.parent.gameObject.SetActive(hasCrashed);
+    }
+
+    public void ShowBackwardsWarning(bool goingBackwards)
+    {
+        backwardWarning.transform.parent.gameObject.SetActive(goingBackwards);
     }
 
     private void ActivateMainMenu()

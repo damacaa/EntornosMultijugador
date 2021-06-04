@@ -9,16 +9,89 @@ public class PolePositionManager : NetworkBehaviour
 {
     public int numPlayers;
     private MyNetworkManager _networkManager;
+    private UIManager _uiManager;
 
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>(4);
     private CircuitController _circuitController;
     private GameObject[] _debuggingSpheres;
 
+
+
+
+
+    #region Variables de Tiempo
+    //Tiempo de la vuelta actual
+    [SyncVar] private float lapTime = 0;
+    //Tiempo Total de la carrera
+    [SyncVar] private float totalTime = 0;
+
+    #endregion
+
+    #region Comprobaciones
+    //Variable que indica si el localPlayer esta yendo en direccion contraria
+    private bool goingBackwards = false;
+
+    public bool GoingBackwards
+    {
+        get { return goingBackwards; }
+        set
+        {
+            if (OnGoingBackwardsEvent != null && goingBackwards != value)
+                OnGoingBackwardsEvent(value);
+
+            goingBackwards = value;
+        }
+    }
+
+    //Variable que indica si el localPlayer se ha chocado
+    private bool hasCrashed = false;
+
+    public bool HasCrashed
+    {
+        get { return hasCrashed; }
+        set
+        {
+            if (OnHasCrashedEvent != null && hasCrashed != value)
+                OnHasCrashedEvent(value);
+
+            hasCrashed = value;
+        }
+    }
+
+    //Boolean que indica si ha empezado la carrera
+    private bool hasRaceStarted = false;
+    //Boolean que indica si ha acabado la carrera
+    private bool hasRaceEnded = false;
+
+
+
+    #endregion
+
+    #region Eventos
+
+    public delegate void OnRaceStartDelegate(bool newVal);
+    public event OnRaceStartDelegate OnRaceStartEvent;
+
+    public delegate void OnRaceEndDelegate(bool newVal);
+    public event OnRaceEndDelegate OnRaceEndEvent;
+
+    public delegate void OnGoingBackwardsDelegate(bool newVal);
+    public event OnGoingBackwardsDelegate OnGoingBackwardsEvent;
+
+    public delegate void OnHasCrashedDelegate(bool newVal);
+    public event OnHasCrashedDelegate OnHasCrashedEvent;
+
+    public delegate void OnRankingChangeDelegate(string newVal);
+    public event OnRankingChangeDelegate OnRankingChangeEvent;
+
+
+    #endregion
+
     private void Awake()
     {
         if (_networkManager == null) _networkManager = FindObjectOfType<MyNetworkManager>();
         if (_circuitController == null) _circuitController = FindObjectOfType<CircuitController>();
-
+        if (_uiManager==null) _uiManager = FindObjectOfType<UIManager>();
         //ELIMINAMOS LA GENERACION DE ESFERAS INNECESARIAS
 
         _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
@@ -28,6 +101,16 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
+    }
+
+    private void Start()
+    {
+       /* if (isLocalPlayer)
+        {
+        }*/
+        //this.OnRankingChangeEvent += OnRankingChangeEventHandler;
+        this.OnHasCrashedEvent += OnHasCrashedEventHandler;
+        this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
     }
 
     private void Update()
@@ -54,12 +137,13 @@ public class PolePositionManager : NetworkBehaviour
 
         public override int Compare(PlayerInfo x, PlayerInfo y)
         {
-            if (_arcLengths[x.ID] < _arcLengths[y.ID])
+            if (_arcLengths[x.ID] > _arcLengths[y.ID])
                 return 1;
             else return -1;
         }
     }
 
+    
     public void UpdateRaceProgress()
     {
         // Update car arc-lengths
@@ -79,6 +163,22 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         Debug.Log("El orden de carrera es: " + myRaceOrder);
+        OnRankingChangeEvent(myRaceOrder);
+    }
+
+    /*void OnRankingChangeEventHandler(string ranking)
+    {
+        _uiManager.UpdateRanking(ranking);
+    }*/
+
+    void OnHasCrashedEventHandler(bool hasCrashed)
+    {
+        _uiManager.ShowCrashedWarning(hasCrashed);
+    }
+
+    void OnGoingBackwardsEventHandler(bool goingBackwards)
+    {
+        _uiManager.ShowBackwardsWarning(goingBackwards);
     }
 
     float ComputeCarArcLength(int id)
