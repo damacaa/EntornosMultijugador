@@ -7,14 +7,29 @@ using UnityEngine;
 
 public class PolePositionManager : NetworkBehaviour
 {
-    public int numPlayers;
+    
     private MyNetworkManager _networkManager;
     private UIManager _uiManager;
 
-    private readonly List<PlayerInfo> _players = new List<PlayerInfo>(4);
     private CircuitController _circuitController;
     private GameObject[] _debuggingSpheres;
+
+    [Header("RaceStartingPositions")]
     private Transform[] startingPoints;
+
+    [SyncVar]public int numPlayers = 4;
+    [SyncVar]public int maxLaps = 3;
+
+    private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
+    private readonly List<PlayerInfo> _order = new List<PlayerInfo>();
+
+    public bool isPractice = true;
+
+    [Header("RaceProgress")]
+    [SyncVar]string myRaceOrder = "";
+    //Boolean que indica si ha empezado la carrera
+    [SyncVar] public bool racing = false;
+
 
     #region Variables de Tiempo
     //Tiempo de la vuelta actual
@@ -28,8 +43,7 @@ public class PolePositionManager : NetworkBehaviour
     //Variable que indica si el localPlayer esta yendo en direccion contraria
     private bool goingBackwards = false;
 
-    //Boolean que indica si ha empezado la carrera
-    [SyncVar] public bool racing = false;
+
     //Boolean que indica si ha acabado la carrera
     private bool hasRaceEnded = false;
     #endregion
@@ -86,11 +100,11 @@ public class PolePositionManager : NetworkBehaviour
         if (_players.Count == 0)
             return;
 
-        if (isServer)
+        if (racing)
         {
-            if (racing)
+            UpdateRaceProgress();
+            if (isServer)
             {
-                UpdateRaceProgress();
                 if (CheckFinish())
                 {
                     racing = false;
@@ -107,7 +121,7 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            if (_players[i].CurrentLap == 2)
+            if (_players[i].CurrentLap == maxLaps-1)
             {
                 Debug.Log("Vencedor: " + _players[i].name);
                 totalTime = 0;
@@ -162,13 +176,13 @@ public class PolePositionManager : NetworkBehaviour
 
         public override int Compare(PlayerInfo x, PlayerInfo y)
         {
-            if (_arcLengths[x.ID] > _arcLengths[y.ID])
+            if (_arcLengths[x.ID] < _arcLengths[y.ID])
                 return 1;
             else return -1;
         }
     }
 
-
+    [Server]
     public void UpdateRaceProgress()
     {
         // Update car arc-lengths
@@ -184,20 +198,24 @@ public class PolePositionManager : NetworkBehaviour
 
         _players.Sort(new PlayerInfoComparer(arcLengths));
 
-        string myRaceOrder = "";
-        foreach (var player in _players)
+        myRaceOrder = "";
+
+        for (int i = 0; i < _players.Count; i++)
         {
-            myRaceOrder += player.Name + " ";
+            myRaceOrder += _players[i].Name;
+            if (i < _players.Count-1)
+            {
+                myRaceOrder += '\n';
+            }
         }
-
-        //Debug.Log(myRaceOrder);
-
-        OnRankingChangeEventHandler(myRaceOrder);
+        RpcUpdateUIRaceProgress(myRaceOrder);
     }
 
-    void OnRankingChangeEventHandler(string ranking)
+
+    [ClientRpc]
+    void RpcUpdateUIRaceProgress(string newRanking)
     {
-        _uiManager.UpdateRanking(ranking);
+        _uiManager.UpdateRanking(newRanking);
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
@@ -218,6 +236,7 @@ public class PolePositionManager : NetworkBehaviour
         float minArcL =
             this._circuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
 
+        //Esto no hace falta cuando quitemos las bolas
         this._debuggingSpheres[id].transform.position = carProj;
 
         if (this._players[id].CurrentLap == 0)
