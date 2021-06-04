@@ -21,12 +21,11 @@ public class PolePositionManager : NetworkBehaviour
     int currentPlayers;
 
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
-    private readonly List<PlayerInfo> _order = new List<PlayerInfo>();
 
     public bool isPractice = true;
 
     [Header("RaceProgress")]
-    [SyncVar] string myRaceOrder = "";
+    string myRaceOrder = "";
     //Boolean que indica si ha empezado la carrera
     [SyncVar] public bool racing = false;
 
@@ -56,8 +55,7 @@ public class PolePositionManager : NetworkBehaviour
     public delegate void OnRaceEndDelegate(bool newVal);
     public event OnRaceEndDelegate OnRaceEndEvent;
 
-    public delegate void OnRankingChangeDelegate(string newVal);
-    public event OnRankingChangeDelegate OnRankingChangeEvent;
+
 
 
     #endregion
@@ -167,20 +165,20 @@ public class PolePositionManager : NetworkBehaviour
         currentPlayers++;
         player.MaxCheckPoints = _circuitController.checkpoints.Count;
         _players.Add(player);
+
+        if (isServer)
+        {
+            player.transform.position = startingPoints[_players.Count - 1].position;
+            player.transform.rotation = startingPoints[_players.Count - 1].rotation;
+            _uiManager.AddPlayerToRoom(player, _players.Count - 1);
+        }
     }
 
     private class PlayerInfoComparer : Comparer<PlayerInfo>
     {
-        float[] _arcLengths;
-
-        public PlayerInfoComparer(float[] arcLengths)
-        {
-            _arcLengths = arcLengths;
-        }
-
         public override int Compare(PlayerInfo x, PlayerInfo y)
         {
-            if (_arcLengths[x.ID] < _arcLengths[y.ID])
+            if (x.controller.DistToFinish < y.controller.DistToFinish)
                 return 1;
             else return -1;
         }
@@ -190,17 +188,14 @@ public class PolePositionManager : NetworkBehaviour
     public void UpdateRaceProgress()
     {
         // Update car arc-lengths
-        float[] arcLengths = new float[_players.Count];
 
         for (int i = 0; i < _players.Count; ++i)
         {
-            float l = ComputeCarArcLength(i); //Distancia restante hasta la meta
+            _players[i].controller.DistToFinish = ComputeCarArcLength(i); //Distancia restante hasta la meta
 
-            _players[i].controller.DistToFinish = l;
-            arcLengths[i] = l;
         }
 
-        _players.Sort(new PlayerInfoComparer(arcLengths));
+        _players.Sort(new PlayerInfoComparer());
 
         myRaceOrder = "";
 
@@ -216,13 +211,14 @@ public class PolePositionManager : NetworkBehaviour
         RpcUpdateUIRaceProgress(myRaceOrder);
     }
 
-
     [ClientRpc]
     void RpcUpdateUIRaceProgress(string newRanking)
     {
         _uiManager.UpdateRanking(newRanking);
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
+
+
 
     float ComputeCarArcLength(int id)
     {
@@ -242,15 +238,16 @@ public class PolePositionManager : NetworkBehaviour
         //Esto no hace falta cuando quitemos las bolas
         this._debuggingSpheres[id].transform.position = carProj;
 
-        if (_players[id].CurrentLap == 0)
-        {
-            minArcL -= _circuitController.CircuitLength * (laps + 1);
-        }
-        else
-        {
-            minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap + 1);
-        }
+
+        minArcL += _circuitController.CircuitLength *(_players[id].CurrentLap);
+
 
         return minArcL;
+    }
+
+    [ClientRpc]
+    void showCosa(float s)
+    {
+        Debug.Log(s);
     }
 }

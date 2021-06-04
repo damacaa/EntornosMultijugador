@@ -37,7 +37,7 @@ public class PlayerController : NetworkBehaviour
 
     private UIManager _uiManager;
 
-    private float distToFinish;
+    public float distToFinish;
     public float DistToFinish
     {
         get { return distToFinish; }
@@ -50,6 +50,11 @@ public class PlayerController : NetworkBehaviour
             {
                 //Debug.Log(distToFinish + " --> " + value);
                 BackwardsTimeout = 0.1f;//Tiempo que se mantiene en pantalla el aviso de marcha atrás
+            }
+
+            if (value< 2)
+            {
+                Debug.Log(value);
             }
             distToFinish = value;
         }
@@ -90,11 +95,7 @@ public class PlayerController : NetworkBehaviour
 
 
     public delegate void OnLapChangeDelegate(int newVal);
-
     public event OnLapChangeDelegate OnLapChangeEvent;
-
-    /*public delegate void OnGoingBackwardsDelegate(bool newVal);
-    public event OnGoingBackwardsDelegate OnGoingBackwardsEvent;*/
 
     public delegate void OnHasCrashedDelegate(bool newVal);
     public event OnHasCrashedDelegate OnHasCrashedEvent;
@@ -148,7 +149,7 @@ public class PlayerController : NetworkBehaviour
                 OnGoingBackwardsEventHandler(false);
             }
 
-            
+
 
         }
     }
@@ -347,7 +348,7 @@ public class PlayerController : NetworkBehaviour
 
     //NUEVO
 
-    //enables o not the controller when object attached to it is activated or desactivated 
+    //enables o not the controller when object attached to it is activated or desactivated
     private void OnEnable()
     {
         _input.Enable();
@@ -358,7 +359,7 @@ public class PlayerController : NetworkBehaviour
         _input.Disable();
     }
 
-    //get input Controller 
+    //get input Controller
     public _InputController GetInput()
     {
         return _input;
@@ -378,7 +379,7 @@ public class PlayerController : NetworkBehaviour
     //if we collide and we are not able to continue playing the car flips
     private void Reset()
     {
-        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche 
+        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche
         transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
     }
 

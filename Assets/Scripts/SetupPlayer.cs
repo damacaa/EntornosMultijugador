@@ -86,7 +86,6 @@ public class SetupPlayer : NetworkBehaviour
             _playerController.enabled = true;
             _playerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
             _playerController.OnLapChangeEvent += OnLapChangeEventHandler;
-            _polePositionManager.OnRankingChangeEvent += OnRankingChangeEventHandler;
             ConfigureCamera();
         }
     }
@@ -106,10 +105,6 @@ public class SetupPlayer : NetworkBehaviour
         _uiManager.UpdateLap(lap);
     }
 
-    void OnRankingChangeEventHandler(string ranking)
-    {
-        _uiManager.UpdateRanking(ranking);
-    }
 
     void ConfigureCamera()
     {

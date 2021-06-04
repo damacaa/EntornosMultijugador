@@ -6,9 +6,11 @@ using UnityEngine.SceneManagement;
 
 public class MyNetworkManager : NetworkManager
 {
+
+    [SerializeField] private UIManager _uiManager;
     public new void Start()
     {
-
+        if (!_uiManager) _uiManager = FindObjectOfType<UIManager>();
 
 #if UNITY_SERVER
             if (autoStartServerBuild)
@@ -48,7 +50,11 @@ public class MyNetworkManager : NetworkManager
  
     }
 
-
+    /*public override void OnStartHost()
+    {
+        base.OnStartHost();
+        _uiManager.ActivateHostOptions();
+    }*/
     #endregion server
 
 
