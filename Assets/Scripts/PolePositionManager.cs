@@ -29,7 +29,7 @@ public class PolePositionManager : NetworkBehaviour
     private bool goingBackwards = false;
 
     //Boolean que indica si ha empezado la carrera
-    [SyncVar]public bool racing = false;
+    [SyncVar] public bool racing = false;
     //Boolean que indica si ha acabado la carrera
     private bool hasRaceEnded = false;
     #endregion
@@ -74,15 +74,11 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Start()
     {
-        ResetPlayer();
-        /* if (isLocalPlayer)
-         {
-         }*/
-        //this.OnRankingChangeEvent += OnRankingChangeEventHandler;
-        //this.OnHasCrashedEvent += OnHasCrashedEventHandler;
-        //this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
-
-
+        if (isServer)
+        {
+            racing = false;
+            StartCoroutine(DelayStart(3f));
+        }
     }
 
     private void Update()
@@ -99,7 +95,7 @@ public class PolePositionManager : NetworkBehaviour
                 {
                     racing = false;
                     Finish();
-                    ResetPlayer();
+                    ResetPlayers();
                 }
 
                 totalTime += Time.deltaTime;
@@ -111,8 +107,9 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            if (_players[i].CurrentLap == 1 || totalTime > 3f)
+            if (_players[i].CurrentLap == 2)
             {
+                Debug.Log("Vencedor: " + _players[i].name);
                 totalTime = 0;
                 return true;
             }
@@ -121,8 +118,9 @@ public class PolePositionManager : NetworkBehaviour
     }
 
     [Server]
-    private void ResetPlayer()
+    private void ResetPlayers()
     {
+        Debug.Log("Reseting" + _players.Count + " players");
         for (int i = 0; i < _players.Count; ++i)
         {
             _players[i].controller.ResetToStart(startingPoints[i]);
@@ -132,7 +130,12 @@ public class PolePositionManager : NetworkBehaviour
 
     IEnumerator DelayStart(float t)
     {
-        yield return new WaitForSeconds(t);
+        yield return new WaitForSeconds(t / 3);
+        Debug.Log("Preparados...");
+        yield return new WaitForSeconds(t / 3);
+        Debug.Log("Listos...");
+        yield return new WaitForSeconds(t / 3);
+        Debug.Log("Ya!");
         racing = true;
         yield return null;
     }

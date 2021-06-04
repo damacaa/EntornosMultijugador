@@ -44,7 +44,10 @@ public class SetupPlayer : NetworkBehaviour
         _playerInfo.ID = _id;
         _playerInfo.Name = "Player" + _id;
         _playerInfo.CurrentLap = 0;
-        _polePositionManager.AddPlayer(_playerInfo);
+        if (isServer)
+        {
+            _polePositionManager.AddPlayer(_playerInfo);
+        }
     }
 
     /// <summary>
@@ -60,9 +63,6 @@ public class SetupPlayer : NetworkBehaviour
         }
 
         string nameFromUI = _uiManager.GetPlayerName();
-        if (isClient) { Debug.Log("Client "+nameFromUI); }
-        if (isServer) { Debug.Log("Server "+nameFromUI); }
-        
         CmdChangeName(nameFromUI);
     }
 

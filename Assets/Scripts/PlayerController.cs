@@ -174,23 +174,15 @@ public class PlayerController : NetworkBehaviour
     [Command]
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
-        if (!_polePosition.racing) { return; }
+        if (!_polePosition.racing) {
+            m_Rigidbody.velocity = Vector3.zero;
+            return; }
 
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
         InputBrake = Mathf.Clamp(InputBrake, 0, 1);
 
         float steering = maxSteeringAngle * InputSteering;
-
-        //Evita que el coche se deslice
-        /*if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
-        {
-            this.m_Rigidbody.freezeRotation = true;
-        }
-        else
-        {
-            this.m_Rigidbody.freezeRotation = false;
-        }*/
 
         foreach (AxleInfo axleInfo in axleInfos)
         {
