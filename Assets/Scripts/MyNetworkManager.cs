@@ -50,11 +50,17 @@ public class MyNetworkManager : NetworkManager
  
     }
 
-    /*public override void OnStartHost()
+    public override void OnStartHost()
     {
         base.OnStartHost();
         _uiManager.ActivateHostOptions();
-    }*/
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        _uiManager.ActivateClientOptions();
+    }
     #endregion server
 
 

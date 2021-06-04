@@ -54,10 +54,11 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         buttonHost.onClick.AddListener(() => StartHost());
-        buttonClient.onClick.AddListener(() => ActivateRoomHUD());
+        buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
         playButton.onClick.AddListener(() => ButtonPlay());
         practiceButton.onClick.AddListener(() => ButtonPractise());
+        readyButton.onClick.AddListener(() => ButtonPlay());//cambiarlo para poner qeu un jugador esta listo
         ActivateMainMenu();
     }
 
@@ -125,17 +126,31 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void ActivateClientOptions()
+    {
+        readyButton.gameObject.SetActive(true);
+        practiceButton.gameObject.SetActive(false);
+        playButton.gameObject.SetActive(false);
+
+    }
+
+
+
     private void StartHost()
     {
-        m_NetworkManager.StartHost();
-        ActivateInGameHUD();
-        //ActivateRoomHUD();
+        //m_NetworkManager.StartHost();
+        m_NetworkManager.OnStartHost();
+        //ActivateInGameHUD();
+        ActivateRoomHUD();
     }
 
     private void StartClient()
     {
         m_NetworkManager.networkAddress = inputFieldIP.text;
-        m_NetworkManager.StartClient();
+       // m_NetworkManager.StartClient();
+        m_NetworkManager.OnStartClient();
+        ActivateRoomHUD();
+
     }
 
     public void ButtonPlay()
