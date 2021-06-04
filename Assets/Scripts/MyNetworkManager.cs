@@ -6,11 +6,13 @@ using UnityEngine.SceneManagement;
 
 public class MyNetworkManager : NetworkManager
 {
+    [SerializeField] private Transform[] StartingPositions;
+    [SerializeField] private Color[] coloresCoches;
 
     public new void Start()
     {
 
-       
+
 #if UNITY_SERVER
             if (autoStartServerBuild)
             {
@@ -19,13 +21,12 @@ public class MyNetworkManager : NetworkManager
 #endif
     }
 
-    #region client
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
-        Debug.Log("Jugador Conectado al servidor");
     }
 
+    #region client
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
@@ -49,8 +50,8 @@ public class MyNetworkManager : NetworkManager
         base.OnServerAddPlayer(conn);
         //Set name choosen as the players name
         SetupPlayer player = conn.identity.GetComponent<SetupPlayer>();
-        player.CmdChangeName();
-        Debug.Log(player.GetName()); //coge el nombre del espacio creado en el HUD inicial para meter el nombre del jugador
+        //player.CmdChangeName();
+        //Debug.Log(player.GetName()); //coge el nombre del espacio creado en el HUD inicial para meter el nombre del jugador
     }
 
     #endregion server

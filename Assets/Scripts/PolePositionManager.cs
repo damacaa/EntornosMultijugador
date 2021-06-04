@@ -68,7 +68,9 @@ public class PolePositionManager : NetworkBehaviour
        /* if (isLocalPlayer)
         {
         }*/
-        this.OnRankingChangeEvent += OnRankingChangeEventHandler;
+        //this.OnRankingChangeEvent += OnRankingChangeEventHandler;
+        this.OnHasCrashedEvent += OnHasCrashedEventHandler;
+        this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
     }
 
     private void Update()
@@ -103,7 +105,7 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
-    [Server]
+
     public void UpdateRaceProgress()
     {
         // Update car arc-lengths
@@ -126,17 +128,18 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
-    void OnRankingChangeEventHandler(string ranking)
+    /*void OnRankingChangeEventHandler(string ranking)
     {
         _uiManager.UpdateRanking(ranking);
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
-    }
+    }*/
 
-    
+
+
 
     float ComputeCarArcLength(int id)
     {
-        // Compute the projection of the car position to the closest circuit 
+        // Compute the projection of the car position to the closest circuit
         // path segment and accumulate the arc-length along of the car along
         // the circuit.
         Vector3 carPos = this._players[id].transform.position;
