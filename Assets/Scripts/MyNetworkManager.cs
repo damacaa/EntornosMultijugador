@@ -21,9 +21,12 @@ public class MyNetworkManager : NetworkManager
 #endif
     }
 
+    public override void OnClientConnect(NetworkConnection conn)
+    {
+        base.OnClientConnect(conn);
+    }
+
     #region client
-
-
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
@@ -46,33 +49,9 @@ public class MyNetworkManager : NetworkManager
     {
         base.OnServerAddPlayer(conn);
 
+        //Gets the color selected un initialHUD represented as a number and according to it
+        //Changes the player Color
         SetupPlayer player = conn.identity.gameObject.GetComponent<SetupPlayer>();
-        int colorIdx = player.GetUi().GetCar();
-        if (colorIdx == 0)
-        {
-            Color color = Color.red;
-            player.CmdSetCarColor(color);
-        }
-        if (colorIdx == 1)
-        {
-            Color color = Color.green;
-            player.CmdSetCarColor(color);
-        }
-        if (colorIdx == 2)
-        {
-            Color color = Color.yellow;
-            player.CmdSetCarColor(color);
-
-        }
-        if (colorIdx == 3)
-        {
-            Color color = Color.white;
-            player.CmdSetCarColor(color);
-        }
-        //Debug.Log(player.GetCarColor());
-        //GameObject player;
-        //player = Instantiate(spawnPrefabs[1], Vector3.zero, Quaternion.identity) as GameObject;
-        //NetworkServer.AddPlayerForConnection(conn, player);
 
 
     }

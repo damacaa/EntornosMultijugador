@@ -92,8 +92,9 @@ public class UIManager : MonoBehaviour
         return carColor.text;
     }
 
-    //gets car color
-    public int GetCar() {
+    
+    //gets car's color selected
+    public int GetCarSelected() {
         int car = 0;
         var color = GetCarColor();
         if (color == "Verde")
@@ -108,6 +109,7 @@ public class UIManager : MonoBehaviour
         {
             car =3;
         }
+        Debug.Log(car);
         return car;
     }
 

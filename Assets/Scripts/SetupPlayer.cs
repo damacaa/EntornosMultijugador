@@ -13,6 +13,7 @@ public class SetupPlayer : NetworkBehaviour
     [SyncVar] private int _id;
     [SyncVar] private string _name;
     [SerializeField] private GameObject _carBody;
+    [SyncVar(hook = nameof(ColorUp))] private Color _carColor = Color.black;
 
     private UIManager _uiManager;
     private MyNetworkManager _networkManager;
@@ -52,6 +53,8 @@ public class SetupPlayer : NetworkBehaviour
     /// </summary>
     public override void OnStartLocalPlayer()
     {
+        int id = _uiManager.GetCarSelected();
+        ChangeColor(id);
     }
 
     #endregion
@@ -111,14 +114,44 @@ public class SetupPlayer : NetworkBehaviour
         return _uiManager;
     }
 
-    [Command]
-    public void CmdSetCarColor(Color newColor)
+
+    public void SetCarColor(Color newColor)
     {
-        _carBody.GetComponent<MeshRenderer>().materials[1].color= newColor;
+        _carBody.GetComponent<MeshRenderer>().materials[1].color = newColor;
     }
 
-    public Material GetCarColor()
+    public Material GetActualCarColor()
     {
         return _carBody.GetComponent<MeshRenderer>().materials[1];
+    }
+
+    [Command]
+    public void ChangeColor(int id)
+    {
+        int colorIdx = id;
+        if (colorIdx == 0)
+        {
+           _carColor = Color.red;
+
+        }
+        if (colorIdx == 1)
+        {
+            _carColor = Color.green;
+      
+        }
+        if (colorIdx == 2)
+        {
+            _carColor = Color.yellow;
+
+        }
+        if (colorIdx == 3)
+        {
+            _carColor = Color.white;
+        }
+    }
+
+    public void ColorUp(Color old, Color newC)
+    {
+        SetCarColor(newC);
     }
 }
