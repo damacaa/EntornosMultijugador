@@ -11,13 +11,14 @@ using Random = System.Random;
 public class SetupPlayer : NetworkBehaviour
 {
     [SyncVar] private int _id;
-    [SyncVar] private string _name;
+    [SyncVar(hook = nameof(ChangeName))] private string _name;
 
     private UIManager _uiManager;
     private MyNetworkManager _networkManager;
     private PlayerController _playerController;
     private PlayerInfo _playerInfo;
     private PolePositionManager _polePositionManager;
+
 
     #region Start & Stop Callbacks
 
@@ -51,6 +52,8 @@ public class SetupPlayer : NetworkBehaviour
     /// </summary>
     public override void OnStartLocalPlayer()
     {
+        string nameFromUI = _uiManager.GetPlayerName();
+        CmdChangeName(nameFromUI);
     }
 
     #endregion
@@ -69,10 +72,10 @@ public class SetupPlayer : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            _playerInfo.Name = _name;
             _playerController.enabled = true;
             _playerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
             _playerController.OnLapChangeEvent += OnLapChangeEventHandler;
+            _polePositionManager.OnRankingChangeEvent += OnRankingChangeEventHandler;
             ConfigureCamera();
         }
     }
@@ -92,24 +95,29 @@ public class SetupPlayer : NetworkBehaviour
         _uiManager.UpdateLap(lap);
     }
 
+    void OnRankingChangeEventHandler(string ranking)
+    {
+        _uiManager.UpdateRanking(ranking);
+    }
+
     void ConfigureCamera()
     {
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
     }
 
-    #region ServerFunctions
-    //change name function 
-    [Server]
-    private void ChangeName()
-    {
-        _name = _uiManager.GetPlayerName();
 
-    }
+    #region ServerMethods
+    //change name function 
+
+    void ChangeName(string oldName, string newName)
+    {
+        _playerInfo.Name = newName;
+    } 
 
     [Command]
-    public void CmdChangeName()
+    public void CmdChangeName(string newName)
     {
-        ChangeName();
+        _name = newName;
     }
 
     //change id function 
