@@ -237,13 +237,7 @@ public class PolePositionManager : NetworkBehaviour
 
         float minArcL = this._circuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
 
-        /*if (carDist > 15)
-        {
-            this._players[id].transform.position = carProj;
-            minArcL = this._circuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
-        }*/
-
-        this._players[id].Segment = segIdx;
+        if(segIdx == 0 && this._players[id].CurrentLap == 0) { this._players[id].CurrentLap =1; }
 
         //Esto no hace falta cuando quitemos las bolas
         this._debuggingSpheres[id].transform.position = carProj;
@@ -256,10 +250,6 @@ public class PolePositionManager : NetworkBehaviour
         {
             minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap + 1);
         }
-        //minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap);
-        //Debug.Log(_circuitController.CircuitLength * (_players[id].CurrentLap- laps));
-
-
 
         return minArcL;
     }

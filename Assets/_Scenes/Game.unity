@@ -803,7 +803,7 @@ BoxCollider:
   m_GameObject: {fileID: 975801133}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 12.600003, y: 6.93864, z: 1.9000005}
   m_Center: {x: 5.000001, y: 3.46932, z: -0.9500002}
@@ -1767,6 +1767,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TagString
       value: Finish
+      objectReference: {fileID: 0}
+    - target: {fileID: 3251817754351065410, guid: 2356b61abd7af864eadff2e62f8c8586,
+        type: 3}
+      propertyPath: m_Positions.Array.data[0].x
+      value: -57.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3251817754351065410, guid: 2356b61abd7af864eadff2e62f8c8586,
+        type: 3}
+      propertyPath: m_Positions.Array.data[24].x
+      value: -57.5
       objectReference: {fileID: 0}
     - target: {fileID: 3251817754351065411, guid: 2356b61abd7af864eadff2e62f8c8586,
         type: 3}

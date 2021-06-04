@@ -16,6 +16,8 @@ public class CircuitController : MonoBehaviour
         get { return _totalLength; }
     }
 
+    public int numPoints { get; set; }
+
     public List<Checkpoint> checkpoints = new List<Checkpoint>();
     public GameObject checkpointPrefab;
 
@@ -23,7 +25,7 @@ public class CircuitController : MonoBehaviour
     {
         _circuitPath = GetComponent<LineRenderer>();
 
-        int numPoints = _circuitPath.positionCount;
+        numPoints = _circuitPath.positionCount;
         _pathPos = new Vector3[numPoints];
         _cumArcLength = new float[numPoints];
         _circuitPath.GetPositions(_pathPos);

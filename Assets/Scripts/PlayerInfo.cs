@@ -23,7 +23,13 @@ public class PlayerInfo : MonoBehaviour
     public int Segment
     {
         get { return segment; }
-        set { segment = value; }
+        set
+        {
+            if (value != segment)
+            {
+                segment = value;
+            }
+        }
     }
 
     public override string ToString()
@@ -50,20 +56,9 @@ public class PlayerInfo : MonoBehaviour
                     CurrentLap++;
                     Debug.Log(name + " vuelta " + CurrentLap);
                 }
-                else if (CurrentLap == 0)
-                {
-                        LastCheckPoint = 0;
-                        CurrentLap++;
-                }else if (controller.goingBackwards)
-                {
-                    CurrentLap--;
-                    LastCheckPoint = MaxCheckPoints - 1;
-                }
             }
-            else if (id - LastCheckPoint == 1)
-            {
-                LastCheckPoint = id;
-            }
+            else if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
+            //
         }
     }
 
@@ -71,5 +66,6 @@ public class PlayerInfo : MonoBehaviour
     {
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
         Handles.Label(transform.position + transform.right + Vector3.up, CurrentLap.ToString());
+        Handles.Label(transform.position + transform.right + 2 * Vector3.up, segment.ToString());
     }
 }
