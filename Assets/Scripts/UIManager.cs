@@ -30,6 +30,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text crashedWarning;
     [SerializeField] private Text backwardWarning;
 
+    [Header("Client Wait HUD")]
+    [SerializeField]
+    private GameObject clientWait;
+    [SerializeField] private Text[] playerNames;
+    [SerializeField] private Button playButtonClient;
+    [SerializeField] private Text carColorClient;
+    [SerializeField] private Text playerNameClient;
+    [SerializeField] private InputField inputFieldIP_Wait;
+
     private int circuitLaps;
 
     private void Awake()
@@ -41,8 +50,9 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         buttonHost.onClick.AddListener(() => StartHost());
-        buttonClient.onClick.AddListener(() => StartClient());
+        buttonClient.onClick.AddListener(() => ActivateClientWaitHUD());
         buttonServer.onClick.AddListener(() => StartServer());
+        playButtonClient.onClick.AddListener(() => ButtonPlay());
         ActivateMainMenu();
     }
 
@@ -84,6 +94,15 @@ public class UIManager : MonoBehaviour
         inGameHUD.SetActive(true);
     }
 
+    private void ActivateClientWaitHUD()
+    {
+        clientWait.SetActive(true);
+        playerNameClient.text = playerName.textComponent.text;
+        carColorClient.text = carColor.text;
+        inputFieldIP_Wait = inputFieldIP;
+        mainMenu.SetActive(false);
+    }
+
     private void StartHost()
     {
         m_NetworkManager.StartHost();
@@ -92,11 +111,16 @@ public class UIManager : MonoBehaviour
 
     private void StartClient()
     {
-        m_NetworkManager.StartClient();
         m_NetworkManager.networkAddress = inputFieldIP.text;
-        ActivateInGameHUD();
+        m_NetworkManager.StartClient();
     }
 
+    public void ButtonPlay()
+    {
+        m_NetworkManager.StartClient();
+        m_NetworkManager.networkAddress = inputFieldIP_Wait.text;
+        clientWait.SetActive(false);
+    }
     private void StartServer()
     {
         m_NetworkManager.StartServer();
@@ -105,7 +129,6 @@ public class UIManager : MonoBehaviour
 
     public string GetPlayerName()
     {
-        //return "Patata";
         return playerName.text;
     }
 
@@ -114,8 +137,7 @@ public class UIManager : MonoBehaviour
         return carColor.text;
     }
 
-    
-    //gets car's color selected
+    //gets car's color selected from client UI
     public int GetCarSelected() {
         int car = 0;
         var color = GetCarColor();
