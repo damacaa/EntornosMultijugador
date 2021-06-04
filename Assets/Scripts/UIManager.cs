@@ -17,8 +17,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button buttonServer;
     [SerializeField] private InputField inputFieldIP;
     [SerializeField] private InputField playerName;
+    [SerializeField] private Text carColor;
 
-    [Header("In-Game HUD")] [SerializeField]
+    [Header("In-Game HUD")]
+    [SerializeField]
     private GameObject inGameHUD;
 
     [SerializeField] private Text textSpeed;
@@ -48,7 +50,7 @@ public class UIManager : MonoBehaviour
     {
         textSpeed.text = "Speed " + speed + " Km/h";
     }
-    
+
     public void UpdateLap(int lap)
     {
         textLaps.text = "Lap " + lap + "/" + circuitLaps;
@@ -59,6 +61,7 @@ public class UIManager : MonoBehaviour
         textPosition.text = ranking;
     }
 
+
     public void ShowCrashedWarning(bool hasCrashed)
     {
         crashedWarning.transform.parent.gameObject.SetActive(hasCrashed);
@@ -68,7 +71,6 @@ public class UIManager : MonoBehaviour
     {
         backwardWarning.transform.parent.gameObject.SetActive(goingBackwards);
     }
-
 
     private void ActivateMainMenu()
     {
@@ -105,4 +107,32 @@ public class UIManager : MonoBehaviour
     {
         return playerName.text;
     }
+
+    public string GetCarColor()
+    {
+        return carColor.text;
+    }
+
+    
+    //gets car's color selected
+    public int GetCarSelected() {
+        int car = 0;
+        var color = GetCarColor();
+        if (color == "Verde")
+        {
+            car =1;
+        }
+        else if (color == "Amarillo")
+        {
+            car =2;
+        }
+        else if (color == "Blanco")
+        {
+            car =3;
+        }
+        Debug.Log(car);
+        return car;
+    }
+
+
 }

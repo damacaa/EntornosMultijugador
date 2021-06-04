@@ -6,11 +6,13 @@ using UnityEngine.SceneManagement;
 
 public class MyNetworkManager : NetworkManager
 {
+    [SerializeField] private Transform[] StartingPositions;
+    [SerializeField] private Color[] coloresCoches;
 
     public new void Start()
     {
 
-       
+
 #if UNITY_SERVER
             if (autoStartServerBuild)
             {
@@ -19,13 +21,12 @@ public class MyNetworkManager : NetworkManager
 #endif
     }
 
-    #region client
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
-        Debug.Log("Jugador Conectado al servidor");
     }
 
+    #region client
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);

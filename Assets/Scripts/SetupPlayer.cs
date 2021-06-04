@@ -11,6 +11,8 @@ using Random = System.Random;
 public class SetupPlayer : NetworkBehaviour
 {
     [SyncVar] private int _id;
+    [SerializeField] private GameObject _carBody;
+    [SyncVar(hook = nameof(ColorUpdate))] private Color _carColor = Color.black;
     [SyncVar(hook = nameof(ChangeName))] private string _name;
 
     private UIManager _uiManager;
@@ -52,8 +54,13 @@ public class SetupPlayer : NetworkBehaviour
     /// </summary>
     public override void OnStartLocalPlayer()
     {
+
+        int colorId= _uiManager.GetCarSelected();
+        CmdChangeColor(colorId);
+
         string nameFromUI = _uiManager.GetPlayerName();
         CmdChangeName(nameFromUI);
+
     }
 
     #endregion
@@ -105,7 +112,11 @@ public class SetupPlayer : NetworkBehaviour
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
     }
 
-
+    public UIManager GetUi()
+    {
+        return _uiManager;
+    }
+    
     #region ServerMethods
     //change name function 
 
@@ -118,30 +129,49 @@ public class SetupPlayer : NetworkBehaviour
     public void CmdChangeName(string newName)
     {
         _name = newName;
+
     }
 
-    //change id function 
-    [Server]
-    private void ChangeID()
+
+    public void SetCarColor(Color newColor)
     {
-        _id = NetworkServer.connections.Count - 1;
+        _carBody.GetComponent<MeshRenderer>().materials[1].color = newColor;
     }
+
+    public Material GetActualCarColor()
+    {
+        return _carBody.GetComponent<MeshRenderer>().materials[1];
+    }
+
+    //changes sync var _carColor in server in order to later replicate this change to all clients
     [Command]
-    public void CmdChangeID()
+    public void CmdChangeColor(int id)
     {
-        ChangeID();
+        int colorIdx = id;
+        if (colorIdx == 0)
+        {
+           _carColor = Color.red;
+
+        }
+        if (colorIdx == 1)
+        {
+            _carColor = Color.green;
+      
+        }
+        if (colorIdx == 2)
+        {
+            _carColor = Color.yellow;
+
+        }
+        if (colorIdx == 3)
+        {
+            _carColor = Color.white;
+        }
     }
 
-
-    #endregion ServerFunctions
-
-    #region ClientMethods
-
-    public string GetName()
+    //updates car color in client
+    public void ColorUpdate(Color old, Color newC)
     {
-        return _name;
+        SetCarColor(newC);
     }
- 
-    #endregion Client Methods
-
 }
