@@ -12,7 +12,8 @@ public class PlayerInfo : MonoBehaviour
     public int CurrentPosition { get; set; }
 
     public int CurrentLap { get; set; }
-    public int CheckPoints { get; set; }
+    public int LastCheckPoint;
+    public int MaxCheckPoints;
 
     public PlayerController controller;
 
@@ -30,9 +31,9 @@ public class PlayerInfo : MonoBehaviour
     {
         if (collision.gameObject.tag == "Finish")
         {
-            if (CheckPoints > 0)
+            if (LastCheckPoint >= MaxCheckPoints)
             {
-                CheckPoints = 0;
+                LastCheckPoint = 0;
                 CurrentLap++;
                 Debug.Log(name + " vuelta " + CurrentLap);
             }
@@ -40,7 +41,11 @@ public class PlayerInfo : MonoBehaviour
 
         if (collision.gameObject.tag == "CheckPoint")
         {
-            CheckPoints++;
+            int id = collision.gameObject.GetComponent<Checkpoint>().id;
+            if (id - LastCheckPoint == 1)
+            {
+                LastCheckPoint = id;
+            }
         }
     }
 }

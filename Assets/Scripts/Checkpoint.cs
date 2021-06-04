@@ -5,18 +5,14 @@ using UnityEngine;
 public class Checkpoint : MonoBehaviour
 {
 
-    private CheckpointManager checkpointManager;
-    private void OnTriggerEnter(Collider other)
+    //public CheckpointManager checkpointManager;
+    public int id;
+    /*private void OnTriggerEnter(Collider other)
     {
 
         if (other.gameObject.TryGetComponent<PlayerController>(out PlayerController playerController))
         {
             checkpointManager.PlayersThroughCheckpoint(this,other.transform);
         }
-    }
-
-    public void SetCheckpointManager(CheckpointManager checkpointManager)
-    {
-        this.checkpointManager = checkpointManager;
-    }
+    }*/
 }
