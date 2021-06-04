@@ -14,6 +14,7 @@ public class PolePositionManager : NetworkBehaviour
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>(4);
     private CircuitController _circuitController;
     private GameObject[] _debuggingSpheres;
+    private Transform[] startingPoints;
 
     #region Variables de Tiempo
     //Tiempo de la vuelta actual
@@ -28,7 +29,7 @@ public class PolePositionManager : NetworkBehaviour
     private bool goingBackwards = false;
 
     //Boolean que indica si ha empezado la carrera
-    private bool hasRaceStarted = false;
+    [SyncVar]public bool racing = false;
     //Boolean que indica si ha acabado la carrera
     private bool hasRaceEnded = false;
     #endregion
@@ -51,7 +52,7 @@ public class PolePositionManager : NetworkBehaviour
     {
         if (_networkManager == null) _networkManager = FindObjectOfType<MyNetworkManager>();
         if (_circuitController == null) _circuitController = FindObjectOfType<CircuitController>();
-        if (_uiManager==null) _uiManager = FindObjectOfType<UIManager>();
+        if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
         //ELIMINAMOS LA GENERACION DE ESFERAS INNECESARIAS
 
         _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
@@ -61,26 +62,85 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
+        NetworkStartPosition[] sp = GameObject.FindObjectsOfType<NetworkStartPosition>();
+        startingPoints = new Transform[sp.Length];
+        for (int i = 0; i < sp.Length; i++)
+        {
+            startingPoints[i] = sp[i].gameObject.transform;
+        }
+
+        racing = true;
     }
 
     private void Start()
     {
-       /* if (isLocalPlayer)
-        {
-        }*/
+        ResetPlayer();
+        /* if (isLocalPlayer)
+         {
+         }*/
         //this.OnRankingChangeEvent += OnRankingChangeEventHandler;
-        this.OnHasCrashedEvent += OnHasCrashedEventHandler;
-        this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
+        //this.OnHasCrashedEvent += OnHasCrashedEventHandler;
+        //this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
+
+
     }
 
     private void Update()
     {
+        if (_players.Count == 0)
+            return;
+
         if (isServer)
         {
-            if (_players.Count == 0)
-                return;
-            UpdateRaceProgress();
+            if (racing)
+            {
+                UpdateRaceProgress();
+                if (CheckFinish())
+                {
+                    racing = false;
+                    Finish();
+                    ResetPlayer();
+                }
+
+                totalTime += Time.deltaTime;
+            }
         }
+    }
+
+    private bool CheckFinish()
+    {
+        for (int i = 0; i < _players.Count; ++i)
+        {
+            if (_players[i].CurrentLap == 1 || totalTime > 3f)
+            {
+                totalTime = 0;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [Server]
+    private void ResetPlayer()
+    {
+        for (int i = 0; i < _players.Count; ++i)
+        {
+            _players[i].controller.ResetToStart(startingPoints[i]);
+            StartCoroutine(DelayStart(3f));
+        }
+    }
+
+    IEnumerator DelayStart(float t)
+    {
+        yield return new WaitForSeconds(t);
+        racing = true;
+        yield return null;
+    }
+
+    [ClientRpc]
+    private void Finish()
+    {
+        Debug.Log("Fin");
     }
 
     public void AddPlayer(PlayerInfo player)
@@ -126,13 +186,17 @@ public class PolePositionManager : NetworkBehaviour
         {
             myRaceOrder += player.Name + " ";
         }
+
+        //Debug.Log(myRaceOrder);
+
+        OnRankingChangeEventHandler(myRaceOrder);
     }
 
-    /*void OnRankingChangeEventHandler(string ranking)
+    void OnRankingChangeEventHandler(string ranking)
     {
         _uiManager.UpdateRanking(ranking);
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
-    }*/
+    }
 
 
 

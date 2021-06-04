@@ -6,9 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class MyNetworkManager : NetworkManager
 {
-    [SerializeField] private Transform[] StartingPositions;
-    [SerializeField] private Color[] coloresCoches;
-
     public new void Start()
     {
 

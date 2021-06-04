@@ -110,6 +110,8 @@ public class PlayerController : NetworkBehaviour
     public event OnHasCrashedDelegate OnHasCrashedEvent;
 
     private _InputController _input; //call our own action controller
+
+    PolePositionManager _polePosition;
     #endregion Variables
 
     #region Unity Callbacks
@@ -119,12 +121,14 @@ public class PlayerController : NetworkBehaviour
         m_Rigidbody = GetComponent<Rigidbody>();
         _input = new _InputController();
         if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
+        if (_polePosition == null) _polePosition = FindObjectOfType<PolePositionManager>();
     }
 
     private void Start()
     {
         //this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
         this.OnHasCrashedEvent += OnHasCrashedEventHandler;
+        _input.Player.Restart.performed += ctx => CmdReset();
     }
 
     public void Update()
@@ -135,7 +139,6 @@ public class PlayerController : NetworkBehaviour
             InputSteering = _input.Player.Steering.ReadValue<float>();
             InputBrake = _input.Player.Jump.ReadValue<float>();
             Speed = m_Rigidbody.velocity.magnitude;
-            ActionTriggered();// looks if an action has been triggered 
 
             float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
             Crashed = r > 90 && r < 270;
@@ -153,10 +156,8 @@ public class PlayerController : NetworkBehaviour
                 OnGoingBackwardsEventHandler(false);
             }
 
-            if (Crashed)
-            {
-                CmdReset();
-            }
+            
+
         }
     }
 
@@ -170,16 +171,11 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
     #region Methods
-
-    [Command]
-    public void auxControlMovement(float InputSteering, float InputAcceleration, float InputBrake)
-    {
-        controlMovement(InputSteering, InputAcceleration, InputBrake);
-    }
-
     [Command]
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
+        if (!_polePosition.racing) { return; }
+
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
         InputBrake = Mathf.Clamp(InputBrake, 0, 1);
@@ -187,14 +183,14 @@ public class PlayerController : NetworkBehaviour
         float steering = maxSteeringAngle * InputSteering;
 
         //Evita que el coche se deslice
-        if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
+        /*if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
         {
             this.m_Rigidbody.freezeRotation = true;
         }
         else
         {
             this.m_Rigidbody.freezeRotation = false;
-        }
+        }*/
 
         foreach (AxleInfo axleInfo in axleInfos)
         {
@@ -253,32 +249,28 @@ public class PlayerController : NetworkBehaviour
     [ClientRpc]
     void controlMovementInClient(float InputSteering, float InputAcceleration, float InputBrake)
     {
-        if (true)
+        float steering = maxSteeringAngle * InputSteering;
+
+        //Evita que el coche se deslice
+        /*if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
         {
+            this.m_Rigidbody.freezeRotation = true;
+        }
+        else
+        {
+            this.m_Rigidbody.freezeRotation = false;
+        }*/
 
-            float steering = maxSteeringAngle * InputSteering;
-
-            //Evita que el coche se deslice
-            if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
+        foreach (AxleInfo axleInfo in axleInfos)
+        {
+            if (axleInfo.steering)
             {
-                this.m_Rigidbody.freezeRotation = true;
-            }
-            else
-            {
-                this.m_Rigidbody.freezeRotation = false;
+                axleInfo.leftWheel.steerAngle = steering;
+                axleInfo.rightWheel.steerAngle = steering;
             }
 
-            foreach (AxleInfo axleInfo in axleInfos)
-            {
-                if (axleInfo.steering)
-                {
-                    axleInfo.leftWheel.steerAngle = steering;
-                    axleInfo.rightWheel.steerAngle = steering;
-                }
-
-                ApplyLocalPositionToVisuals(axleInfo.leftWheel);
-                ApplyLocalPositionToVisuals(axleInfo.rightWheel);
-            }
+            ApplyLocalPositionToVisuals(axleInfo.leftWheel);
+            ApplyLocalPositionToVisuals(axleInfo.rightWheel);
         }
     }
 
@@ -387,26 +379,29 @@ public class PlayerController : NetworkBehaviour
         return _input;
     }
 
-    //if we collide and we are not able to continue playing the car flips
-    [Server]
-    private void Reset()
-    {
-        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche 
-        transform.position = transform.position + Vector3.up - m_Rigidbody.velocity;
-        m_Rigidbody.velocity = Vector3.zero;
-    }
 
     [Command]
     public void CmdReset()
     {
         Debug.Log("Digo al server que resetee");
-        Reset();
+        if (Crashed)
+        {
+            Reset();
+        }
     }
 
-    //checks if the player has done an action and if done executes it on the server
-    void ActionTriggered()
+    //if we collide and we are not able to continue playing the car flips
+    private void Reset()
     {
-        _input.Player.Restart.performed += ctx => CmdReset();
+        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche 
+        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+    }
+
+    public void ResetToStart(Transform t)
+    {
+        m_Rigidbody.velocity = Vector3.zero;
+        transform.position = t.position;
+        transform.rotation = t.rotation;
     }
 
     private void OnCollisionEnter(Collision collision)
