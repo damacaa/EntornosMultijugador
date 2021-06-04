@@ -19,7 +19,6 @@ public class PolePositionManager : NetworkBehaviour
 
 
 
-
     #region Variables de Tiempo
     //Tiempo de la vuelta actual
     [SyncVar] private float lapTime = 0;
@@ -109,7 +108,7 @@ public class PolePositionManager : NetworkBehaviour
        /* if (isLocalPlayer)
         {
         }*/
-        this.OnRankingChangeEvent += OnRankingChangeEventHandler;
+        //this.OnRankingChangeEvent += OnRankingChangeEventHandler;
         this.OnHasCrashedEvent += OnHasCrashedEventHandler;
         this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
     }
@@ -144,6 +143,7 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    
     public void UpdateRaceProgress()
     {
         // Update car arc-lengths
@@ -166,10 +166,10 @@ public class PolePositionManager : NetworkBehaviour
         OnRankingChangeEvent(myRaceOrder);
     }
 
-    void OnRankingChangeEventHandler(string ranking)
+    /*void OnRankingChangeEventHandler(string ranking)
     {
         _uiManager.UpdateRanking(ranking);
-    }
+    }*/
 
     void OnHasCrashedEventHandler(bool hasCrashed)
     {
