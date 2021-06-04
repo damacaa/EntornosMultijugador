@@ -13,7 +13,7 @@ public class SetupPlayer : NetworkBehaviour
     [SyncVar] private int _id;
     [SyncVar] private string _name;
     [SerializeField] private GameObject _carBody;
-    [SyncVar(hook = nameof(ColorUp))] private Color _carColor = Color.black;
+    [SyncVar(hook = nameof(ColorUpdate))] private Color _carColor = Color.black;
 
     private UIManager _uiManager;
     private MyNetworkManager _networkManager;
@@ -53,8 +53,8 @@ public class SetupPlayer : NetworkBehaviour
     /// </summary>
     public override void OnStartLocalPlayer()
     {
-        int id = _uiManager.GetCarSelected();
-        ChangeColor(id);
+        int colorId= _uiManager.GetCarSelected();
+        CmdChangeColor(colorId);
     }
 
     #endregion
@@ -125,8 +125,9 @@ public class SetupPlayer : NetworkBehaviour
         return _carBody.GetComponent<MeshRenderer>().materials[1];
     }
 
+    //changes sync var _carColor in server in order to later replicate this change to all clients
     [Command]
-    public void ChangeColor(int id)
+    public void CmdChangeColor(int id)
     {
         int colorIdx = id;
         if (colorIdx == 0)
@@ -150,7 +151,8 @@ public class SetupPlayer : NetworkBehaviour
         }
     }
 
-    public void ColorUp(Color old, Color newC)
+    //updates car color in client
+    public void ColorUpdate(Color old, Color newC)
     {
         SetCarColor(newC);
     }
