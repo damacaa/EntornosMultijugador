@@ -44,7 +44,8 @@ public class SetupPlayer : NetworkBehaviour
         _playerInfo.ID = _id;
 
         _polePositionManager.AddPlayer(_playerInfo);
-        _uiManager.SetPlayerThatControls(this.gameObject);
+        
+        //_uiManager.SetPlayerThatControls(this.gameObject);
     }
 
     /// <summary>
@@ -57,6 +58,7 @@ public class SetupPlayer : NetworkBehaviour
         if (isClient)
         {
             CmdChangeColor(colorId);
+            _playerInfo.SetPlayerGO(this.gameObject);
         }
         string nameFromUI = _uiManager.GetPlayerName();
         if (nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
@@ -172,25 +174,15 @@ public class SetupPlayer : NetworkBehaviour
         SetCarColor(newC);
     }
 
-    [Command]
-    public void ChangeReadyName(int player)
+    public void ChangeReadyName(int player, bool isReady)
     {
-        if (player == 0)
-        {
-            m_RoomManager.changeReadyName1();
-        }
-        if (player == 1)
-        {
-            m_RoomManager.changeReadyName2();
-        }
-        if (player == 2)
-        {
-            m_RoomManager.changeReadyName3();
-        }
-        if (player == 3)
-        {
-            m_RoomManager.changeReadyName4();
-        }
+        CmdChangeReadyName(player, isReady);
+    }
+
+    [Command]
+    public void CmdChangeReadyName(int player, bool isReady)
+    {
+        m_RoomManager.changeReadyName(player,isReady);
     }
 
 

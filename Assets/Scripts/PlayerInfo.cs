@@ -10,6 +10,7 @@ public class PlayerInfo : MonoBehaviour
     private UIManager _uiManager;
     public string Name;
 
+    public GameObject playerGO;
     public int ID { get; set; }
 
     public int CurrentPosition { get; set; }
@@ -88,7 +89,12 @@ public class PlayerInfo : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+    public void SetPlayerGO(GameObject car)
+    {
+        playerGO = car;
+    }
+
+    /*private void OnDrawGizmos()
     {
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
 

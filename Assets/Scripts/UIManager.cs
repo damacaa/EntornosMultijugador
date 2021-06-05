@@ -12,7 +12,9 @@ public class UIManager : MonoBehaviour
     private MyNetworkManager m_NetworkManager;
     private MyRoomManager m_RoomManager;
     [SerializeField] private PolePositionManager _polePositionManager;
+
     private GameObject player; //from here do commands
+
 
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
@@ -99,6 +101,33 @@ public class UIManager : MonoBehaviour
         mainMenu.SetActive(false);
         roomHUD.SetActive(false);
     }
+
+    public void ActivateRoomHUDHost()
+    {
+        m_NetworkManager.StartHost();
+        roomHUD.SetActive(true);
+        playerNameClient.text = playerName.textComponent.text;
+        carColorClient.text = carColor.text;
+        inputFieldIP_Wait = inputFieldIP;
+        //_polePositionManager.AddPlayersReady();
+        readyButton.gameObject.SetActive(true);
+
+        mainMenu.SetActive(false);
+    }
+    public void ActivateRoomHUDClient()
+    {
+        m_NetworkManager.StartClient();
+        m_NetworkManager.networkAddress = inputFieldIP.text;
+        roomHUD.SetActive(true);
+        playerNameClient.text = playerName.textComponent.text;
+        carColorClient.text = carColor.text;
+        inputFieldIP_Wait = inputFieldIP;
+
+        //_polePositionManager.AddPlayersReady();
+        readyButton.gameObject.SetActive(true);
+        mainMenu.SetActive(false);
+    }
+
     public void UpdateSpeed(int speed)
     {
         textSpeed.text = "Speed " + speed + " Km/h";
@@ -133,31 +162,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void ActivateRoomHUDHost()
-    {
-        m_NetworkManager.StartHost();
-        roomHUD.SetActive(true);
-        playerNameClient.text = playerName.textComponent.text;
-        carColorClient.text = carColor.text;
-        inputFieldIP_Wait = inputFieldIP;
-        _polePositionManager.SumPlayersReady();
-        readyButton.gameObject.SetActive(true);
-
-        mainMenu.SetActive(false);
-    }
-    public void ActivateRoomHUDClient()
-    {
-        m_NetworkManager.StartClient();
-        m_NetworkManager.networkAddress = inputFieldIP.text;
-        roomHUD.SetActive(true);
-        playerNameClient.text = playerName.textComponent.text;
-        carColorClient.text = carColor.text;
-        inputFieldIP_Wait = inputFieldIP;
-
-        _polePositionManager.SumPlayersReady();
-        readyButton.gameObject.SetActive(true);
-        mainMenu.SetActive(false);
-    }
+   
 
     public void ActivateHostOptions()
     {
@@ -191,10 +196,19 @@ public class UIManager : MonoBehaviour
 
     public void SetReady(int playerIdx)
     {
-        player.GetComponent<SetupPlayer>().ChangeReadyName(playerIdx);
+        //player.GetComponent<SetupPlayer>().ChangeReadyName(playerIdx,true);
+        _polePositionManager.SetPlayerReady(playerIdx,true);
         readyButton.gameObject.SetActive(false);
-        playButton.gameObject.SetActive(true);
+        notReadyButton.gameObject.SetActive(true);
     }
+    public void SetNotReady(int playerIdx)
+    {
+        _polePositionManager.SetPlayerReady(playerIdx,false);
+        //player.GetComponent<SetupPlayer>().ChangeReadyName(playerIdx,false);
+        readyButton.gameObject.SetActive(true);
+        notReadyButton.gameObject.SetActive(false);
+    }
+
     public void ButtonPractise()
     {
         m_NetworkManager.StartHost();
@@ -216,13 +230,15 @@ public class UIManager : MonoBehaviour
     public void GetReadyButton(int playerN)
     {
         readyButton.onClick.AddListener(()=>SetReady(playerN));
+
+        notReadyButton.onClick.AddListener(()=>SetNotReady(playerN));
     }
-    
-    public void SetPlayerThatControls(GameObject p)
+
+    /*public void SetPlayerThatControls(GameObject p)
     {
         player = p;
-    }
- 
+    }*/
+
 
     #region car
     public string GetPlayerName()
