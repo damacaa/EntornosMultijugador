@@ -9,6 +9,7 @@ public class PolePositionManager : NetworkBehaviour
 {
     private MyNetworkManager _networkManager;
     private UIManager _uiManager;
+    private MyRoomManager m_RoomManager;
 
     private CircuitController _circuitController;
     private GameObject[] _debuggingSpheres;
@@ -21,6 +22,7 @@ public class PolePositionManager : NetworkBehaviour
     int currentPlayers;
 
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
+    [SyncVar] public int playersReady = 0;
 
     public bool isTrainingRace = true;
     public bool openRoom = true;
@@ -37,6 +39,7 @@ public class PolePositionManager : NetworkBehaviour
     //Tiempo Total de la carrera
     [SyncVar] private float totalTime = 0;
 
+    public bool waiting = true;
     #endregion
 
     #region Comprobaciones
@@ -74,12 +77,10 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
-
+        m_RoomManager = FindObjectOfType<MyRoomManager>();
         racing = true;
     }
 
-
-    public bool waiting = true;
     private void Update()
     {
         if (_players.Count == 0)
@@ -104,22 +105,6 @@ public class PolePositionManager : NetworkBehaviour
         {
             waiting = false;
             ResetPlayers();
-        }
-    }
-
-    [Server]
-    public void StartRace()
-    {
-        bool everyOneIsReady = true;
-        foreach (PlayerInfo player in _players)
-        {
-            everyOneIsReady = player.isReady && everyOneIsReady;
-        }
-        if (everyOneIsReady)
-        {
-            numPlayers = _players.Count;
-            racing = true;
-            RpcChangeFromRoomToGameHUD();
         }
     }
 
@@ -179,16 +164,30 @@ public class PolePositionManager : NetworkBehaviour
 
         if (isServer)
         {
-            player.isAdmin = true;
             player.transform.position = startingPoints[_players.Count - 1].position;
             player.transform.rotation = startingPoints[_players.Count - 1].rotation;
-            _uiManager.AddPlayerToRoom(player, _players.Count - 1);
+
+            int playerN = _players.Count - 1;
+            //checks what player is if 1,2,3 or 4
+            if (playerN == 0)
+            {
+                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
+            }
+            if (playerN == 1)
+            {
+                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
+            }
+
+            if (playerN == 2)
+            {
+                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
+            }
+            if (playerN == 3)
+            {
+                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
+            }
 
         }
-
-        isTrainingRace = _players.Count < 2;
-        
-        _uiManager.TrainingOrRacing(isTrainingRace);
 
     }
 
@@ -236,13 +235,6 @@ public class PolePositionManager : NetworkBehaviour
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
-    [ClientRpc]
-    void RpcChangeFromRoomToGameHUD()
-    {
-        _uiManager.ActivateInGameHUD();
-    }
-
-
     float ComputeCarArcLength(int id)
     {
         // Compute the projection of the car position to the closest circuit
@@ -265,9 +257,8 @@ public class PolePositionManager : NetworkBehaviour
         return minArcL;
     }
 
-    [ClientRpc]
-    void showCosa(float s)
+    public void SumPlayersReady()
     {
-        Debug.Log(s);
+        playersReady += 1;
     }
 }
