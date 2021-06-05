@@ -190,8 +190,6 @@ public class UIManager : MonoBehaviour
 
     public void SetReady(int player)
     {
-
-        Debug.Log("CAMBIO");
         if (player == 0)
         {
             m_RoomManager.changeReadyName1();
