@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     private MyNetworkManager m_NetworkManager;
     private MyRoomManager m_RoomManager;
     [SerializeField] private PolePositionManager _polePositionManager;
-    public GameObject player; //from here do commands
+    private GameObject player; //from here do commands
 
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
