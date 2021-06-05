@@ -57,8 +57,8 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        buttonHost.onClick.AddListener(() => StartHost());
-        buttonClient.onClick.AddListener(() =>ActivateRoomHUD());
+        buttonHost.onClick.AddListener(() => ActivateRoomHUDHost());
+        buttonClient.onClick.AddListener(() =>ActivateRoomHUDClient());
         buttonServer.onClick.AddListener(() => StartServer());
         playButton.onClick.AddListener(() => ButtonPlay());
         practiceButton.onClick.AddListener(() => ButtonPractise());
@@ -131,7 +131,18 @@ public class UIManager : MonoBehaviour
             playerNames[i].text = newNames[i];
         }
     }
-    public void ActivateRoomHUD()
+
+    public void ActivateRoomHUDHost()
+    {
+        m_NetworkManager.StartHost();
+        roomHUD.SetActive(true);
+        playerNameClient.text = playerName.textComponent.text;
+        carColorClient.text = carColor.text;
+        inputFieldIP_Wait = inputFieldIP;
+        playButton.gameObject.SetActive(true);
+        mainMenu.SetActive(false);
+    }
+    public void ActivateRoomHUDClient()
     {
         m_NetworkManager.StartClient();
         m_NetworkManager.networkAddress = inputFieldIP.text;
