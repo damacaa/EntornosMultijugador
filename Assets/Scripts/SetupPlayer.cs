@@ -184,6 +184,4 @@ public class SetupPlayer : NetworkBehaviour
     {
         m_RoomManager.changeReadyName(player,isReady);
     }
-
-
 }

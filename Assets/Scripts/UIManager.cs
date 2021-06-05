@@ -15,8 +15,6 @@ public class UIManager : MonoBehaviour
 
     private GameObject player; //from here do commands
 
-
-
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
     [SerializeField] private Button buttonClient;
@@ -162,7 +160,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-   
+
 
     public void ActivateHostOptions()
     {
@@ -197,13 +195,13 @@ public class UIManager : MonoBehaviour
     public void SetReady(int playerIdx)
     {
         //player.GetComponent<SetupPlayer>().ChangeReadyName(playerIdx,true);
-        _polePositionManager.SetPlayerReady(playerIdx,true);
+        _polePositionManager.SetPlayerReady(playerIdx, true);
         readyButton.gameObject.SetActive(false);
         notReadyButton.gameObject.SetActive(true);
     }
     public void SetNotReady(int playerIdx)
     {
-        _polePositionManager.SetPlayerReady(playerIdx,false);
+        _polePositionManager.SetPlayerReady(playerIdx, false);
         //player.GetComponent<SetupPlayer>().ChangeReadyName(playerIdx,false);
         readyButton.gameObject.SetActive(true);
         notReadyButton.gameObject.SetActive(false);
@@ -229,9 +227,9 @@ public class UIManager : MonoBehaviour
 
     public void GetReadyButton(int playerN)
     {
-        readyButton.onClick.AddListener(()=>SetReady(playerN));
+        readyButton.onClick.AddListener(() => SetReady(playerN));
 
-        notReadyButton.onClick.AddListener(()=>SetNotReady(playerN));
+        notReadyButton.onClick.AddListener(() => SetNotReady(playerN));
     }
 
     /*public void SetPlayerThatControls(GameObject p)
