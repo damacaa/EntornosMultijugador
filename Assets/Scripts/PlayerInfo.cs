@@ -4,11 +4,11 @@ using Mirror;
 using UnityEditor;
 using UnityEngine;
 
-public class PlayerInfo : NetworkBehaviour
+public class PlayerInfo : MonoBehaviour
 {
 
     private UIManager _uiManager;
-    [SyncVar] public string Name;
+    public string Name;
 
     public int ID { get; set; }
 
@@ -48,8 +48,6 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
-    [SyncVar] public bool isReady = false;
-    [SyncVar(hook = nameof(onHostAuth))] public bool isAdmin = false;
     public override string ToString()
     {
         return Name;
@@ -67,7 +65,7 @@ public class PlayerInfo : NetworkBehaviour
         {
             int id = collision.gameObject.GetComponent<Checkpoint>().id;
             if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
-            //
+
         }
 
         if (collision.gameObject.tag == "Finish")
