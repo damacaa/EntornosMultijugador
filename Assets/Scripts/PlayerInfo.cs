@@ -14,7 +14,9 @@ public class PlayerInfo : NetworkBehaviour
 
     public int CurrentPosition { get; set; }
 
-    public int CurrentLap { get; set; }
+    public int CurrentLapSegments;
+    [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLapCountingFromFinishLine;
+
     public int LastCheckPoint;
     public int MaxCheckPoints;
 
@@ -34,14 +36,15 @@ public class PlayerInfo : NetworkBehaviour
                 if (a < -1 && LastCheckPoint == MaxCheckPoints - 1)
                 {
                     LastCheckPoint = 0;
-                    CurrentLap++;
+                    CurrentLapSegments++;
                 }
                 else if (a > 1)
                 {
                     LastCheckPoint = MaxCheckPoints - 1;
-                    CurrentLap--;
+                    CurrentLapSegments--;
                 }
                 segment = value;
+
             }
         }
     }
@@ -68,26 +71,22 @@ public class PlayerInfo : NetworkBehaviour
             //
         }
 
-        /*if (collision.gameObject.tag == "Finish")
+        if (collision.gameObject.tag == "Finish")
         {
             //Meta
             if (LastCheckPoint == MaxCheckPoints - 1)
             {
-                LastCheckPoint = 0;
-                CurrentLap++;
-                Debug.Log(name + " vuelta " + CurrentLap);
+                //LastCheckPoint = 0;
+                CurrentLapCountingFromFinishLine++;
+                //Debug.Log(name + " vuelta " + CurrentLapCountingFromFinishLine);
             }
-            else if (LastCheckPoint == 0 && controller.goingBackwards)
-            {
-                CurrentLap--;
-            }
-        }*/
+        }
     }
 
     private void OnDrawGizmos()
     {
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
-        Handles.Label(transform.position + transform.right + Vector3.up, CurrentLap.ToString());
+        Handles.Label(transform.position + transform.right + Vector3.up, CurrentLapSegments.ToString());
         Handles.Label(transform.position + transform.right + 2 * Vector3.up, segment.ToString());
         Handles.Label(transform.position + transform.right + 3 * Vector3.up, LastCheckPoint.ToString());
     }
@@ -121,5 +120,11 @@ public class PlayerInfo : NetworkBehaviour
             _uiManager.setRoomHUDButtons(this);
             _uiManager.ActivateRoomHUD();
         }
+    }
+
+    [Client]
+    public void UpdateLapUI(int oldValue, int newValue)
+    {
+        _uiManager.UpdateLap(this, newValue);
     }
 }

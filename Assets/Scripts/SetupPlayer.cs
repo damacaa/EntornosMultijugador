@@ -47,7 +47,7 @@ public class SetupPlayer : NetworkBehaviour
         if(nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
         CmdChangeName(nameFromUI);
 
-        _playerInfo.CurrentLap = 0;
+        _playerInfo.CurrentLapSegments = 0;
         _polePositionManager.AddPlayer(_playerInfo);
     }
 
@@ -82,7 +82,6 @@ public class SetupPlayer : NetworkBehaviour
         {
             _playerController.enabled = true;
             _playerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
-            _playerController.OnLapChangeEvent += OnLapChangeEventHandler;
             ConfigureCamera();
         }
     }
@@ -96,12 +95,6 @@ public class SetupPlayer : NetworkBehaviour
     {
         _uiManager.UpdateSpeed((int)speed * 5); // 5 for visualization purpose (km/h)
     }
-
-    void OnLapChangeEventHandler(int lap)
-    {
-        _uiManager.UpdateLap(lap);
-    }
-
 
     void ConfigureCamera()
     {
