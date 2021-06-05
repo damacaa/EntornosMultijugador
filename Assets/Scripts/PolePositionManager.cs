@@ -119,7 +119,7 @@ public class PolePositionManager : NetworkBehaviour
         {
             if (_players[i].CurrentLap == laps + 1)
             {
-                Debug.Log("Vencedor: " + _players[i].name);
+                Debug.Log("Vencedor: " + _players[i].name + _players[i].CurrentLap);
                 totalTime = 0;
                 return true;
             }
@@ -132,8 +132,8 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            _players[i].CurrentLap = 0;
-            _players[i].LastCheckPoint = 0;
+            _players[i].CurrentLap = 1;
+            _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1; ;
             _players[i].controller.ResetToStart(startingPoints[i]);
             _players[i].controller.DistToFinish = ComputeCarArcLength(i);
             _players[i].controller.InitialDistToFinish = _players[i].controller.DistToFinish;
@@ -233,21 +233,11 @@ public class PolePositionManager : NetworkBehaviour
 
         float minArcL = this._circuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
 
-        if (segIdx == 0 && this._players[id].CurrentLap == 0) { this._players[id].CurrentLap = 1; }
-
         //Esto no hace falta cuando quitemos las bolas
         this._debuggingSpheres[id].transform.position = carProj;
 
-
-        if (_players[id].CurrentLap == 0)
-        {
-            minArcL -= _circuitController.CircuitLength * (laps + 1);
-        }
-        else
-        {
-            minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap + 1);
-        }
-
+        _players[id].Segment = segIdx;
+        minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap + 1);
 
         return minArcL;
     }

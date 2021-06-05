@@ -19,6 +19,7 @@ public class PlayerInfo : MonoBehaviour
     public PlayerController controller;
     public float InitialDistToFinish = 0;
 
+    private bool dirty = false;
     private int segment;
     public int Segment
     {
@@ -27,6 +28,17 @@ public class PlayerInfo : MonoBehaviour
         {
             if (value != segment)
             {
+                int a = value - segment;
+                if (a < -1 && LastCheckPoint == MaxCheckPoints - 1)
+                {
+                    LastCheckPoint = 0;
+                    CurrentLap++;
+                }
+                else if (a > 1)
+                {
+                    LastCheckPoint = MaxCheckPoints - 1;
+                    CurrentLap--;
+                }
                 segment = value;
             }
         }
@@ -47,19 +59,24 @@ public class PlayerInfo : MonoBehaviour
         if (collision.gameObject.tag == "CheckPoint")
         {
             int id = collision.gameObject.GetComponent<Checkpoint>().id;
-            if (id == 0)
-            {
-                //Meta
-                if (LastCheckPoint == MaxCheckPoints - 1)
-                {
-                    LastCheckPoint = 0;
-                    CurrentLap++;
-                    Debug.Log(name + " vuelta " + CurrentLap);
-                }
-            }
-            else if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
+            if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
             //
         }
+
+        /*if (collision.gameObject.tag == "Finish")
+        {
+            //Meta
+            if (LastCheckPoint == MaxCheckPoints - 1)
+            {
+                LastCheckPoint = 0;
+                CurrentLap++;
+                Debug.Log(name + " vuelta " + CurrentLap);
+            }
+            else if (LastCheckPoint == 0 && controller.goingBackwards)
+            {
+                CurrentLap--;
+            }
+        }*/
     }
 
     private void OnDrawGizmos()
@@ -67,5 +84,6 @@ public class PlayerInfo : MonoBehaviour
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
         Handles.Label(transform.position + transform.right + Vector3.up, CurrentLap.ToString());
         Handles.Label(transform.position + transform.right + 2 * Vector3.up, segment.ToString());
+        Handles.Label(transform.position + transform.right + 3 * Vector3.up, LastCheckPoint.ToString());
     }
 }
