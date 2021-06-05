@@ -82,14 +82,14 @@ public class PolePositionManager : NetworkBehaviour
     public bool waiting = true;
     private void Update()
     {
-        if (_players.Count == 0)
-            return;
-
-        if (racing)
+        if (isServer)
         {
-            UpdateRaceProgress();
-            if (isServer)
+            if (_players.Count == 0)
+                return;
+
+            if (racing)
             {
+                UpdateRaceProgress();
                 if (CheckFinish())
                 {
                     racing = false;
@@ -99,11 +99,11 @@ public class PolePositionManager : NetworkBehaviour
 
                 totalTime += Time.deltaTime;
             }
-        }
-        else if (waiting)
-        {
-            waiting = false;
-            ResetPlayers();
+            else if (waiting)
+            {
+                waiting = false;
+                ResetPlayers();
+            }
         }
     }
 
@@ -127,9 +127,9 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            if (_players[i].CurrentLap == laps + 1)
+            if (_players[i].CurrentLapSegments == laps )
             {
-                Debug.Log("Vencedor: " + _players[i].name + _players[i].CurrentLap);
+                Debug.Log("Vencedor: " + _players[i].name + _players[i].CurrentLapSegments);
                 totalTime = 0;
                 return true;
             }
@@ -142,7 +142,8 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            _players[i].CurrentLap = 1;
+            _players[i].CurrentLapSegments = 1;
+            _players[i].CurrentLapCountingFromFinishLine = 1;
             _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1; ;
             _players[i].controller.ResetToStart(startingPoints[i]);
             _players[i].controller.DistToFinish = ComputeCarArcLength(i);
@@ -187,7 +188,7 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         isTrainingRace = _players.Count < 2;
-        
+
         _uiManager.TrainingOrRacing(isTrainingRace);
 
     }
@@ -260,7 +261,7 @@ public class PolePositionManager : NetworkBehaviour
         this._debuggingSpheres[id].transform.position = carProj;
 
         _players[id].Segment = segIdx;
-        minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap + 1);
+        minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLapSegments + 1);
 
         return minArcL;
     }

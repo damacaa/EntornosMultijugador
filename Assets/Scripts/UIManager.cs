@@ -70,9 +70,15 @@ public class UIManager : MonoBehaviour
         textSpeed.text = "Speed " + speed + " Km/h";
     }
 
-    public void UpdateLap(int lap)
+    public void UpdateLap(PlayerInfo player, int lap)
     {
-        textLaps.text = "Lap " + lap + "/" + circuitLaps;
+        if (player.isLocalPlayer)
+        {
+            if (lap >= 0)
+            {
+                textLaps.text = "Lap " + lap + "/" + circuitLaps;
+            }
+        }
     }
     
     public void UpdateRanking(string ranking)
