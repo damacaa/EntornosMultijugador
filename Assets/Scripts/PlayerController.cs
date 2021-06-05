@@ -147,7 +147,7 @@ public class PlayerController : NetworkBehaviour
             }
 
 
-            _playerInfo.UpdateSpeed(m_Rigidbody.velocity.magnitude);
+            
 
         }
     }
@@ -226,7 +226,8 @@ public class PlayerController : NetworkBehaviour
         AddDownForce();
         TractionControl();
 
-        controlMovementInClient(InputSteering, InputAcceleration, InputBrake);
+        _playerInfo.UpdateSpeed(m_Rigidbody.velocity.magnitude);
+        //controlMovementInClient(InputSteering, InputAcceleration, InputBrake);
     }
 
 
@@ -234,16 +235,6 @@ public class PlayerController : NetworkBehaviour
     void controlMovementInClient(float InputSteering, float InputAcceleration, float InputBrake)
     {
         float steering = maxSteeringAngle * InputSteering;
-
-        //Evita que el coche se deslice
-        /*if (InputAcceleration == 0 && InputSteering == 0 && !Crashed)
-        {
-            this.m_Rigidbody.freezeRotation = true;
-        }
-        else
-        {
-            this.m_Rigidbody.freezeRotation = false;
-        }*/
 
         foreach (AxleInfo axleInfo in axleInfos)
         {
@@ -368,17 +359,21 @@ public class PlayerController : NetworkBehaviour
     public void CmdReset()
     {
         Debug.Log("Digo al server que resetee");
-        if (Crashed)
-        {
             Reset();
-        }
     }
 
     //if we collide and we are not able to continue playing the car flips
     private void Reset()
     {
         Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche
-        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+        CircuitController cC = FindObjectOfType<CircuitController>();
+        int i = GetComponent<PlayerInfo>().LastCheckPoint;
+
+        m_Rigidbody.velocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
+
+        transform.position = cC.checkpoints[i].transform.position;
+        transform.rotation = cC.checkpoints[i].transform.rotation;
     }
 
     public void ResetToStart(Transform t)

@@ -83,7 +83,21 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-    
+
+    /*[ClientRpc]
+    public void UpdateTime(PlayerInfo player)
+    {
+        if (player.isLocalPlayer)
+        {
+                textTime.text = "TIME: " + player.CurrentLapTime + "/" + player.TotalLapTime;
+        }
+    }*/
+
+    public void UpdateTime(string time)
+    {
+            textTime.text = time;
+    }
+
     public void UpdateRanking(string ranking)
     {
         textPosition.text = ranking;
@@ -179,8 +193,8 @@ public class UIManager : MonoBehaviour
 
     private void StartHost()
     {
-        //m_NetworkManager.StartHost();
-        m_NetworkManager.OnStartHost();
+        m_NetworkManager.StartHost();
+        //m_NetworkManager.OnStartHost();
         //ActivateInGameHUD();
         ActivateRoomHUD();
     }

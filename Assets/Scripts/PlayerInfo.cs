@@ -22,10 +22,12 @@ public class PlayerInfo : NetworkBehaviour
     public int LastCheckPoint;
     public int MaxCheckPoints;
 
+    [SyncVar(hook = nameof(UpdateTime))] public float CurrentLapTime = 0;
+    public float TotalLapTime = 0;
+
     public PlayerController controller;
     public float InitialDistToFinish = 0;
 
-    private bool dirty = false;
     private int segment;
     public int Segment
     {
@@ -78,9 +80,10 @@ public class PlayerInfo : NetworkBehaviour
             //Meta
             if (LastCheckPoint == MaxCheckPoints - 1 && CurrentLapSegments >= 0)
             {
-                if (CurrentLapCountingFromFinishLine < CurrentLapSegments || true)
+                if (CurrentLapCountingFromFinishLine <= CurrentLapSegments + 1)
                 {
-                    CurrentLapCountingFromFinishLine = CurrentLapSegments + 1;
+                    CurrentLapTime = 0;
+                    CurrentLapCountingFromFinishLine = CurrentLapSegments + 2;
                 }
             }
             else if (CurrentLapSegments < 0)
@@ -90,13 +93,16 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
-    /*private void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
-        Handles.Label(transform.position + transform.right + Vector3.up, CurrentLapSegments.ToString());
-        Handles.Label(transform.position + transform.right + 2 * Vector3.up, segment.ToString());
-        Handles.Label(transform.position + transform.right + 3 * Vector3.up, LastCheckPoint.ToString());
-    }*/
+
+        Handles.Label(transform.position - transform.right + Vector3.up, CurrentLapSegments.ToString());
+        Handles.Label(transform.position - transform.right + 2 * Vector3.up, CurrentLapCountingFromFinishLine.ToString());
+
+        Handles.Label(transform.position + transform.right + Vector3.up, segment.ToString());
+        Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());
+    }
 
     public override void OnStartLocalPlayer()
     {
@@ -134,7 +140,7 @@ public class PlayerInfo : NetworkBehaviour
     {
         _uiManager.UpdateLap(this, newValue);
     }
-    
+
 
     public void UpdateSpeed(float newValue)
     {
@@ -146,5 +152,15 @@ public class PlayerInfo : NetworkBehaviour
     public void UpdateSpeedUI(float oldValue, float newValue)
     {
         _uiManager.UpdateSpeed(this, newValue);
+    }
+
+    public void UpdateTime(float old, float time)
+    {
+        if (isLocalPlayer)
+        {
+            _uiManager.UpdateTime("TIME: " +
+                Math.Round(CurrentLapTime / 60) + ":" + Math.Round(CurrentLapTime % 60, 2)
+            + "/" + Math.Round(TotalLapTime / 60) + ":" + Math.Round(TotalLapTime % 60, 2));
+        }
     }
 }

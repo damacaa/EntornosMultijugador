@@ -441,8 +441,7 @@ MonoBehaviour:
   - {fileID: 313464659}
   - {fileID: 1030217891}
   numPlayers: 0
-  laps: 3
-  playersReady: 0
+  laps: 1
   isTrainingRace: 1
   openRoom: 1
   racing: 0

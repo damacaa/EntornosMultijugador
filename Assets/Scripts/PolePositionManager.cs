@@ -141,12 +141,16 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            _players[i].CurrentLapSegments = 1;
+
             _players[i].CurrentLapCountingFromFinishLine = 1;
-            _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1; ;
+            _players[i].CurrentLapSegments = -1;
+
+            _players[i].CurrentLapTime = 0;
+            _players[i].TotalLapTime = 0;
+
+            _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1;
+
             _players[i].controller.ResetToStart(startingPoints[i]);
-            _players[i].controller.DistToFinish = ComputeCarArcLength(i);
-            _players[i].controller.InitialDistToFinish = _players[i].controller.DistToFinish;
 
             StartCoroutine(DelayStart(3f));
         }
@@ -210,7 +214,9 @@ public class PolePositionManager : NetworkBehaviour
         for (int i = 0; i < _players.Count; ++i)
         {
             _players[i].controller.DistToFinish = ComputeCarArcLength(i); //Distancia restante hasta la meta
-
+            _players[i].TotalLapTime += Time.deltaTime;
+            _players[i].CurrentLapTime += Time.deltaTime;
+            //_players[i].UpdateTime();
         }
 
         _players.Sort(new PlayerInfoComparer());
