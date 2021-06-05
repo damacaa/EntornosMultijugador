@@ -21,7 +21,7 @@ public class PolePositionManager : NetworkBehaviour
     [SyncVar] public int laps = 3;
     int currentPlayers;
 
-    private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
+    [SerializeField]private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
 
     [SyncVar(hook = nameof(checkRaceStart))] public int playersReady = 0;
 
@@ -167,7 +167,7 @@ public class PolePositionManager : NetworkBehaviour
         Debug.Log("Fin");
     }
 
-    [Server]
+
     public void AddPlayer(PlayerInfo player)
     {
         //AQUI FALTA UN COMENTARIO

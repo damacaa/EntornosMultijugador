@@ -59,6 +59,7 @@ public class SetupPlayer : NetworkBehaviour
         if (isClient)
         {
             CmdChangeColor(colorId);
+
             _playerInfo.SetPlayerGO(this.gameObject);
         }
         string nameFromUI = _uiManager.GetPlayerName();

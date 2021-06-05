@@ -229,6 +229,9 @@ public class UIManager : MonoBehaviour
 
     public void GetReadyButton(int playerN)
     {
+        readyButton.onClick.RemoveAllListeners();
+        notReadyButton.onClick.RemoveAllListeners();
+
         readyButton.onClick.AddListener(()=>SetReady(playerN));
 
         notReadyButton.onClick.AddListener(()=>SetNotReady(playerN));
