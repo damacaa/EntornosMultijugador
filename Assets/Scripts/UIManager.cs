@@ -11,8 +11,9 @@ public class UIManager : MonoBehaviour
 
     private MyNetworkManager m_NetworkManager;
     private MyRoomManager m_RoomManager;
-
     [SerializeField] private PolePositionManager _polePositionManager;
+    private GameObject player; //from here do commands
+
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
@@ -134,7 +135,7 @@ public class UIManager : MonoBehaviour
 
     public void ActivateRoomHUDHost()
     {
-        m_NetworkManager.OnStartHost();
+        m_NetworkManager.StartHost();
         roomHUD.SetActive(true);
         playerNameClient.text = playerName.textComponent.text;
         carColorClient.text = carColor.text;
@@ -188,24 +189,9 @@ public class UIManager : MonoBehaviour
     }
 
 
-    public void SetReady(int player)
+    public void SetReady(int playerIdx)
     {
-        if (player == 0)
-        {
-            m_RoomManager.changeReadyName1();
-        }
-        if (player == 1)
-        {
-            m_RoomManager.changeReadyName2();
-        }
-        if (player == 2)
-        {
-            m_RoomManager.changeReadyName3();
-        }
-        if (player == 3)
-        {
-            m_RoomManager.changeReadyName4();
-        }
+        player.GetComponent<SetupPlayer>().ChangeReadyName(playerIdx);
         readyButton.gameObject.SetActive(false);
         playButton.gameObject.SetActive(true);
     }
@@ -229,9 +215,14 @@ public class UIManager : MonoBehaviour
 
     public void GetReadyButton(int playerN)
     {
-        readyButton.onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
+        readyButton.onClick.AddListener(()=>SetReady(playerN));
     }
-
+    
+    public void SetPlayerThatControls(GameObject p)
+    {
+        player = p;
+    }
+ 
 
     #region car
     public string GetPlayerName()

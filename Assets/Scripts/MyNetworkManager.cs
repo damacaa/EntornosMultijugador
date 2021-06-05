@@ -50,22 +50,8 @@ public class MyNetworkManager : NetworkManager
         Debug.Log(conn);
     }
 
-
+    
     #endregion server
 
-    public override void OnStartHost()
-    {
-        base.OnStartHost();
-        Debug.Log("OnStartHost");
-
-
-    }
-
-    public override void OnStopHost()
-    {
-        base.OnStopHost();
-        Debug.Log("OnStopHost");
-
-    }
 
 }
