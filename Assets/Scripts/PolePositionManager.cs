@@ -161,32 +161,30 @@ public class PolePositionManager : NetworkBehaviour
         player.MaxCheckPoints = _circuitController.checkpoints.Count;
         currentPlayers++;
         _players.Add(player);
-
+        Debug.Log("CAMBIO");
         if (isServer)
         {
             player.transform.position = startingPoints[_players.Count - 1].position;
             player.transform.rotation = startingPoints[_players.Count - 1].rotation;
+        }
+        int playerN = _players.Count - 1;
+        //checks what player is if 1,2,3 or 4
+        if (playerN == 0)
+        {
+            m_RoomManager._ui.GetReadyButton(playerN);
+        }
+        else if (playerN == 1)
+        {
+            m_RoomManager._ui.GetReadyButton(playerN);
+        }
 
-            int playerN = _players.Count - 1;
-            //checks what player is if 1,2,3 or 4
-            if (playerN == 0)
-            {
-                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
-            }
-            if (playerN == 1)
-            {
-                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
-            }
-
-            if (playerN == 2)
-            {
-                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
-            }
-            if (playerN == 3)
-            {
-                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
-            }
-
+        else if (playerN == 2)
+        {
+            m_RoomManager._ui.GetReadyButton(playerN);
+        }
+        else if (playerN == 3)
+        {
+            m_RoomManager._ui.GetReadyButton(playerN);
         }
 
     }

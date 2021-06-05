@@ -227,9 +227,9 @@ public class UIManager : MonoBehaviour
         return playButton;
     }
 
-    public Button GetReadyButton()
+    public void GetReadyButton(int playerN)
     {
-        return readyButton;
+        readyButton.onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
     }
 
 
