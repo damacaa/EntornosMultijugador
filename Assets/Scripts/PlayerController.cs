@@ -32,7 +32,7 @@ public class PlayerController : NetworkBehaviour
     private PlayerInfo _playerInfo;
     
     private float m_SteerHelper = 0.8f;
-    private float m_CurrentSpeed = 0;
+    [SyncVar(hook = nameof(UpdateSpeed))] private float m_CurrentSpeed = 0;
 
     public bool goingBackwards = false;
 
@@ -73,17 +73,15 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
- /*   private float Speed
+    private float Speed
     {
         get { return m_CurrentSpeed; }
         set
         {
             if (Math.Abs(m_CurrentSpeed - value) < float.Epsilon) return;
             m_CurrentSpeed = value;
-            if (OnSpeedChangeEvent != null)
-                OnSpeedChangeEvent(m_CurrentSpeed);
         }
-    }*/
+    }
 
     public delegate void OnSpeedChangeDelegate(float newVal);
 
@@ -226,8 +224,9 @@ public class PlayerController : NetworkBehaviour
         AddDownForce();
         TractionControl();
 
-        _playerInfo.UpdateSpeed(m_Rigidbody.velocity.magnitude);
+        //_playerInfo.UpdateSpeed(m_Rigidbody.velocity.magnitude);
         //controlMovementInClient(InputSteering, InputAcceleration, InputBrake);
+        Speed = m_Rigidbody.velocity.magnitude;
     }
 
 
@@ -400,5 +399,14 @@ public class PlayerController : NetworkBehaviour
     void OnGoingBackwardsEventHandler(bool goingBackwards)
     {
         _uiManager.ShowBackwardsWarning(goingBackwards);
+    }
+
+    [Client]
+    public void UpdateSpeed(float old, float speed)
+    {
+        if (isLocalPlayer)
+        {
+            _uiManager.UpdateSpeed(speed);
+        }
     }
 }

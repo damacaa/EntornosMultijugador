@@ -65,12 +65,9 @@ public class UIManager : MonoBehaviour
 
     
 
-    public void UpdateSpeed(PlayerInfo player, float speed)
+    public void UpdateSpeed(float speed)
     {
-        if (player.isLocalPlayer)
-        {
             textSpeed.text = "Speed " + (int) (speed * 5f)+ " Km/h";
-        }
     }
 
     public void UpdateLap(PlayerInfo player, int lap)

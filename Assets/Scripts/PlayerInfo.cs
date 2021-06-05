@@ -17,7 +17,7 @@ public class PlayerInfo : NetworkBehaviour
 
     public int CurrentLapSegments;
     [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLapCountingFromFinishLine;
-    [SyncVar(hook = nameof(UpdateSpeedUI))] public float Speed = 0;
+    //[SyncVar(hook = nameof(UpdateSpeedUI))] public float Speed = 0;
 
     public int LastCheckPoint;
     public int MaxCheckPoints;
@@ -142,17 +142,17 @@ public class PlayerInfo : NetworkBehaviour
     }
 
 
-    public void UpdateSpeed(float newValue)
+    /*public void UpdateSpeed(float newValue)
     {
         if (Math.Abs(newValue - Speed) < float.Epsilon) return;
         Speed = newValue;
-    }
+    }*/
 
-    [Client]
+    /*[Client]
     public void UpdateSpeedUI(float oldValue, float newValue)
     {
         _uiManager.UpdateSpeed(this, newValue);
-    }
+    }*/
 
     public void UpdateTime(float old, float time)
     {
