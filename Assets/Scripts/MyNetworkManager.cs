@@ -23,15 +23,31 @@ public class MyNetworkManager : NetworkManager
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
+        Debug.Log("OnClientConnect");
     }
 
     #region client
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
-        Debug.Log("Jugador Desconectado al servidor");
-        SceneManager.LoadSceneAsync(0);
+        Debug.Log("Jugador Desconectado del servidor");
+
     }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        Debug.Log("OnStartClient");
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        Debug.Log("OnClientError");
+        _uiManager.ActivateMainMenu();
+    }
+
+
 
     #endregion client
 
@@ -41,8 +57,11 @@ public class MyNetworkManager : NetworkManager
         base.OnServerConnect(conn);
         Debug.Log("Jugador Conectado y creado servidor");
     }
-
-
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        base.OnServerDisconnect(conn);
+        Debug.Log("OnServerDisconnect");
+    }
 
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
@@ -50,8 +69,19 @@ public class MyNetworkManager : NetworkManager
         Debug.Log(conn);
     }
 
-    
+
     #endregion server
 
+    public override void OnStartHost()
+    {
+        base.OnStartHost();
+        Debug.Log("OnStartHost");
+    }
+
+    public override void OnStopHost()
+    {
+        base.OnStopHost();
+        Debug.Log("OnStopHost");
+    }
 
 }
