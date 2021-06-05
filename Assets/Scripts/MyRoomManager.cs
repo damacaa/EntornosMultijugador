@@ -37,21 +37,25 @@ public class MyRoomManager : NetworkBehaviour
         _ui.UpdateNameList(playerNames);
     }
     
-    public void changeReadyName(int playerIndex)
+    public void changeReadyName(int playerIndex,bool isReady)
     {
         switch (playerIndex)
         {
             case 0:
-                player1 = "READY";
+                if (isReady) player1 = "READY";
+                else player1 = "";
                 break;
             case 1:
-                player2 = "READY";
+                if (isReady) player2 = "READY";
+                else player1 = "";
                 break;
             case 2:
-                player3 = "READY";
+                if (isReady) player3 = "READY";
+                else player1 = "";
                 break;
             case 3:
-                player4 = "READY";
+                if (isReady) player4 = "READY";
+                else player1 = "";
                 break;
         }
     }

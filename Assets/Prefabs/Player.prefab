@@ -167,8 +167,8 @@ MonoBehaviour:
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
   compressRotation: 0
-  interpolateScale: 1
-  syncScale: 1
+  interpolateScale: 0
+  syncScale: 0
 --- !u!114 &449604030476931776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,7 +196,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 370ebdb6a034beb4dad079ecb19fb3c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Name: 
+  playerGO: {fileID: 0}
+  LastCheckPoint: 0
+  MaxCheckPoints: 0
   controller: {fileID: 0}
+  InitialDistToFinish: 0
 --- !u!114 &1137246169109603126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,6 +233,9 @@ MonoBehaviour:
   topSpeed: 200
   downForce: 1000
   slipLimit: 0.2
+  goingBackwards: 0
+  distToFinish: 0
+  InitialDistToFinish: 0
 --- !u!114 &6346869062069434778
 MonoBehaviour:
   m_ObjectHideFlags: 0

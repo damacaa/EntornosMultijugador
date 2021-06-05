@@ -73,11 +73,11 @@ public class PlayerInfo : MonoBehaviour
         playerGO = car;
     }
 
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
         Handles.Label(transform.position + transform.right + Vector3.up, CurrentLap.ToString());
         Handles.Label(transform.position + transform.right + 2 * Vector3.up, segment.ToString());
         Handles.Label(transform.position + transform.right + 3 * Vector3.up, LastCheckPoint.ToString());
-    }
+    }*/
 }
