@@ -112,9 +112,9 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            if (_players[i].CurrentLap == laps + 1)
+            if (_players[i].CurrentLapCountingFromFinishLine == laps + 1)
             {
-                Debug.Log("Vencedor: " + _players[i].name + _players[i].CurrentLap);
+                Debug.Log("Vencedor: " + _players[i].name );
                 totalTime = 0;
                 return true;
             }
@@ -127,11 +127,14 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            _players[i].CurrentLap = 1;
-            _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1; ;
+            _players[i].CurrentLapTime = 0;
+            _players[i].TotalTime = 0;
+
+            _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1;
+            _players[i].CurrentLapSegments = -1;
+            _players[i].CurrentLapCountingFromFinishLine = 1;
+
             _players[i].controller.ResetToStart(startingPoints[i]);
-            _players[i].controller.DistToFinish = ComputeCarArcLength(i);
-            _players[i].controller.InitialDistToFinish = _players[i].controller.DistToFinish;
 
             StartCoroutine(DelayStart(3f));
         }
@@ -192,8 +195,10 @@ public class PolePositionManager : NetworkBehaviour
 
         for (int i = 0; i < _players.Count; ++i)
         {
+            _players[i].CurrentLapTime += Time.deltaTime;
+            _players[i].TotalTime += Time.deltaTime;
             _players[i].controller.DistToFinish = ComputeCarArcLength(i); //Distancia restante hasta la meta
-
+            //showTime(_players[i]);
         }
 
         _players.Sort(new PlayerInfoComparer());
@@ -236,7 +241,7 @@ public class PolePositionManager : NetworkBehaviour
         this._debuggingSpheres[id].transform.position = carProj;
 
         _players[id].Segment = segIdx;
-        minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap + 1);
+        minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLapSegments + 1);
 
         return minArcL;
     }
@@ -245,4 +250,10 @@ public class PolePositionManager : NetworkBehaviour
     {
         playersReady += 1;
     }
+
+    /*[ClientRpc]
+    void showTime(PlayerInfo p)
+    {
+        //_uiManager.UpdateTime(p);
+    }*/
 }

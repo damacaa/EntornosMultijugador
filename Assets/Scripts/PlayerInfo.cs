@@ -13,8 +13,12 @@ public class PlayerInfo : MonoBehaviour
     public int ID { get; set; }
 
     public int CurrentPosition { get; set; }
+    public float CurrentLapTime { get; set; }
+    public float TotalTime { get; set; }
 
-    public int CurrentLap { get; set; }
+    public int CurrentLapSegments;
+    public int CurrentLapCountingFromFinishLine;
+
     public int LastCheckPoint;
     public int MaxCheckPoints;
 
@@ -34,12 +38,12 @@ public class PlayerInfo : MonoBehaviour
                 if (a < -1 && LastCheckPoint == MaxCheckPoints - 1)
                 {
                     LastCheckPoint = 0;
-                    CurrentLap++;
+                    CurrentLapSegments++;
                 }
                 else if (a > 1)
                 {
                     LastCheckPoint = MaxCheckPoints - 1;
-                    CurrentLap--;
+                    CurrentLapSegments--;
                 }
                 segment = value;
             }
@@ -63,15 +67,49 @@ public class PlayerInfo : MonoBehaviour
         {
             int id = collision.gameObject.GetComponent<Checkpoint>().id;
             if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
-            
+
+        }
+
+        if (collision.gameObject.tag == "Finish")
+        {
+            //Meta
+            if (LastCheckPoint == MaxCheckPoints - 1 && CurrentLapSegments >= 0)
+            {
+                if (CurrentLapCountingFromFinishLine <= CurrentLapSegments + 1)
+                {
+                    CurrentLapTime = 0;
+                    CurrentLapCountingFromFinishLine = CurrentLapSegments + 2;
+                }
+            }
+            else if (CurrentLapSegments < 0)
+            {
+                CurrentLapCountingFromFinishLine = 1;
+            }
         }
     }
 
     private void OnDrawGizmos()
     {
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
-        Handles.Label(transform.position + transform.right + Vector3.up, CurrentLap.ToString());
-        Handles.Label(transform.position + transform.right + 2 * Vector3.up, segment.ToString());
-        Handles.Label(transform.position + transform.right + 3 * Vector3.up, LastCheckPoint.ToString());
+
+        Handles.Label(transform.position - transform.right + Vector3.up, CurrentLapSegments.ToString());
+        Handles.Label(transform.position - transform.right + 2 * Vector3.up, CurrentLapCountingFromFinishLine.ToString());
+
+        Handles.Label(transform.position + transform.right + Vector3.up, CurrentLapTime.ToString());
+        Handles.Label(transform.position + transform.right + 2 * Vector3.up, TotalTime.ToString());
     }
+
+
+    /*
+    [Client]
+    public void UpdateLapUI(int oldValue, int newValue)
+    {
+        _uiManager.UpdateLap(this, newValue);
+    }
+
+    [ClientRpc]
+    public void UpdateTimeUI(float oldValue, float newValue)
+    {
+        _uiManager.UpdateTime(this);
+    }*/
 }

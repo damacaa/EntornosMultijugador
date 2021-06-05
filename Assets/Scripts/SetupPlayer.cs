@@ -42,8 +42,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         base.OnStartClient();
         _playerInfo.ID = _id;
-      
-        _playerInfo.CurrentLap = 0;
+
         _polePositionManager.AddPlayer(_playerInfo);
         _uiManager.SetPlayerThatControls(this.gameObject);
     }
@@ -115,7 +114,7 @@ public class SetupPlayer : NetworkBehaviour
         return _uiManager;
     }
 
-    //change name function 
+    //change name function
 
     void ChangeName(string oldName, string newName)
     {

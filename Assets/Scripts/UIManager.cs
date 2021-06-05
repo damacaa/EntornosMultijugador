@@ -260,5 +260,6 @@ public class UIManager : MonoBehaviour
         playerNames[pos].text = player.Name;
         readyMarkers[pos].gameObject.SetActive(true);
     }
+
     #endregion car
 }

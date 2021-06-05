@@ -32,6 +32,10 @@ public class PlayerController : NetworkBehaviour
     private float m_SteerHelper = 0.8f;
     private float m_CurrentSpeed = 0;
 
+    public void SendSpeed(float old, float speed)
+    {
+        OnSpeedChangeEvent(speed);
+    }
 
     public bool goingBackwards = false;
 
@@ -59,7 +63,7 @@ public class PlayerController : NetworkBehaviour
 
 
     //Variable que indica si el localPlayer se ha chocado
-    private bool crashed = false;
+    [SyncVar] private bool crashed = false;
     public bool Crashed
     {
         get { return crashed; }
@@ -80,7 +84,7 @@ public class PlayerController : NetworkBehaviour
             if (Math.Abs(m_CurrentSpeed - value) < float.Epsilon) return;
             m_CurrentSpeed = value;
             if (OnSpeedChangeEvent != null)
-                OnSpeedChangeEvent(m_CurrentSpeed);
+                OnSpeedChangeEventHandler(m_CurrentSpeed);
         }
     }
 
@@ -124,13 +128,12 @@ public class PlayerController : NetworkBehaviour
             InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
             InputSteering = _input.Player.Steering.ReadValue<float>();
             InputBrake = _input.Player.Jump.ReadValue<float>();
-            Speed = m_Rigidbody.velocity.magnitude;
 
             float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
             Crashed = r > 90 && r < 270;
 
             //Replace with UI
-            if (BackwardsTimeout > 0f )
+            if (BackwardsTimeout > 0f)
             {
                 goingBackwards = true;
                 GetComponentInChildren<MeshRenderer>().material.color = Color.red;
@@ -143,8 +146,6 @@ public class PlayerController : NetworkBehaviour
                 GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
                 OnGoingBackwardsEventHandler(false);
             }
-
-
 
         }
     }
@@ -162,9 +163,12 @@ public class PlayerController : NetworkBehaviour
     [Command]
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
-        if (!_polePosition.racing) {
+
+        if (!_polePosition.racing)
+        {
             m_Rigidbody.velocity = Vector3.zero;
-            return; }
+            return;
+        }
 
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
@@ -224,6 +228,9 @@ public class PlayerController : NetworkBehaviour
         TractionControl();
 
         controlMovementInClient(InputSteering, InputAcceleration, InputBrake);
+
+        Speed = m_Rigidbody.velocity.magnitude;
+        OnSpeedChangeEventHandler(Speed);
     }
 
 
@@ -365,17 +372,22 @@ public class PlayerController : NetworkBehaviour
     public void CmdReset()
     {
         Debug.Log("Digo al server que resetee");
-        if (Crashed)
-        {
-            Reset();
-        }
+        Reset();
     }
 
+
     //if we collide and we are not able to continue playing the car flips
+    [Server]
     private void Reset()
     {
-        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche
-        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+        CircuitController cC = FindObjectOfType<CircuitController>();
+        int lastCheckPoint = GetComponent<PlayerInfo>().LastCheckPoint;
+
+        transform.position = cC.checkpoints[lastCheckPoint].transform.position;
+        transform.rotation = cC.checkpoints[lastCheckPoint].transform.rotation;
+
+        m_Rigidbody.velocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
     }
 
     public void ResetToStart(Transform t)
@@ -389,8 +401,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (isServer && collision.relativeVelocity.magnitude > 10f)
         {
-            Debug.Log("Server: " + collision.gameObject.name);
-            Reset();
+            Debug.Log("Colisión: " + gameObject.name + " --> " + collision.gameObject.name);
         }
     }
 
@@ -402,5 +413,11 @@ public class PlayerController : NetworkBehaviour
     void OnGoingBackwardsEventHandler(bool goingBackwards)
     {
         _uiManager.ShowBackwardsWarning(goingBackwards);
+    }
+
+    [ClientRpc]
+    void OnSpeedChangeEventHandler(float speed)
+    {
+        _uiManager.UpdateSpeed((int)speed * 5); // 5 for visualization purpose (km/h)
     }
 }
