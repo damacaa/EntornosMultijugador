@@ -10,6 +10,7 @@ public class PlayerInfo : NetworkBehaviour
     private UIManager _uiManager;
     [SyncVar] public string Name;
 
+    public GameObject playerGO;
     public int ID { get; set; }
 
     public int CurrentPosition { get; set; }
@@ -85,6 +86,11 @@ public class PlayerInfo : NetworkBehaviour
                 CurrentLapCountingFromFinishLine = 1;
             }
         }
+    }
+
+    public void SetPlayerGO(GameObject car)
+    {
+        playerGO = car;
     }
 
     private void OnDrawGizmos()

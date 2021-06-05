@@ -20,7 +20,7 @@ public class SetupPlayer : NetworkBehaviour
     private PlayerController _playerController;
     private PlayerInfo _playerInfo;
     private PolePositionManager _polePositionManager;
-
+    private MyRoomManager m_RoomManager;
     #region Start & Stop Callbacks
 
     /// <summary>
@@ -42,13 +42,10 @@ public class SetupPlayer : NetworkBehaviour
     {
         base.OnStartClient();
         _playerInfo.ID = _id;
-
-        string nameFromUI = _uiManager.GetPlayerName();
-        if(nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
-        CmdChangeName(nameFromUI);
-
-        _playerInfo.CurrentLapSegments = 0;
+      
+        _playerInfo.CurrentLap = 0;
         _polePositionManager.AddPlayer(_playerInfo);
+        _playerInfo.SetPlayerGO(this.gameObject);
     }
 
     /// <summary>
@@ -62,6 +59,10 @@ public class SetupPlayer : NetworkBehaviour
         {
             CmdChangeColor(colorId);
         }
+        string nameFromUI = _uiManager.GetPlayerName();
+        if (nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
+        CmdChangeName(nameFromUI);
+
     }
 
     #endregion
@@ -73,6 +74,7 @@ public class SetupPlayer : NetworkBehaviour
         _networkManager = FindObjectOfType<MyNetworkManager>();
         _polePositionManager = FindObjectOfType<PolePositionManager>();
         _uiManager = FindObjectOfType<UIManager>();
+        m_RoomManager = FindObjectOfType<MyRoomManager>();
     }
 
     // Start is called before the first frame update
@@ -82,6 +84,7 @@ public class SetupPlayer : NetworkBehaviour
         {
             _playerController.enabled = true;
             _playerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
+            _playerController.OnLapChangeEvent += OnLapChangeEventHandler;
             ConfigureCamera();
         }
     }
@@ -95,6 +98,12 @@ public class SetupPlayer : NetworkBehaviour
     {
         _uiManager.UpdateSpeed((int)speed * 5); // 5 for visualization purpose (km/h)
     }
+
+    void OnLapChangeEventHandler(int lap)
+    {
+        _uiManager.UpdateLap(lap);
+    }
+
 
     void ConfigureCamera()
     {
@@ -163,4 +172,12 @@ public class SetupPlayer : NetworkBehaviour
     {
         SetCarColor(newC);
     }
+
+    [Command]
+    public void ChangeReadyName(int player)
+    {
+        m_RoomManager.changeReadyName(player);
+    }
+
+
 }
