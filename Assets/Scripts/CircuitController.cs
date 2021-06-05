@@ -16,6 +16,8 @@ public class CircuitController : MonoBehaviour
         get { return _totalLength; }
     }
 
+    public int numPoints { get; set; }
+
     public List<Checkpoint> checkpoints = new List<Checkpoint>();
     public GameObject checkpointPrefab;
 
@@ -23,7 +25,7 @@ public class CircuitController : MonoBehaviour
     {
         _circuitPath = GetComponent<LineRenderer>();
 
-        int numPoints = _circuitPath.positionCount;
+        numPoints = _circuitPath.positionCount;
         _pathPos = new Vector3[numPoints];
         _cumArcLength = new float[numPoints];
         _circuitPath.GetPositions(_pathPos);
@@ -40,7 +42,7 @@ public class CircuitController : MonoBehaviour
         _totalLength = _cumArcLength[_cumArcLength.Length - 1];
 
         int spacing = 2; //Spawnea u checkpoint cada x puntos
-        for (int i = 1; i < (_pathPos.Length - 1) / spacing; i++)
+        for (int i = 0; i < (_pathPos.Length - 1) / spacing; i++)
         {
             GameObject gO = GameObject.Instantiate(checkpointPrefab, _pathPos[i * spacing], Quaternion.LookRotation(_pathPos[(i + 1) * spacing] - _pathPos[i * spacing]));
             Checkpoint cP = gO.GetComponent<Checkpoint>();

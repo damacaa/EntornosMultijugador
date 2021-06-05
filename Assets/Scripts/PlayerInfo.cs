@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerInfo : NetworkBehaviour
@@ -18,6 +19,32 @@ public class PlayerInfo : NetworkBehaviour
     public int MaxCheckPoints;
 
     public PlayerController controller;
+    public float InitialDistToFinish = 0;
+
+    private bool dirty = false;
+    private int segment;
+    public int Segment
+    {
+        get { return segment; }
+        set
+        {
+            if (value != segment)
+            {
+                int a = value - segment;
+                if (a < -1 && LastCheckPoint == MaxCheckPoints - 1)
+                {
+                    LastCheckPoint = 0;
+                    CurrentLap++;
+                }
+                else if (a > 1)
+                {
+                    LastCheckPoint = MaxCheckPoints - 1;
+                    CurrentLap--;
+                }
+                segment = value;
+            }
+        }
+    }
 
     [SyncVar] public bool isReady = false;
     [SyncVar(hook = nameof(onHostAuth))] public bool isAdmin = false;
@@ -34,24 +61,35 @@ public class PlayerInfo : NetworkBehaviour
 
     private void OnTriggerEnter(Collider collision)
     {
-        if (collision.gameObject.tag == "Finish")
+        if (collision.gameObject.tag == "CheckPoint")
         {
-            if (LastCheckPoint >= MaxCheckPoints)
+            int id = collision.gameObject.GetComponent<Checkpoint>().id;
+            if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
+            //
+        }
+
+        /*if (collision.gameObject.tag == "Finish")
+        {
+            //Meta
+            if (LastCheckPoint == MaxCheckPoints - 1)
             {
                 LastCheckPoint = 0;
                 CurrentLap++;
                 Debug.Log(name + " vuelta " + CurrentLap);
             }
-        }
-
-        if (collision.gameObject.tag == "CheckPoint")
-        {
-            int id = collision.gameObject.GetComponent<Checkpoint>().id;
-            if (id - LastCheckPoint == 1)
+            else if (LastCheckPoint == 0 && controller.goingBackwards)
             {
-                LastCheckPoint = id;
+                CurrentLap--;
             }
-        }
+        }*/
+    }
+
+    private void OnDrawGizmos()
+    {
+        Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
+        Handles.Label(transform.position + transform.right + Vector3.up, CurrentLap.ToString());
+        Handles.Label(transform.position + transform.right + 2 * Vector3.up, segment.ToString());
+        Handles.Label(transform.position + transform.right + 3 * Vector3.up, LastCheckPoint.ToString());
     }
 
     public override void OnStartLocalPlayer()

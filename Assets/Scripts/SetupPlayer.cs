@@ -44,6 +44,7 @@ public class SetupPlayer : NetworkBehaviour
         _playerInfo.ID = _id;
 
         string nameFromUI = _uiManager.GetPlayerName();
+        if(nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
         CmdChangeName(nameFromUI);
 
         _playerInfo.CurrentLap = 0;
@@ -61,7 +62,6 @@ public class SetupPlayer : NetworkBehaviour
         {
             CmdChangeColor(colorId);
         }
-        
     }
 
     #endregion
