@@ -9,6 +9,7 @@ public class PolePositionManager : NetworkBehaviour
 {
     private MyNetworkManager _networkManager;
     private UIManager _uiManager;
+    private MyRoomManager m_RoomManager;
 
     private CircuitController _circuitController;
     private GameObject[] _debuggingSpheres;
@@ -37,6 +38,7 @@ public class PolePositionManager : NetworkBehaviour
     //Tiempo Total de la carrera
     [SyncVar] private float totalTime = 0;
 
+    public bool waiting = true;
     #endregion
 
     #region Comprobaciones
@@ -74,12 +76,10 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
-
+        m_RoomManager = FindObjectOfType<MyRoomManager>();
         racing = true;
     }
 
-
-    public bool waiting = true;
     private void Update()
     {
         if (_players.Count == 0)
@@ -104,22 +104,6 @@ public class PolePositionManager : NetworkBehaviour
         {
             waiting = false;
             ResetPlayers();
-        }
-    }
-
-    [Server]
-    public void StartRace()
-    {
-        bool everyOneIsReady = true;
-        foreach (PlayerInfo player in _players)
-        {
-            everyOneIsReady = player.isReady && everyOneIsReady;
-        }
-        if (everyOneIsReady)
-        {
-            numPlayers = _players.Count;
-            racing = true;
-            RpcChangeFromRoomToGameHUD();
         }
     }
 
@@ -179,16 +163,26 @@ public class PolePositionManager : NetworkBehaviour
 
         if (isServer)
         {
-            player.isAdmin = true;
             player.transform.position = startingPoints[_players.Count - 1].position;
             player.transform.rotation = startingPoints[_players.Count - 1].rotation;
-            _uiManager.AddPlayerToRoom(player, _players.Count - 1);
+            if (_players.Count - 1 == 0)
+            {
+                m_RoomManager.changeReadyName1();
+            }
+            if (_players.Count - 1 == 1)
+            {
+                m_RoomManager.changeReadyName2();
+            }
+            if (_players.Count - 1 == 2)
+            {
+                m_RoomManager.changeReadyName3();
+            }
+            if (_players.Count - 1 == 3)
+            {
+                m_RoomManager.changeReadyName4();
+            }
 
         }
-
-        isTrainingRace = _players.Count < 2;
-        
-        _uiManager.TrainingOrRacing(isTrainingRace);
 
     }
 
@@ -235,13 +229,6 @@ public class PolePositionManager : NetworkBehaviour
         _uiManager.UpdateRanking(newRanking);
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
-
-    [ClientRpc]
-    void RpcChangeFromRoomToGameHUD()
-    {
-        _uiManager.ActivateInGameHUD();
-    }
-
 
     float ComputeCarArcLength(int id)
     {
