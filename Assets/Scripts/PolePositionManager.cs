@@ -14,7 +14,7 @@ public class PolePositionManager : NetworkBehaviour
     private GameObject[] _debuggingSpheres;
 
     [Header("RaceStartingPositions")]
-    private Transform[] startingPoints;
+    public Transform[] startingPoints;
 
     [SyncVar] public int numPlayers = 4;
     [SyncVar] public int laps = 3;
@@ -22,7 +22,8 @@ public class PolePositionManager : NetworkBehaviour
 
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
 
-    public bool isPractice = true;
+    public bool isTrainingRace = true;
+    public bool openRoom = true;
 
     [Header("RaceProgress")]
     string myRaceOrder = "";
@@ -74,14 +75,7 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
-        NetworkStartPosition[] sp = GameObject.FindObjectsOfType<NetworkStartPosition>();
-        startingPoints = new Transform[sp.Length];
-        for (int i = 0; i < sp.Length; i++)
-        {
-            startingPoints[i] = sp[i].gameObject.transform;
-        }
-
-        racing = false;
+        racing = true;
     }
 
 
@@ -110,6 +104,22 @@ public class PolePositionManager : NetworkBehaviour
         {
             waiting = false;
             ResetPlayers();
+        }
+    }
+
+    [Server]
+    public void StartRace()
+    {
+        bool everyOneIsReady = true;
+        foreach (PlayerInfo player in _players)
+        {
+            everyOneIsReady = player.isReady && everyOneIsReady;
+        }
+        if (everyOneIsReady)
+        {
+            numPlayers = _players.Count;
+            racing = true;
+            RpcChangeFromRoomToGameHUD();
         }
     }
 
@@ -162,16 +172,24 @@ public class PolePositionManager : NetworkBehaviour
 
     public void AddPlayer(PlayerInfo player)
     {
-        currentPlayers++;
+        //AQUI FALTA UN COMENTARIO
         player.MaxCheckPoints = _circuitController.checkpoints.Count;
+        currentPlayers++;
         _players.Add(player);
 
         if (isServer)
         {
+            player.isAdmin = true;
             player.transform.position = startingPoints[_players.Count - 1].position;
             player.transform.rotation = startingPoints[_players.Count - 1].rotation;
             _uiManager.AddPlayerToRoom(player, _players.Count - 1);
+
         }
+
+        isTrainingRace = _players.Count < 2;
+        
+        _uiManager.TrainingOrRacing(isTrainingRace);
+
     }
 
     private class PlayerInfoComparer : Comparer<PlayerInfo>
@@ -218,6 +236,11 @@ public class PolePositionManager : NetworkBehaviour
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
+    [ClientRpc]
+    void RpcChangeFromRoomToGameHUD()
+    {
+        _uiManager.ActivateInGameHUD();
+    }
 
 
     float ComputeCarArcLength(int id)
