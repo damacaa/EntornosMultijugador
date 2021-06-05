@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
-public class PlayerInfo : MonoBehaviour
+public class PlayerInfo : NetworkBehaviour
 {
-    public string Name { get; set; }
+
+    private UIManager _uiManager;
+    [SyncVar] public string Name;
 
     public int ID { get; set; }
 
@@ -17,6 +19,8 @@ public class PlayerInfo : MonoBehaviour
 
     public PlayerController controller;
 
+    [SyncVar] public bool isReady = false;
+    [SyncVar(hook = nameof(onHostAuth))] public bool isAdmin = false;
     public override string ToString()
     {
         return Name;
@@ -25,6 +29,7 @@ public class PlayerInfo : MonoBehaviour
     private void Awake()
     {
         controller = gameObject.GetComponent<PlayerController>();
+        if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
     }
 
     private void OnTriggerEnter(Collider collision)
@@ -46,6 +51,37 @@ public class PlayerInfo : MonoBehaviour
             {
                 LastCheckPoint = id;
             }
+        }
+    }
+
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+
+        //Si el jugador es el host directamente esta listo
+        if (isServer)
+        {
+            isReady = true;
+        }
+  
+    }
+
+    [Command]
+    public void CmdSetReady(bool isReady)
+    {
+        this.isReady = isReady;
+    }
+
+
+    [Client]
+    void onHostAuth(bool oldvalue, bool newvalue)
+    {
+        if (newvalue && isLocalPlayer)
+        {
+            Debug.Log("onHostAuth");
+ 
+            _uiManager.setRoomHUDButtons(this);
+            _uiManager.ActivateRoomHUD();
         }
     }
 }

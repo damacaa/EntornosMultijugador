@@ -42,12 +42,12 @@ public class SetupPlayer : NetworkBehaviour
     {
         base.OnStartClient();
         _playerInfo.ID = _id;
-        _playerInfo.Name = "Player" + _id;
+
+        string nameFromUI = _uiManager.GetPlayerName();
+        CmdChangeName(nameFromUI);
+
         _playerInfo.CurrentLap = 0;
-        if (isServer)
-        {
-            _polePositionManager.AddPlayer(_playerInfo);
-        }
+        _polePositionManager.AddPlayer(_playerInfo);
     }
 
     /// <summary>
@@ -61,9 +61,7 @@ public class SetupPlayer : NetworkBehaviour
         {
             CmdChangeColor(colorId);
         }
-
-        string nameFromUI = _uiManager.GetPlayerName();
-        CmdChangeName(nameFromUI);
+        
     }
 
     #endregion
@@ -122,11 +120,6 @@ public class SetupPlayer : NetworkBehaviour
         _playerInfo.Name = newName;
     }
 
-    [Command]
-    public void CmdChangeName(string newName)
-    {
-        _name = newName;
-    }
 
 
     public void SetCarColor(Color newColor)
@@ -138,6 +131,13 @@ public class SetupPlayer : NetworkBehaviour
     {
         return _carBody.GetComponent<MeshRenderer>().materials[1];
     }
+
+    [Command]
+    public void CmdChangeName(string newName)
+    {
+        _name = newName;
+    }
+
 
     //changes sync var _carColor in server in order to later replicate this change to all clients
     [Command]

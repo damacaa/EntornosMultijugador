@@ -38,6 +38,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button playButton;
     [SerializeField] private Button practiceButton;
     [SerializeField] private Button readyButton;
+    [SerializeField] private Button notReadyButton;
     [SerializeField] private Text carColorClient;
     [SerializeField] private Text playerNameClient;
     [SerializeField] private InputField inputFieldIP_Wait;
@@ -47,7 +48,7 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
-        _polePositionManager = FindObjectOfType<PolePositionManager>();
+        if (!_polePositionManager) _polePositionManager = FindObjectOfType<PolePositionManager>();
         circuitLaps = FindObjectOfType<CircuitController>().circuitLaps;
     }
 
@@ -61,6 +62,8 @@ public class UIManager : MonoBehaviour
         readyButton.onClick.AddListener(() => ButtonPlay());//cambiarlo para poner qeu un jugador esta listo
         ActivateMainMenu();
     }
+
+    
 
     public void UpdateSpeed(int speed)
     {
@@ -95,20 +98,21 @@ public class UIManager : MonoBehaviour
         roomHUD.SetActive(false);
     }
 
-    private void ActivateInGameHUD()
+    public void ActivateInGameHUD()
     {
         mainMenu.SetActive(false);
         inGameHUD.SetActive(true);
         roomHUD.SetActive(false);
     }
 
-    private void ActivateRoomHUD()
+    public void ActivateRoomHUD()
     {
         roomHUD.SetActive(true);
         playerNameClient.text = playerName.textComponent.text;
         carColorClient.text = carColor.text;
         inputFieldIP_Wait = inputFieldIP;
         mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
     }
 
     public void ActivateHostOptions()
@@ -134,21 +138,49 @@ public class UIManager : MonoBehaviour
 
     }
 
+    public void setRoomHUDButtons(PlayerInfo localPlayer)
+    {
+        readyButton.onClick.RemoveAllListeners();
+        notReadyButton.onClick.RemoveAllListeners();
+        playButton.onClick.RemoveAllListeners();
 
+        if (localPlayer.isServer)
+        {
+            readyButton.gameObject.SetActive(false);
+            notReadyButton.gameObject.SetActive(false);
+            playButton.gameObject.SetActive(true);
+            playButton.onClick.AddListener(() => _polePositionManager.StartRace());
+        }
+        else
+        {
+            playButton.gameObject.SetActive(false);
+            notReadyButton.gameObject.SetActive(localPlayer.isReady);
+            readyButton.gameObject.SetActive(!localPlayer.isReady);
+            readyButton.onClick.AddListener(() => localPlayer.CmdSetReady(true));
+            notReadyButton.onClick.AddListener(() => localPlayer.CmdSetReady(false));
+        }
+
+    }
+
+    public void TrainingOrRacing(bool isTraining)
+    {
+        practiceButton.gameObject.SetActive(isTraining);
+        playButton.gameObject.SetActive(!isTraining);
+    }
 
     private void StartHost()
     {
-        //m_NetworkManager.StartHost();
-        m_NetworkManager.OnStartHost();
+        m_NetworkManager.StartHost();
+        //m_NetworkManager.OnStartHost();
         //ActivateInGameHUD();
         ActivateRoomHUD();
     }
 
     private void StartClient()
     {
+        m_NetworkManager.StartClient();
         m_NetworkManager.networkAddress = inputFieldIP.text;
-       // m_NetworkManager.StartClient();
-        m_NetworkManager.OnStartClient();
+        //m_NetworkManager.OnStartClient();
         ActivateRoomHUD();
 
     }
@@ -204,6 +236,7 @@ public class UIManager : MonoBehaviour
 
     public void AddPlayerToRoom(PlayerInfo player, int pos)
     {
-        playerNames[pos].text = player.ToString();
+        playerNames[pos].text = player.Name;
+        readyMarkers[pos].gameObject.SetActive(true);
     }
 }
