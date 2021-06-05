@@ -22,6 +22,7 @@ public class PolePositionManager : NetworkBehaviour
     int currentPlayers;
 
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
+    [SyncVar] public int playersReady = 0;
 
     public bool isTrainingRace = true;
     public bool openRoom = true;
@@ -165,21 +166,25 @@ public class PolePositionManager : NetworkBehaviour
         {
             player.transform.position = startingPoints[_players.Count - 1].position;
             player.transform.rotation = startingPoints[_players.Count - 1].rotation;
-            if (_players.Count - 1 == 0)
+
+            int playerN = _players.Count - 1;
+            //checks what player is if 1,2,3 or 4
+            if (playerN == 0)
             {
-                m_RoomManager.changeReadyName1();
+                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
             }
-            if (_players.Count - 1 == 1)
+            if (playerN == 1)
             {
-                m_RoomManager.changeReadyName2();
+                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
             }
-            if (_players.Count - 1 == 2)
+
+            if (playerN == 2)
             {
-                m_RoomManager.changeReadyName3();
+                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
             }
-            if (_players.Count - 1 == 3)
+            if (playerN == 3)
             {
-                m_RoomManager.changeReadyName4();
+                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
             }
 
         }
@@ -252,9 +257,8 @@ public class PolePositionManager : NetworkBehaviour
         return minArcL;
     }
 
-    [ClientRpc]
-    void showCosa(float s)
+    public void SumPlayersReady()
     {
-        Debug.Log(s);
+        playersReady += 1;
     }
 }

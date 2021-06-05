@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MyRoomManager : NetworkBehaviour
 {
-    [SerializeField] UIManager _ui;
+    [SerializeField] public UIManager _ui;
     [SerializeField] string[] playerNames;
     [SyncVar(hook = nameof(UpdateListName))] public string player1;
     [SyncVar(hook = nameof(UpdateListName))] public string player2;

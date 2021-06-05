@@ -58,12 +58,12 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         buttonHost.onClick.AddListener(() => ActivateRoomHUDHost());
-        buttonClient.onClick.AddListener(() =>ActivateRoomHUDClient());
+        buttonClient.onClick.AddListener(() => ActivateRoomHUDClient());
         buttonServer.onClick.AddListener(() => StartServer());
-        playButton.onClick.AddListener(() => ButtonPlay());
+        //playButton.onClick.AddListener(() => ButtonPlay());
         practiceButton.onClick.AddListener(() => ButtonPractise());
-        readyButton.onClick.AddListener(() => ButtonReady());//cambiarlo para poner qeu un jugador esta listo
-        m_RoomManager.UpdateListName("NO","HACE NADA");
+        readyButton.onClick.AddListener(() => ButtonReady());
+        m_RoomManager.UpdateListName("NO", "HACE NADA");
         ActivateMainMenu();
     }
 
@@ -107,7 +107,7 @@ public class UIManager : MonoBehaviour
     {
         textLaps.text = "Lap " + lap + "/" + circuitLaps;
     }
-    
+
     public void UpdateRanking(string ranking)
     {
         textPosition.text = ranking;
@@ -139,7 +139,9 @@ public class UIManager : MonoBehaviour
         playerNameClient.text = playerName.textComponent.text;
         carColorClient.text = carColor.text;
         inputFieldIP_Wait = inputFieldIP;
-        playButton.gameObject.SetActive(true);
+        _polePositionManager.SumPlayersReady();
+        readyButton.gameObject.SetActive(true);
+
         mainMenu.SetActive(false);
     }
     public void ActivateRoomHUDClient()
@@ -150,7 +152,9 @@ public class UIManager : MonoBehaviour
         playerNameClient.text = playerName.textComponent.text;
         carColorClient.text = carColor.text;
         inputFieldIP_Wait = inputFieldIP;
-        playButton.gameObject.SetActive(true);
+
+        _polePositionManager.SumPlayersReady();
+        readyButton.gameObject.SetActive(true);
         mainMenu.SetActive(false);
     }
 
@@ -184,11 +188,26 @@ public class UIManager : MonoBehaviour
     }
 
 
-    public void ButtonPlay()
+    public void SetReady(int player)
     {
-        //m_NetworkManager.StartClient();
-        //m_NetworkManager.networkAddress = inputFieldIP_Wait.text;
-        ActivateInGameHUD();
+        if (player == 0)
+        {
+            m_RoomManager.changeReadyName1();
+        }
+        if (player == 1)
+        {
+            m_RoomManager.changeReadyName2();
+        }
+        if (player == 2)
+        {
+            m_RoomManager.changeReadyName3();
+        }
+        if (player == 3)
+        {
+            m_RoomManager.changeReadyName4();
+        }
+        readyButton.gameObject.SetActive(false);
+        playButton.gameObject.SetActive(true);
     }
     public void ButtonPractise()
     {
@@ -200,8 +219,17 @@ public class UIManager : MonoBehaviour
 
     public void ButtonReady()
     {
-        m_NetworkManager.StartClient();
-        m_NetworkManager.networkAddress = inputFieldIP_Wait.text;
+
+    }
+
+    public Button GetPlayButton()
+    {
+        return playButton;
+    }
+
+    public Button GetReadyButton()
+    {
+        return readyButton;
     }
 
 
@@ -217,20 +245,21 @@ public class UIManager : MonoBehaviour
     }
 
     //gets car's color selected from client UI
-    public int GetCarSelected() {
+    public int GetCarSelected()
+    {
         int car = 0;
         var color = GetCarColor();
         if (color == "Verde")
         {
-            car =1;
+            car = 1;
         }
         else if (color == "Amarillo")
         {
-            car =2;
+            car = 2;
         }
         else if (color == "Blanco")
         {
-            car =3;
+            car = 3;
         }
         return car;
     }

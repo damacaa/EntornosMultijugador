@@ -320,6 +320,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5511279530080818257, guid: 82fdd1b122962e24a9f077926f216770,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8364469310304294504, guid: 82fdd1b122962e24a9f077926f216770,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8638827622985593291, guid: 82fdd1b122962e24a9f077926f216770,
         type: 3}
       propertyPath: m_LocalPosition.z
@@ -432,6 +442,7 @@ MonoBehaviour:
   - {fileID: 1030217891}
   numPlayers: 0
   laps: 3
+  playersReady: 0
   isTrainingRace: 1
   openRoom: 1
   racing: 0
