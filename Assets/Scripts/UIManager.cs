@@ -134,8 +134,6 @@ public class UIManager : MonoBehaviour
 
     }
 
-
-
     private void StartHost()
     {
         //m_NetworkManager.StartHost();

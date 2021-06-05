@@ -47,7 +47,7 @@ public class MyNetworkManager : NetworkManager
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
- 
+        Debug.Log(conn);
     }
 
     public override void OnStartHost()
