@@ -81,7 +81,7 @@ public class SetupPlayer : NetworkBehaviour
         if (isLocalPlayer)
         {
             _playerController.enabled = true;
-            _playerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
+
             ConfigureCamera();
         }
     }
@@ -89,11 +89,6 @@ public class SetupPlayer : NetworkBehaviour
     private void Update()
     {
 
-    }
-
-    void OnSpeedChangeEventHandler(float speed)
-    {
-        _uiManager.UpdateSpeed((int)speed * 5); // 5 for visualization purpose (km/h)
     }
 
     void ConfigureCamera()

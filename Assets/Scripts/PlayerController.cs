@@ -29,9 +29,10 @@ public class PlayerController : NetworkBehaviour
     private float InputBrake { get; set; }
 
     private Rigidbody m_Rigidbody;
+    private PlayerInfo _playerInfo;
+    
     private float m_SteerHelper = 0.8f;
     private float m_CurrentSpeed = 0;
-
 
     public bool goingBackwards = false;
 
@@ -72,7 +73,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private float Speed
+ /*   private float Speed
     {
         get { return m_CurrentSpeed; }
         set
@@ -82,7 +83,7 @@ public class PlayerController : NetworkBehaviour
             if (OnSpeedChangeEvent != null)
                 OnSpeedChangeEvent(m_CurrentSpeed);
         }
-    }
+    }*/
 
     public delegate void OnSpeedChangeDelegate(float newVal);
 
@@ -104,10 +105,11 @@ public class PlayerController : NetworkBehaviour
 
     public void Awake()
     {
-        m_Rigidbody = GetComponent<Rigidbody>();
         _input = new _InputController();
         if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
         if (_polePosition == null) _polePosition = FindObjectOfType<PolePositionManager>();
+        if (!m_Rigidbody) m_Rigidbody = GetComponent<Rigidbody>();
+        if (!_playerInfo) _playerInfo = GetComponent<PlayerInfo>();
     }
 
     private void Start()
@@ -124,7 +126,7 @@ public class PlayerController : NetworkBehaviour
             InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
             InputSteering = _input.Player.Steering.ReadValue<float>();
             InputBrake = _input.Player.Jump.ReadValue<float>();
-            Speed = m_Rigidbody.velocity.magnitude;
+            //Speed = m_Rigidbody.velocity.magnitude;
 
             float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
             Crashed = r > 90 && r < 270;
@@ -145,6 +147,7 @@ public class PlayerController : NetworkBehaviour
             }
 
 
+            _playerInfo.UpdateSpeed(m_Rigidbody.velocity.magnitude);
 
         }
     }

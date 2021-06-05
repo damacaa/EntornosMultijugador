@@ -177,7 +177,7 @@ public class PolePositionManager : NetworkBehaviour
         currentPlayers++;
         _players.Add(player);
 
-        if (isServer)
+        if (player.isServer)
         {
             player.isAdmin = true;
             player.transform.position = startingPoints[_players.Count - 1].position;

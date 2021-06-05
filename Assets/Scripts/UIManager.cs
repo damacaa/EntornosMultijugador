@@ -65,9 +65,12 @@ public class UIManager : MonoBehaviour
 
     
 
-    public void UpdateSpeed(int speed)
+    public void UpdateSpeed(PlayerInfo player, float speed)
     {
-        textSpeed.text = "Speed " + speed + " Km/h";
+        if (player.isLocalPlayer)
+        {
+            textSpeed.text = "Speed " + (int) (speed * 5f)+ " Km/h";
+        }
     }
 
     public void UpdateLap(PlayerInfo player, int lap)
@@ -97,7 +100,7 @@ public class UIManager : MonoBehaviour
         backwardWarning.transform.parent.gameObject.SetActive(goingBackwards);
     }
 
-    private void ActivateMainMenu()
+    public void ActivateMainMenu()
     {
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
@@ -176,8 +179,8 @@ public class UIManager : MonoBehaviour
 
     private void StartHost()
     {
-        m_NetworkManager.StartHost();
-        //m_NetworkManager.OnStartHost();
+        //m_NetworkManager.StartHost();
+        m_NetworkManager.OnStartHost();
         //ActivateInGameHUD();
         ActivateRoomHUD();
     }

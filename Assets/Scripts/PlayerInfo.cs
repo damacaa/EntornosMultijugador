@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEditor;
@@ -16,6 +17,7 @@ public class PlayerInfo : NetworkBehaviour
 
     public int CurrentLapSegments;
     [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLapCountingFromFinishLine;
+    [SyncVar(hook = nameof(UpdateSpeedUI))] public float Speed = 0;
 
     public int LastCheckPoint;
     public int MaxCheckPoints;
@@ -88,13 +90,13 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
         Handles.Label(transform.position + transform.right + Vector3.up, CurrentLapSegments.ToString());
         Handles.Label(transform.position + transform.right + 2 * Vector3.up, segment.ToString());
         Handles.Label(transform.position + transform.right + 3 * Vector3.up, LastCheckPoint.ToString());
-    }
+    }*/
 
     public override void OnStartLocalPlayer()
     {
@@ -131,5 +133,18 @@ public class PlayerInfo : NetworkBehaviour
     public void UpdateLapUI(int oldValue, int newValue)
     {
         _uiManager.UpdateLap(this, newValue);
+    }
+    
+
+    public void UpdateSpeed(float newValue)
+    {
+        if (Math.Abs(newValue - Speed) < float.Epsilon) return;
+        Speed = newValue;
+    }
+
+    [Client]
+    public void UpdateSpeedUI(float oldValue, float newValue)
+    {
+        _uiManager.UpdateSpeed(this, newValue);
     }
 }
