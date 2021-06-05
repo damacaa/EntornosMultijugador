@@ -77,7 +77,7 @@ namespace Mirror
 
         #region Commands
 
-        [Command]
+        //[Command]
         public void CmdChangeReadyState(bool readyState)
         {
             readyToBegin = readyState;

@@ -116,7 +116,7 @@ public class PlayerInfo : NetworkBehaviour
 
     }
 
-    [Command]
+    //[Command]
     public void CmdSetReady(bool isReady)
     {
         this.isReady = isReady;

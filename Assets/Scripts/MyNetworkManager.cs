@@ -4,7 +4,7 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MyNetworkManager : NetworkManager
+public class MyNetworkManager : NetworkRoomManager
 {
 
     [SerializeField] private UIManager _uiManager;

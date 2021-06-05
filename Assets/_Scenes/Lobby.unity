@@ -247,24 +247,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6018784443523912681}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &656971635 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8364469310304294504, guid: 82fdd1b122962e24a9f077926f216770,
-    type: 3}
-  m_PrefabInstance: {fileID: 1717867433}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &656971639 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3477669869894446545, guid: 82fdd1b122962e24a9f077926f216770,
-    type: 3}
-  m_PrefabInstance: {fileID: 1717867433}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 656971635}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &751625712
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,18 +277,6 @@ Transform:
   m_Father: {fileID: 1829574718}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &754626851 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5511279530080818257, guid: 82fdd1b122962e24a9f077926f216770,
-    type: 3}
-  m_PrefabInstance: {fileID: 1717867433}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &852576749 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4468142981199812549, guid: 82fdd1b122962e24a9f077926f216770,
-    type: 3}
-  m_PrefabInstance: {fileID: 1717867433}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &975801133 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3251817753454631760, guid: 2356b61abd7af864eadff2e62f8c8586,
@@ -337,12 +307,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3251817754252941477, guid: 2356b61abd7af864eadff2e62f8c8586,
     type: 3}
   m_PrefabInstance: {fileID: 6018784443523912681}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1252118021 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5335174979031415532, guid: 82fdd1b122962e24a9f077926f216770,
-    type: 3}
-  m_PrefabInstance: {fileID: 1717867433}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1717867433
 PrefabInstance:
@@ -541,7 +505,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 0, b: 0.27581596, a: 1}
   m_Intensity: 1
   m_Range: 152.89854
   m_SpotAngle: 124.2994
@@ -770,7 +734,6 @@ GameObject:
   - component: {fileID: 2140735093}
   - component: {fileID: 2140735091}
   - component: {fileID: 2140735090}
-  - component: {fileID: 2140735092}
   m_Layer: 0
   m_Name: '@NetworkManager'
   m_TagString: Untagged
@@ -820,7 +783,7 @@ MonoBehaviour:
   serverBatching: 1
   serverBatchInterval: 0
   offlineScene: 
-  onlineScene: Assets/_Scenes/Game.unity
+  onlineScene: 
   transport: {fileID: 2140735090}
   networkAddress: localhost
   maxConnections: 4
@@ -840,30 +803,12 @@ MonoBehaviour:
   minPlayers: 1
   roomPlayerPrefab: {fileID: 2136360778268727316, guid: b593432de05352341ac4eb15ba14f0e2,
     type: 3}
-  RoomScene: Assets/_Scenes/Game.unity
+  RoomScene: Assets/_Scenes/Lobby.unity
   GameplayScene: Assets/_Scenes/Game.unity
   _allPlayersReady: 0
   roomSlots: []
   clientIndex: 0
   _uiManager: {fileID: 0}
---- !u!114 &2140735092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2140735089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc0f113afba9a074b9a3e4fb56f16abb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerList: {fileID: 754626851}
-  playerPrefab: {fileID: 1252118021}
-  cancelButton: {fileID: 656971635}
-  leaveButton: {fileID: 852576749}
-  startButton: {fileID: 656971639}
-  owner: 0
 --- !u!4 &2140735093
 Transform:
   m_ObjectHideFlags: 0
