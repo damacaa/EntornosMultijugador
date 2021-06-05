@@ -24,6 +24,8 @@ public class MyRoomManager : NetworkBehaviour
         player2 = "";
         player3 = "";
         player4 = "";
+
+
     }
 
     public void UpdateListName(string old, string newV)
@@ -35,24 +37,22 @@ public class MyRoomManager : NetworkBehaviour
         _ui.UpdateNameList(playerNames);
     }
     
-    public void changeReadyName1()
+    public void changeReadyName(int playerIndex)
     {
-        player1 = "READY";
-    }
-
-
-    public void changeReadyName2()
-    {
-        player2 = "READY";
-    }
-
-    public void changeReadyName3()
-    {
-        player3 = "READY";
-    }
-
-    public void changeReadyName4()
-    {
-        player4 = "READY";
+        switch (playerIndex)
+        {
+            case 0:
+                player1 = "READY";
+                break;
+            case 1:
+                player2 = "READY";
+                break;
+            case 2:
+                player3 = "READY";
+                break;
+            case 3:
+                player4 = "READY";
+                break;
+        }
     }
 }

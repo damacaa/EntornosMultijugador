@@ -10,6 +10,7 @@ public class PlayerInfo : MonoBehaviour
     private UIManager _uiManager;
     public string Name;
 
+    public GameObject playerGO;
     public int ID { get; set; }
 
     public int CurrentPosition { get; set; }
@@ -65,6 +66,11 @@ public class PlayerInfo : MonoBehaviour
             if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
             
         }
+    }
+
+    public void SetPlayerGO(GameObject car)
+    {
+        playerGO = car;
     }
 
     private void OnDrawGizmos()

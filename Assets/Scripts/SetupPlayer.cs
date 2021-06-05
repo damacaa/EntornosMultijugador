@@ -45,7 +45,7 @@ public class SetupPlayer : NetworkBehaviour
       
         _playerInfo.CurrentLap = 0;
         _polePositionManager.AddPlayer(_playerInfo);
-        _uiManager.SetPlayerThatControls(this.gameObject);
+        _playerInfo.SetPlayerGO(this.gameObject);
     }
 
     /// <summary>
@@ -176,22 +176,7 @@ public class SetupPlayer : NetworkBehaviour
     [Command]
     public void ChangeReadyName(int player)
     {
-        if (player == 0)
-        {
-            m_RoomManager.changeReadyName1();
-        }
-        if (player == 1)
-        {
-            m_RoomManager.changeReadyName2();
-        }
-        if (player == 2)
-        {
-            m_RoomManager.changeReadyName3();
-        }
-        if (player == 3)
-        {
-            m_RoomManager.changeReadyName4();
-        }
+        m_RoomManager.changeReadyName(player);
     }
 
 

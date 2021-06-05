@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     private MyNetworkManager m_NetworkManager;
     private MyRoomManager m_RoomManager;
     [SerializeField] private PolePositionManager _polePositionManager;
-    private GameObject player; //from here do commands
+
 
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
@@ -191,7 +191,7 @@ public class UIManager : MonoBehaviour
 
     public void SetReady(int playerIdx)
     {
-        player.GetComponent<SetupPlayer>().ChangeReadyName(playerIdx);
+        _polePositionManager.SetPlayerReady(playerIdx);
         readyButton.gameObject.SetActive(false);
         playButton.gameObject.SetActive(true);
     }
@@ -218,10 +218,7 @@ public class UIManager : MonoBehaviour
         readyButton.onClick.AddListener(()=>SetReady(playerN));
     }
     
-    public void SetPlayerThatControls(GameObject p)
-    {
-        player = p;
-    }
+
  
 
     #region car

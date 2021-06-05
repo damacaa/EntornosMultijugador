@@ -172,8 +172,13 @@ public class PolePositionManager : NetworkBehaviour
 
         m_RoomManager._ui.GetReadyButton(playerN);
 
-
     }
+
+    public void SetPlayerReady(int playerIndex)
+    {
+        _players[playerIndex].playerGO.GetComponent<SetupPlayer>().ChangeReadyName(playerIndex);
+    }
+
 
     private class PlayerInfoComparer : Comparer<PlayerInfo>
     {
