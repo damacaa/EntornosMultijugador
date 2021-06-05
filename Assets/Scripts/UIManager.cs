@@ -190,6 +190,8 @@ public class UIManager : MonoBehaviour
 
     public void SetReady(int player)
     {
+
+        Debug.Log("CAMBIO");
         if (player == 0)
         {
             m_RoomManager.changeReadyName1();
@@ -227,9 +229,9 @@ public class UIManager : MonoBehaviour
         return playButton;
     }
 
-    public Button GetReadyButton()
+    public void GetReadyButton(int playerN)
     {
-        return readyButton;
+        readyButton.onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
     }
 
 

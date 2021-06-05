@@ -171,20 +171,20 @@ public class PolePositionManager : NetworkBehaviour
             //checks what player is if 1,2,3 or 4
             if (playerN == 0)
             {
-                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
+                m_RoomManager._ui.GetReadyButton(playerN);
             }
-            if (playerN == 1)
+            else if (playerN == 1)
             {
-                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
+                m_RoomManager._ui.GetReadyButton(playerN);
             }
 
-            if (playerN == 2)
+            else if (playerN == 2)
             {
-                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
+                m_RoomManager._ui.GetReadyButton(playerN);
             }
-            if (playerN == 3)
+            else if (playerN == 3)
             {
-                m_RoomManager._ui.GetReadyButton().onClick.AddListener(() => m_RoomManager._ui.SetReady(playerN));
+                m_RoomManager._ui.GetReadyButton(playerN);
             }
 
         }
