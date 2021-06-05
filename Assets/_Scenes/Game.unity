@@ -357,12 +357,12 @@ MonoBehaviour:
   - {fileID: 1087013160}
   - {fileID: 313464659}
   - {fileID: 1030217891}
-  numPlayers: 0
+  numPlayers: 2
   laps: 3
   isTrainingRace: 1
   openRoom: 1
   racing: 0
-  waiting: 1
+  raceStart: 0
 --- !u!4 &1839589614
 Transform:
   m_ObjectHideFlags: 0
