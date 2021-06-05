@@ -34,11 +34,12 @@ public class MyRoomManager : NetworkBehaviour
         playerNames[3] = player4;
         _ui.UpdateNameList(playerNames);
     }
-
+    
     public void changeReadyName1()
     {
         player1 = "READY";
     }
+
 
     public void changeReadyName2()
     {

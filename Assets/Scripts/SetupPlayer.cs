@@ -20,7 +20,7 @@ public class SetupPlayer : NetworkBehaviour
     private PlayerController _playerController;
     private PlayerInfo _playerInfo;
     private PolePositionManager _polePositionManager;
-
+    private MyRoomManager m_RoomManager;
     #region Start & Stop Callbacks
 
     /// <summary>
@@ -45,6 +45,7 @@ public class SetupPlayer : NetworkBehaviour
       
         _playerInfo.CurrentLap = 0;
         _polePositionManager.AddPlayer(_playerInfo);
+        _uiManager.SetPlayerThatControls(this.gameObject);
     }
 
     /// <summary>
@@ -73,6 +74,7 @@ public class SetupPlayer : NetworkBehaviour
         _networkManager = FindObjectOfType<MyNetworkManager>();
         _polePositionManager = FindObjectOfType<PolePositionManager>();
         _uiManager = FindObjectOfType<UIManager>();
+        m_RoomManager = FindObjectOfType<MyRoomManager>();
     }
 
     // Start is called before the first frame update
@@ -170,4 +172,27 @@ public class SetupPlayer : NetworkBehaviour
     {
         SetCarColor(newC);
     }
+
+    [Command]
+    public void ChangeReadyName(int player)
+    {
+        if (player == 0)
+        {
+            m_RoomManager.changeReadyName1();
+        }
+        if (player == 1)
+        {
+            m_RoomManager.changeReadyName2();
+        }
+        if (player == 2)
+        {
+            m_RoomManager.changeReadyName3();
+        }
+        if (player == 3)
+        {
+            m_RoomManager.changeReadyName4();
+        }
+    }
+
+
 }
