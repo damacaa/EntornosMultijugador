@@ -74,11 +74,16 @@ public class PlayerInfo : NetworkBehaviour
         if (collision.gameObject.tag == "Finish")
         {
             //Meta
-            if (LastCheckPoint == MaxCheckPoints - 1)
+            if (LastCheckPoint == MaxCheckPoints - 1 && CurrentLapSegments >= 0)
             {
-                //LastCheckPoint = 0;
-                CurrentLapCountingFromFinishLine++;
-                //Debug.Log(name + " vuelta " + CurrentLapCountingFromFinishLine);
+                if (CurrentLapCountingFromFinishLine < CurrentLapSegments || true)
+                {
+                    CurrentLapCountingFromFinishLine = CurrentLapSegments + 1;
+                }
+            }
+            else if (CurrentLapSegments < 0)
+            {
+                CurrentLapCountingFromFinishLine = 1;
             }
         }
     }
@@ -100,7 +105,7 @@ public class PlayerInfo : NetworkBehaviour
         {
             isReady = true;
         }
-  
+
     }
 
     [Command]
@@ -116,7 +121,7 @@ public class PlayerInfo : NetworkBehaviour
         if (newvalue && isLocalPlayer)
         {
             Debug.Log("onHostAuth");
- 
+
             _uiManager.setRoomHUDButtons(this);
             _uiManager.ActivateRoomHUD();
         }

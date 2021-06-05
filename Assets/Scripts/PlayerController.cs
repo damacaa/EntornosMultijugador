@@ -167,7 +167,7 @@ public class PlayerController : NetworkBehaviour
             return; }
 
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
-        InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
+        InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1)*2;
         InputBrake = Mathf.Clamp(InputBrake, 0, 1);
 
         float steering = maxSteeringAngle * InputSteering;

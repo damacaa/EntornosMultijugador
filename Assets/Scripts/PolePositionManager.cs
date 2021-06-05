@@ -89,6 +89,7 @@ public class PolePositionManager : NetworkBehaviour
 
             if (racing)
             {
+                totalTime += Time.deltaTime;
                 UpdateRaceProgress();
                 if (CheckFinish())
                 {
@@ -96,8 +97,6 @@ public class PolePositionManager : NetworkBehaviour
                     Finish();
                     ResetPlayers();
                 }
-
-                totalTime += Time.deltaTime;
             }
             else if (waiting)
             {
@@ -127,9 +126,9 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            if (_players[i].CurrentLapSegments == laps )
+            if (_players[i].CurrentLapCountingFromFinishLine == laps + 1)
             {
-                Debug.Log("Vencedor: " + _players[i].name + _players[i].CurrentLapSegments);
+                Debug.Log("Vencedor: " + _players[i].name + totalTime);
                 totalTime = 0;
                 return true;
             }
