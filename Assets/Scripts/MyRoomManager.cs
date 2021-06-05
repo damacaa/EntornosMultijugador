@@ -26,11 +26,6 @@ public class MyRoomManager : NetworkBehaviour
         player4 = "";
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
     public void UpdateListName(string old, string newV)
     {
         playerNames[0] = player1;
