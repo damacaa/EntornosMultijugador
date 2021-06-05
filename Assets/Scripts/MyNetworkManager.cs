@@ -20,14 +20,12 @@ public class MyNetworkManager : NetworkManager
 #endif
     }
 
-
-    #region client
-   
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
     }
 
+    #region client
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
@@ -49,8 +47,10 @@ public class MyNetworkManager : NetworkManager
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
- 
+        Debug.Log(conn);
     }
+
+    
     #endregion server
 
 

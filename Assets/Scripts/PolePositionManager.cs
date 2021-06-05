@@ -14,7 +14,7 @@ public class PolePositionManager : NetworkBehaviour
     private GameObject[] _debuggingSpheres;
 
     [Header("RaceStartingPositions")]
-    private Transform[] startingPoints;
+    public Transform[] startingPoints;
 
     [SyncVar] public int numPlayers = 4;
     [SyncVar] public int laps = 3;
@@ -22,7 +22,8 @@ public class PolePositionManager : NetworkBehaviour
 
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
 
-    public bool isPractice = true;
+    public bool isTrainingRace = true;
+    public bool openRoom = true;
 
     [Header("RaceProgress")]
     string myRaceOrder = "";
@@ -74,14 +75,7 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
-        NetworkStartPosition[] sp = GameObject.FindObjectsOfType<NetworkStartPosition>();
-        startingPoints = new Transform[sp.Length];
-        for (int i = 0; i < sp.Length; i++)
-        {
-            startingPoints[i] = sp[i].gameObject.transform;
-        }
-
-        racing = false;
+        racing = true;
     }
 
 
@@ -113,13 +107,29 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    [Server]
+    public void StartRace()
+    {
+        bool everyOneIsReady = true;
+        foreach (PlayerInfo player in _players)
+        {
+            everyOneIsReady = player.isReady && everyOneIsReady;
+        }
+        if (everyOneIsReady)
+        {
+            numPlayers = _players.Count;
+            racing = true;
+            RpcChangeFromRoomToGameHUD();
+        }
+    }
+
     private bool CheckFinish()
     {
         for (int i = 0; i < _players.Count; ++i)
         {
             if (_players[i].CurrentLap == laps + 1)
             {
-                Debug.Log("Vencedor: " + _players[i].name);
+                Debug.Log("Vencedor: " + _players[i].name + _players[i].CurrentLap);
                 totalTime = 0;
                 return true;
             }
@@ -132,8 +142,8 @@ public class PolePositionManager : NetworkBehaviour
     {
         for (int i = 0; i < _players.Count; ++i)
         {
-            _players[i].CurrentLap = 0;
-            _players[i].LastCheckPoint = 0;
+            _players[i].CurrentLap = 1;
+            _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1; ;
             _players[i].controller.ResetToStart(startingPoints[i]);
             _players[i].controller.DistToFinish = ComputeCarArcLength(i);
             _players[i].controller.InitialDistToFinish = _players[i].controller.DistToFinish;
@@ -162,17 +172,24 @@ public class PolePositionManager : NetworkBehaviour
 
     public void AddPlayer(PlayerInfo player)
     {
-        currentPlayers++;
+        //AQUI FALTA UN COMENTARIO
         player.MaxCheckPoints = _circuitController.checkpoints.Count;
+        currentPlayers++;
         _players.Add(player);
 
-
-        //PREGUNTAR ESTO
         if (isServer)
         {
+            player.isAdmin = true;
             player.transform.position = startingPoints[_players.Count - 1].position;
             player.transform.rotation = startingPoints[_players.Count - 1].rotation;
+            _uiManager.AddPlayerToRoom(player, _players.Count - 1);
+
         }
+
+        isTrainingRace = _players.Count < 2;
+        
+        _uiManager.TrainingOrRacing(isTrainingRace);
+
     }
 
     private class PlayerInfoComparer : Comparer<PlayerInfo>
@@ -219,6 +236,11 @@ public class PolePositionManager : NetworkBehaviour
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
+    [ClientRpc]
+    void RpcChangeFromRoomToGameHUD()
+    {
+        _uiManager.ActivateInGameHUD();
+    }
 
 
     float ComputeCarArcLength(int id)
@@ -234,21 +256,11 @@ public class PolePositionManager : NetworkBehaviour
 
         float minArcL = this._circuitController.ComputeClosestPointArcLength(carPos, out segIdx, out carProj, out carDist);
 
-        if (segIdx == 0 && this._players[id].CurrentLap == 0) { this._players[id].CurrentLap = 1; }
-
         //Esto no hace falta cuando quitemos las bolas
         this._debuggingSpheres[id].transform.position = carProj;
 
-
-        if (_players[id].CurrentLap == 0)
-        {
-            minArcL -= _circuitController.CircuitLength * (laps + 1);
-        }
-        else
-        {
-            minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap + 1);
-        }
-
+        _players[id].Segment = segIdx;
+        minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLap + 1);
 
         return minArcL;
     }

@@ -1,4 +1,3 @@
-﻿
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,11 +5,12 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : NetworkBehaviour
+public class UIManager : MonoBehaviour
 {
     public bool showGUI = true;
 
     private MyNetworkManager m_NetworkManager;
+    [SerializeField] private PolePositionManager _polePositionManager;
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
@@ -32,33 +32,38 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private Text backwardWarning;
 
     [Header("Client Wait HUD")]
-    [SerializeField]
-    private GameObject clientWait;
-    private SyncList<string> playerNamesList;
+    [SerializeField] private GameObject roomHUD;
     [SerializeField] private Text[] playerNames;
-    [SerializeField] private Button playButtonClient;
+    [SerializeField] private Text[] readyMarkers;
+    [SerializeField] private Button playButton;
+    [SerializeField] private Button practiceButton;
+    [SerializeField] private Button readyButton;
+    [SerializeField] private Button notReadyButton;
     [SerializeField] private Text carColorClient;
     [SerializeField] private Text playerNameClient;
-    private InputField inputFieldIP_Wait;
+    [SerializeField] private InputField inputFieldIP_Wait;
 
     private int circuitLaps;
-
 
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
+        if (!_polePositionManager) _polePositionManager = FindObjectOfType<PolePositionManager>();
         circuitLaps = FindObjectOfType<CircuitController>().circuitLaps;
     }
 
     private void Start()
     {
         buttonHost.onClick.AddListener(() => StartHost());
-        buttonClient.onClick.AddListener(() => ActivateClientWaitHUD());
+        buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
-        playButtonClient.onClick.AddListener(() => ButtonPlay());
-        playerNamesList = new SyncList<string>();
+        playButton.onClick.AddListener(() => ButtonPlay());
+        practiceButton.onClick.AddListener(() => ButtonPractise());
+        readyButton.onClick.AddListener(() => ButtonPlay());//cambiarlo para poner qeu un jugador esta listo
         ActivateMainMenu();
     }
+
+    
 
     public void UpdateSpeed(int speed)
     {
@@ -69,7 +74,7 @@ public class UIManager : NetworkBehaviour
     {
         textLaps.text = "Lap " + lap + "/" + circuitLaps;
     }
-
+    
     public void UpdateRanking(string ranking)
     {
         textPosition.text = ranking;
@@ -90,41 +95,109 @@ public class UIManager : NetworkBehaviour
     {
         mainMenu.SetActive(true);
         inGameHUD.SetActive(false);
+        roomHUD.SetActive(false);
     }
 
-    private void ActivateInGameHUD()
+    public void ActivateInGameHUD()
     {
         mainMenu.SetActive(false);
         inGameHUD.SetActive(true);
+        roomHUD.SetActive(false);
     }
 
-    private void ActivateClientWaitHUD()
+    public void ActivateRoomHUD()
     {
-        clientWait.SetActive(true);
+        roomHUD.SetActive(true);
         playerNameClient.text = playerName.textComponent.text;
         carColorClient.text = carColor.text;
         inputFieldIP_Wait = inputFieldIP;
         mainMenu.SetActive(false);
+        inGameHUD.SetActive(false);
+    }
+
+    public void ActivateHostOptions()
+    {
+        readyButton.gameObject.SetActive(false);
+        if (_polePositionManager.numPlayers > 1)
+        {
+            practiceButton.gameObject.SetActive(false);
+            playButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            playButton.gameObject.SetActive(false);
+            practiceButton.gameObject.SetActive(true);
+        }
+    }
+
+    public void ActivateClientOptions()
+    {
+        readyButton.gameObject.SetActive(true);
+        practiceButton.gameObject.SetActive(false);
+        playButton.gameObject.SetActive(false);
+
+    }
+
+    public void setRoomHUDButtons(PlayerInfo localPlayer)
+    {
+        readyButton.onClick.RemoveAllListeners();
+        notReadyButton.onClick.RemoveAllListeners();
+        playButton.onClick.RemoveAllListeners();
+
+        if (localPlayer.isServer)
+        {
+            readyButton.gameObject.SetActive(false);
+            notReadyButton.gameObject.SetActive(false);
+            playButton.gameObject.SetActive(true);
+            playButton.onClick.AddListener(() => _polePositionManager.StartRace());
+        }
+        else
+        {
+            playButton.gameObject.SetActive(false);
+            notReadyButton.gameObject.SetActive(localPlayer.isReady);
+            readyButton.gameObject.SetActive(!localPlayer.isReady);
+            readyButton.onClick.AddListener(() => localPlayer.CmdSetReady(true));
+            notReadyButton.onClick.AddListener(() => localPlayer.CmdSetReady(false));
+        }
+
+    }
+
+    public void TrainingOrRacing(bool isTraining)
+    {
+        practiceButton.gameObject.SetActive(isTraining);
+        playButton.gameObject.SetActive(!isTraining);
     }
 
     private void StartHost()
     {
         m_NetworkManager.StartHost();
-        ActivateInGameHUD();
+        //m_NetworkManager.OnStartHost();
+        //ActivateInGameHUD();
+        ActivateRoomHUD();
     }
 
     private void StartClient()
     {
         m_NetworkManager.StartClient();
         m_NetworkManager.networkAddress = inputFieldIP.text;
-        ActivateInGameHUD();
+        //m_NetworkManager.OnStartClient();
+        ActivateRoomHUD();
+
     }
 
     public void ButtonPlay()
     {
         m_NetworkManager.StartClient();
         m_NetworkManager.networkAddress = inputFieldIP_Wait.text;
-        clientWait.SetActive(false);
+        roomHUD.SetActive(false);
+        ActivateInGameHUD();
+    }
+    public void ButtonPractise()
+    {
+        m_NetworkManager.StartHost();
+        m_NetworkManager.networkAddress = inputFieldIP_Wait.text;
+        roomHUD.SetActive(false);
+        ActivateInGameHUD();
     }
     private void StartServer()
     {
@@ -134,7 +207,6 @@ public class UIManager : NetworkBehaviour
 
     public string GetPlayerName()
     {
-        //return "Patata";
         return playerName.text;
     }
 
@@ -144,30 +216,27 @@ public class UIManager : NetworkBehaviour
     }
 
     //gets car's color selected from client UI
-    public int GetCarSelected()
-    {
+    public int GetCarSelected() {
         int car = 0;
         var color = GetCarColor();
         if (color == "Verde")
         {
-            car = 1;
+            car =1;
         }
         else if (color == "Amarillo")
         {
-            car = 2;
+            car =2;
         }
         else if (color == "Blanco")
         {
-            car = 3;
+            car =3;
         }
         return car;
     }
 
-    public void UpdateNames(string[] old, string[] newList)
+    public void AddPlayerToRoom(PlayerInfo player, int pos)
     {
-        for (int i=0; i < playerNamesList.Count; i++)
-        {
-            playerNames[i].text = newList[i];
-        }
+        playerNames[pos].text = player.Name;
+        readyMarkers[pos].gameObject.SetActive(true);
     }
 }
