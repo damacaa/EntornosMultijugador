@@ -135,7 +135,7 @@ public class UIManager : MonoBehaviour
 
     public void ActivateRoomHUDHost()
     {
-        m_NetworkManager.OnStartHost();
+        m_NetworkManager.StartHost();
         roomHUD.SetActive(true);
         playerNameClient.text = playerName.textComponent.text;
         carColorClient.text = carColor.text;
