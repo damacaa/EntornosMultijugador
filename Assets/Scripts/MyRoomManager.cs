@@ -32,7 +32,7 @@ public class MyRoomManager : NetworkBehaviour
         playerNames[1] = player2;
         playerNames[2] = player3;
         playerNames[3] = player4;
-        _ui.UpdateNameList(playerNames);
+        //_ui.UpdateNameList(playerNames);
     }
     
     public void changeReadyName1()
