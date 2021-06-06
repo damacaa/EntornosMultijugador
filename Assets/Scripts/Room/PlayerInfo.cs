@@ -5,56 +5,29 @@ using Mirror;
 using UnityEditor;
 using UnityEngine;
 
-
-/// <summary>
-/// Infarmacion sobre un player
-/// </summary>
 public class PlayerInfo : NetworkBehaviour
 {
-    //referencias
-    private UIManager _uiManager;
-    public PlayerController controller;
 
-    /// <summary>
-    /// Nombre del jugador
-    /// </summary>
+    private UIManager _uiManager;
     [SyncVar] public string Name;
 
-    /// <summary>
-    /// ID del jugador
-    /// </summary>
     public int ID { get; set; }
 
-    /// <summary>
-    /// Vueltas basdas en los segmentos en lso qeu se divide el circuito
-    /// Esto se hace debido al desfase qeu hay entre el punto final qen el qeu se "acaba" el circuito y el lugar en el que se encuentra la meta
-    /// </summary>
+    public int CurrentPosition { get; set; }
+
     public int CurrentLapSegments;
-
-    /// <summary>
-    /// Vueltas basdas la posicion fisica de la meta.
-    /// Esto se hace debido al desfase qeu hay entre el punto final qen el qeu se "acaba" el circuito y el lugar en el que se encuentra la meta
-    /// </summary>
     [SyncVar(hook = nameof(UpdateLapUI))] public int CurrentLapCountingFromFinishLine;
+    //[SyncVar(hook = nameof(UpdateSpeedUI))] public float Speed = 0;
 
-    //Ultimo Checkpoint por el qeu ha pasado el jugador
     public int LastCheckPoint;
-    //Numero total de checkpoints
     public int MaxCheckPoints;
 
-    /// <summary>
-    /// Tiempo actual de la vuelta que esta realizando un jugador
-    /// </summary>
     [SyncVar(hook = nameof(UpdateTime))] public float CurrentLapTime = 0;
-
-    /// <summary>
-    /// Tiempo total en acabar todas las vueltas del circuito
-    /// </summary>
     [SyncVar] public float TotalLapTime = 0;
 
-    /// <summary>
-    /// Segmento del circuito en el que se encuentra actualmente el jugador
-    /// </summary>
+    public PlayerController controller;
+    public float InitialDistToFinish = 0;
+
     private int segment;
     public int Segment
     {
@@ -80,26 +53,27 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
-    [SyncVar(hook = nameof(isHost))] public bool isAdmin = false;
+    //[SyncVar(hook = nameof(UpdateReadyOnUI))] public bool isReady = false;
+    [SyncVar(hook = nameof(onHostAuth))] public bool isAdmin = false;
+    public override string ToString()
+    {
+        return Name;
+    }
 
-    //Referencias
     private void Awake()
     {
         controller = gameObject.GetComponent<PlayerController>();
         if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
     }
 
-    //Al detectar un trigger
     private void OnTriggerEnter(Collider collision)
-    {   
-        //Si es un checkpoint y es el siguiente al ultimo que pasó esta recorriendo el circuito correctamente
+    {
         if (collision.gameObject.tag == "CheckPoint")
         {
             int id = collision.gameObject.GetComponent<Checkpoint>().id;
             if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
         }
 
-        //Si es la meta y ha pasado por todos los checkpoints anteriores se añade una vuelta
         if (collision.gameObject.tag == "Finish")
         {
             //Meta
@@ -118,7 +92,6 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
-    //Gizmos
     private void OnDrawGizmos()
     {
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
@@ -130,8 +103,27 @@ public class PlayerInfo : NetworkBehaviour
         Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());
     }
 
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+
+        //Si el jugador es el host directamente esta listo
+        if (isServer)
+        {
+            //isReady = true;
+        }
+
+    }
+
+    [Command]
+    public void CmdSetReady(bool isReady)
+    {
+        //this.isReady = isReady;
+    }
+
+
     [Client]
-    void isHost(bool oldvalue, bool newvalue)
+    void onHostAuth(bool oldvalue, bool newvalue)
     {
         if (newvalue && isLocalPlayer)
         {
@@ -142,22 +134,31 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
+    /*[Client]
+    void UpdateReadyOnUI(bool oldValue, bool newValue)
+    {
+        _uiManager.readyMarkers[ID].text = (newValue) ? "Ready":"";
+    }*/
 
-    /// <summary>
-    /// Hook que se llama cada vez que CurrentLapCountingFromFinishLine cambia de valor y muetra la nueva vuelta por pantalla.
-    /// </summary>
-    /// <param name="oldValue">Vuelta que acaba de terminar</param>
-    /// <param name="newValue">Vuelta que caba de empezar</param>
+
     public void UpdateLapUI(int oldValue, int newValue)
     {
-        _uiManager.UpdateLap( newValue);
+        _uiManager.UpdateLap(this, newValue);
     }
 
-    /// <summary>
-    /// Hook que se llama cada vez que CurrentLapTime cambia de valor y muetra lel tiempode esta vuelta por pantalla.
-    /// </summary>
-    /// <param name="oldValue">Valor anterior</param>
-    /// <param name="newValue">Valor Nuevo</param>
+
+    /*public void UpdateSpeed(float newValue)
+    {
+        if (Math.Abs(newValue - Speed) < float.Epsilon) return;
+        Speed = newValue;
+    }*/
+
+    /*[Client]
+    public void UpdateSpeedUI(float oldValue, float newValue)
+    {
+        _uiManager.UpdateSpeed(this, newValue);
+    }*/
+
     public void UpdateTime(float old, float time)
     {
         if (isLocalPlayer)

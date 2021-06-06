@@ -5,9 +5,6 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Clase que gestiona el HUD del la primera escena, y se encarga de las funciones de sus botones y recoger el nombre y color qeu tendra el jugador.
-/// </summary>
 public class LobbyUIManager : MonoBehaviour
 {
     public bool showGUI = true;
@@ -28,7 +25,7 @@ public class LobbyUIManager : MonoBehaviour
 
     public Color[] playerColors;
 
-    //referencias
+
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
@@ -61,27 +58,19 @@ public class LobbyUIManager : MonoBehaviour
             }
         }
     }
-    /// <summary>
-    /// Guarda en el objeto de typo ColorandName el nombre y Color del personaje
-    /// </summary>
+
     public void SetColor()
     {
         colorAndName.color = GetSelectedColor();
         colorAndName.Name = GetPlayerName();
     }
 
-    /// <summary>
-    /// Inicializa el Host(Server + Cliente) y guarda su nombre y color 
-    /// </summary>
     private void StartHost()
     {
         SetColor();
         m_NetworkManager.StartHost();
     }
 
-    /// <summary>
-    /// Inicializa un Cliente y guarda su nombre y color
-    /// </summary>
     private void StartClient()
     {
         SetColor();
@@ -89,27 +78,21 @@ public class LobbyUIManager : MonoBehaviour
         m_NetworkManager.networkAddress = inputFieldIP.text;
     }
 
-    /// <summary>
-    /// Inicializa el Servidor
-    /// </summary>
+    public void ButtonPlay()
+    {
+        m_NetworkManager.StartClient();
+    }
+
     private void StartServer()
     {
         m_NetworkManager.StartServer();
     }
 
-    /// <summary>
-    /// Coge el valor que el jugador introduce en el campo de nombre
-    /// </summary>
-    /// <returns>Devuelve el nombre del jugador</returns>
     public string GetPlayerName()
     {
         return playerName.text;
     }
 
-    /// <summary>
-    /// Coge el valor que el jugador marca en el campo de nombre
-    /// </summary>
-    /// <returns> Devuelve el valor de color del jugador</returns>
     public string GetCarColor()
     {
         return carColor.text;

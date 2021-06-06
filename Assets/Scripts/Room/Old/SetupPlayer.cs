@@ -43,9 +43,9 @@ public class SetupPlayer : NetworkBehaviour
         base.OnStartClient();
         _playerInfo.ID = _id;
 
-        //string nameFromUI = _uiManager.GetPlayerName();
-        //if(nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
-        //CmdChangeName(nameFromUI);
+        string nameFromUI = _uiManager.GetPlayerName();
+        if(nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
+        CmdChangeName(nameFromUI);
 
         _playerInfo.CurrentLapSegments = 0;
         _polePositionManager.AddPlayer(_playerInfo);
@@ -57,10 +57,10 @@ public class SetupPlayer : NetworkBehaviour
     /// </summary>
     public override void OnStartLocalPlayer()
     {
-        // colorId = _uiManager.GetCarSelected();
+        int colorId = _uiManager.GetCarSelected();
         if (isClient)
         {
-            //CmdChangeColor(colorId);
+            CmdChangeColor(colorId);
         }
     }
 
