@@ -52,23 +52,18 @@ public class PolePositionManager : NetworkBehaviour
 
         //ELIMINAMOS LA GENERACION DE ESFERAS INNECESARIAS
 
-        if (_networkManager == null) Debug.Log("CAca");
-
         _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
         for (int i = 0; i < _networkManager.maxConnections; ++i)
         {
             _debuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
-
     }
 
     private void Update()
     {
-
         if (_players.Count == 0)
             return;
-
 
         if (racing)
         {
@@ -84,13 +79,13 @@ public class PolePositionManager : NetworkBehaviour
                 racing = false;
                 raceStart = false;
                 Finish();
-                ResetPlayers();
+                ResetRace();
             }
         }
-        else if (!hasStarted)
+        else if (!hasStarted )
         {
             hasStarted = true;
-            ResetPlayers();
+            ResetRace();
         }
 
     }
@@ -98,20 +93,42 @@ public class PolePositionManager : NetworkBehaviour
     [Server]
     public void StartRace()
     {
-        /*bool everyOneIsReady = true;
-        foreach (PlayerInfo player in _players)
-        {
-            everyOneIsReady = player.isReady && everyOneIsReady;
-        }
-        if (everyOneIsReady)
-        {
-        }*/
         numPlayers = _players.Count;
-        //RpcChangeFromRoomToGameHUD();
-        StopCoroutine("DecreaseCountdownCoroutine");
-        StartCoroutine("DecreaseCountdownCoroutine");
+        raceStart = true;
+        StopCoroutine(DecreaseCountdownCoroutine());
+        StartCoroutine(DecreaseCountdownCoroutine());
         RpcUpdateCountdownUI(countdownTimer);
 
+    }
+
+
+    [Server]
+    public void ResetRace()
+    {
+        countdownTimer = 3;
+        Debug.Log(countdownTimer);
+        for (int i = 0; i < _players.Count; ++i)
+        {
+
+            _players[i].CurrentLapSegments = -1;
+            _players[i].CurrentLapCountingFromFinishLine = 0;
+
+            _players[i].CurrentLapTime = 0;
+            _players[i].TotalLapTime = 0;
+
+
+            _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1;
+
+            _players[i].controller.ResetToStart(startingPoints[i]);
+
+        }
+
+        RpcDecreaseCountDown();
+    }
+
+    public void ResetHUD()
+    {
+        RpcResetHUD();
     }
 
     private bool CheckFinish()
@@ -121,7 +138,7 @@ public class PolePositionManager : NetworkBehaviour
             if (_players[i].CurrentLapCountingFromFinishLine == laps + 1)
             {
                 Debug.Log("Vencedor: " + _players[i].name + totalTime);
-
+                //AQUI AÑADIR TIEMPO DE LA PERSONA QUE GANA
                 totalTime = 0;
                 return true;
             }
@@ -129,39 +146,6 @@ public class PolePositionManager : NetworkBehaviour
         return false;
     }
 
-    [Server]
-    private void ResetPlayers()
-    {
-        for (int i = 0; i < _players.Count; ++i)
-        {
-
-            _players[i].CurrentLapCountingFromFinishLine = 1;
-            _players[i].CurrentLapSegments = 0;
-
-            _players[i].CurrentLapTime = 0;
-            _players[i].TotalLapTime = 0;
-
-            _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1;
-
-            _players[i].controller.ResetToStart(startingPoints[i]);
-
-            StartCoroutine(DecreaseCountdownCoroutine());
-        }
-    }
-
-    IEnumerator DelayStart(float t)
-    {
-        yield return new WaitForSeconds(t / 3);
-        Debug.Log("Preparados...");
-        yield return new WaitForSeconds(t / 3);
-        Debug.Log("Listos...");
-        yield return new WaitForSeconds(t / 3);
-        Debug.Log("Ya!");
-        racing = true;
-        yield return null;
-    }
-
-    [ClientRpc]
     private void Finish()
     {
         Debug.Log("Fin");
@@ -208,6 +192,13 @@ public class PolePositionManager : NetworkBehaviour
             Debug.Log("Fin de la cuenta atras");
             racing = true;
         }
+    }
+
+
+
+    [ClientRpc]
+    void RpcDecreaseCountDown() {
+        StartCoroutine(DecreaseCountdownCoroutine());
     }
 
     [Client]
@@ -275,9 +266,9 @@ public class PolePositionManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcChangeFromRoomToGameHUD()
+    void RpcResetHUD()
     {
-        //_uiManager.ActivateInGameHUD();
+        _uiManager.ActivateInGameHUD();
     }
 
     [ClientRpc]

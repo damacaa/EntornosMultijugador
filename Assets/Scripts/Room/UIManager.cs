@@ -41,17 +41,17 @@ public class UIManager : MonoBehaviour
         circuitLaps = FindObjectOfType<CircuitController>().circuitLaps;
     }
 
-    private void Start()
-    {
-        rematchButton.onClick.AddListener(() => ButtonRematch());
-        exitButton.onClick.AddListener(() => ButtonExit());
-    }
+    /* private void Start()
+     {
+         //rematchButton.onClick.AddListener(() => ButtonRematch());
+         //exitButton.onClick.AddListener(() => ButtonExit());
+     }*/
 
     public void ButtonRematch()
     {
+        _polePositionManager.ResetHUD();
+        _polePositionManager.ResetRace();
         _polePositionManager.StartRace();
-        //m_NetworkManager.networkAddress = inputFieldIP_Wait.text;//Sustituir por algo!!!!!!!!!
-        ActivateInGameHUD();
     }
 
     public void ActivateInGameHUD()
@@ -64,12 +64,6 @@ public class UIManager : MonoBehaviour
     {
         inGameHUD.SetActive(false);
         endRaceHUD.SetActive(true);
-    }
-
-    public void ButtonExit()
-    {
-        m_NetworkManager.StopServer();
-        Application.Quit();
     }
 
     public void UpdateSpeed(float speed)
@@ -164,8 +158,8 @@ public class UIManager : MonoBehaviour
     {
         if (localPlayer.isServer)
         {
-            rematchButton.onClick.AddListener(() => _polePositionManager.StartRace());
-            exitButton.onClick.AddListener(() => m_NetworkManager.StopServer());
+            rematchButton.onClick.AddListener(() => ButtonRematch());
+            exitButton.onClick.AddListener(() => m_NetworkManager.StopHost());
         }
         else
         {

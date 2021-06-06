@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class LobbyPlayer : NetworkRoomPlayer
 {
+    [SerializeField]public string _carColor ="";
+    [SerializeField] public string _name;
+
 
     public override void OnStartClient()
     {
@@ -28,5 +31,7 @@ public class LobbyPlayer : NetworkRoomPlayer
     {
         // Debug.LogFormat(LogType.Log, "ReadyStateChanged {0}", newReadyState);
     }
+
+
 }
 

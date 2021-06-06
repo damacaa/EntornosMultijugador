@@ -24,8 +24,21 @@ public class MyNetworkLobbyManager : NetworkRoomManager
     {
         // PlayerScore playerScore = gamePlayer.GetComponent<PlayerScore>();
         //playerScore.index = roomPlayer.GetComponent<NetworkRoomPlayer>().index;
+        Debug.Log(roomPlayer.GetComponent<LobbyPlayer>());
         return true;
     }
+
+    public override void OnRoomServerAddPlayer(NetworkConnection conn)
+    {
+        base.OnRoomServerAddPlayer(conn);
+        string name = _uiManager.GetPlayerName();
+        string color = _uiManager.GetCarColor();
+
+        conn.identity.gameObject.GetComponent<LobbyPlayer>()._name = name;
+        conn.identity.gameObject.GetComponent<LobbyPlayer>()._carColor = color;
+        Debug.Log("COMEDME UN PIE");
+    }
+
 
     public override void OnRoomStopClient()
     {

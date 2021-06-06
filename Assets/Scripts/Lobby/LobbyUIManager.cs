@@ -20,9 +20,7 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private Text carColor;
 
     private void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-      
+    { 
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
     }
 

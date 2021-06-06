@@ -52,7 +52,7 @@ public class MyNetworkManager : NetworkRoomManager
         base.OnRoomClientDisconnect(conn);
         Debug.Log("Jugador Desconectado dela sala");
     }
-    
+
 
     /*public override void OnStartClient()
     {
@@ -67,7 +67,15 @@ public class MyNetworkManager : NetworkRoomManager
         _uiManager.ActivateMainMenu();
     }*/
 
+    public override void OnRoomServerAddPlayer(NetworkConnection conn)
+    {
+        base.OnRoomServerAddPlayer(conn);
+        string name = _uiManager.GetPlayerName();
+        string color = _uiManager.GetCarColor();
 
+        conn.identity.gameObject.GetComponent<LobbyPlayer>()._name = name;
+        conn.identity.gameObject.GetComponent<LobbyPlayer>()._carColor = color;
+    }
 
     #endregion client
 
