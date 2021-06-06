@@ -27,9 +27,9 @@ public class PlayerControllerT : MonoBehaviour
 
     private Rigidbody m_Rigidbody;
     private PlayerInfoT _playerInfo;
-    
+
     private float m_SteerHelper = 0.8f;
-     private float m_CurrentSpeed = 0;
+    private float m_CurrentSpeed = 0;
 
     public bool goingBackwards = false;
 
@@ -92,7 +92,7 @@ public class PlayerControllerT : MonoBehaviour
 
     public void Awake()
     {
-       
+
     }
 
     private void Start()
@@ -108,39 +108,41 @@ public class PlayerControllerT : MonoBehaviour
         if (_polePosition == null) _polePosition = FindObjectOfType<PolePositionManagerT>();
         if (!m_Rigidbody) m_Rigidbody = GetComponent<Rigidbody>();
         if (!_playerInfo) _playerInfo = GetComponent<PlayerInfoT>();
-        
+
         this.OnHasCrashedEvent += OnHasCrashedEventHandler;
         _input.Player.Restart.performed += ctx => CmdReset();
     }
 
     public void Update()
     {
-            InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
-            InputSteering = _input.Player.Steering.ReadValue<float>();
-            InputBrake = _input.Player.Jump.ReadValue<float>();
-            Speed = m_Rigidbody.velocity.magnitude;
+        InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
+        InputSteering = _input.Player.Steering.ReadValue<float>();
+        InputBrake = _input.Player.Jump.ReadValue<float>();
+        Speed = m_Rigidbody.velocity.magnitude;
 
-            float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
-            Crashed = r > 90 && r < 270;
+        float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
+        Crashed = r > 90 && r < 270;
 
-            //Replace with UI
-            if (BackwardsTimeout > 0f )
-            {
-                goingBackwards = true;
-                GetComponentInChildren<MeshRenderer>().material.color = Color.red;
-                BackwardsTimeout -= Time.deltaTime;
-                OnGoingBackwardsEventHandler(true);
-            }
-            else
-            {
-                goingBackwards = false;
-                GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
-                OnGoingBackwardsEventHandler(false);
-            }
+        //Replace with UI
+        if (BackwardsTimeout > 0f)
+        {
+            goingBackwards = true;
+            GetComponentInChildren<MeshRenderer>().material.color = Color.red;
+            BackwardsTimeout -= Time.deltaTime;
+            OnGoingBackwardsEventHandler(true);
+        }
+        else
+        {
+            goingBackwards = false;
+            GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
+            OnGoingBackwardsEventHandler(false);
+        }
+
+        _uiManager.UpdateSpeed(Speed);
     }
     public void FixedUpdate()
     {
-           controlMovement(InputSteering, InputAcceleration, InputBrake);   
+        controlMovement(InputSteering, InputAcceleration, InputBrake);
     }
 
     #endregion
@@ -148,13 +150,15 @@ public class PlayerControllerT : MonoBehaviour
 
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
-        if (!_polePosition.racing) {
+        if (!_polePosition.racing)
+        {
             m_Rigidbody.velocity = Vector3.zero;
-           return; }
+            return;
+        }
 
 
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
-        InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1)*2;
+        InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1) * 2;
         InputBrake = Mathf.Clamp(InputBrake, 0, 1);
         float steering = maxSteeringAngle * InputSteering;
 
@@ -322,12 +326,12 @@ public class PlayerControllerT : MonoBehaviour
     //enables o not the controller when object attached to it is activated or desactivated
     private void OnEnable()
     {
-        
+
     }
 
     private void OnDisable()
     {
-       _input.Disable();
+        _input.Disable();
     }
 
     //get input Controller
@@ -340,15 +344,15 @@ public class PlayerControllerT : MonoBehaviour
     public void CmdReset()
     {
         Debug.Log("Digo al server que resetee");
-            Reset();
+        Reset();
     }
 
     //if we collide and we are not able to continue playing the car flips
     private void Reset()
     {
         Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche
-        CircuitController cC = FindObjectOfType<CircuitController>();
-        int i = GetComponent<PlayerInfo>().LastCheckPoint;
+        CircuitControllerT cC = FindObjectOfType<CircuitControllerT>();
+        int i = GetComponent<PlayerInfoT>().LastCheckPoint;
 
         m_Rigidbody.velocity = Vector3.zero;
         m_Rigidbody.angularVelocity = Vector3.zero;
@@ -383,11 +387,11 @@ public class PlayerControllerT : MonoBehaviour
         _uiManager.ShowBackwardsWarning(goingBackwards);
     }
 
- 
+
     public void UpdateSpeed(float old, float speed)
     {
-       
-            _uiManager.UpdateSpeed(speed);
-        
+
+
+
     }
 }
