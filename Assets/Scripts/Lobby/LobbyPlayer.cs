@@ -58,8 +58,9 @@ public class LobbyPlayer : NetworkRoomPlayer
         }
     }
 
-    public override void OnGUI()
+    /*public override void OnGUI()
     {
+        
         if (!showRoomGUI)
             return;
 
@@ -110,7 +111,7 @@ public class LobbyPlayer : NetworkRoomPlayer
                 GUILayout.EndArea();
             }
         }
-    }
+    }*/
 
 
 }

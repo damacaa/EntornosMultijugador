@@ -36,13 +36,15 @@ public class PlayerController : NetworkBehaviour
     private PlayerInfo _playerInfo;
     private UIManager _uiManager;
     private PolePositionManager _polePosition;
-    
+
     [SyncVar(hook = nameof(UpdateSpeed))] private float m_CurrentSpeed = 0;
     private float m_SteerHelper = 0.8f;
 
     //Variable que indica si el localPlayer va marcha atras.
-    public bool goingBackwards = false;
-  
+    [SyncVar(hook = nameof(ChangeGoingBackwardsInClient))] public bool goingBackwards = false;
+
+
+
     private float BackwardsTimeout = 0;
 
     //Distancia a recorrer para acbar todas la vueltas del circuito
@@ -54,8 +56,7 @@ public class PlayerController : NetworkBehaviour
         {
             float d = value - distToFinish;
             float threshhold = 0.002f;
-            goingBackwards = d < -threshhold && d > -100f;
-            if (goingBackwards)
+            if (d < -threshhold && d > -100f)
             {
                 //Debug.Log(distToFinish + " --> " + value);
                 BackwardsTimeout = 0.1f;//Tiempo que se mantiene en pantalla el aviso de marcha atrás
@@ -89,6 +90,12 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    [Client]
+    private void ChangeGoingBackwardsInClient(bool old, bool newValue)
+    {
+        goingBackwards = newValue;
+    }
+
     //Evento en caso de Chocar
     public delegate void OnHasCrashedDelegate(bool newVal);
     public event OnHasCrashedDelegate OnHasCrashedEvent;
@@ -113,7 +120,10 @@ public class PlayerController : NetworkBehaviour
     {
         //this.OnGoingBackwardsEvent += OnGoingBackwardsEventHandler;
         this.OnHasCrashedEvent += OnHasCrashedEventHandler;
-        _input.Player.Restart.performed += ctx => CmdReset();
+        if (isLocalPlayer)
+        {
+            _input.Player.Restart.performed += ctx => CmdReset();
+        }
     }
 
     /// <summary>
@@ -121,34 +131,36 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     public void Update()
     {
-        if (isClient)
+        if (isLocalPlayer)
         {
             InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
             InputSteering = _input.Player.Steering.ReadValue<float>();
             InputBrake = _input.Player.Jump.ReadValue<float>();
-            //Speed = m_Rigidbody.velocity.magnitude;
-
-            float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
-            Crashed = r > 90 && r < 270;
 
             //Replace with UI
-            if (BackwardsTimeout > 0f )
+            if (goingBackwards)
             {
-                goingBackwards = true;
                 GetComponentInChildren<MeshRenderer>().material.color = Color.red;
-                BackwardsTimeout -= Time.deltaTime;
                 OnGoingBackwardsEventHandler(true);
             }
             else
             {
-                goingBackwards = false;
                 GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
                 OnGoingBackwardsEventHandler(false);
             }
         }
+
+        if (isServer)
+        {
+            float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
+            Crashed = r > 90 && r < 270;
+
+            goingBackwards = BackwardsTimeout > 0f;
+            BackwardsTimeout -= Time.deltaTime;
+        }
     }
 
-    
+
     public void FixedUpdate()
     {
         //Si el objeto el cliente propio del jugador local se llama a la funcion qeu calcula el movimiento
@@ -173,12 +185,14 @@ public class PlayerController : NetworkBehaviour
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
         //Si no se esta correindo la carrera velocidad = 0
-        if (!_polePosition.racing) {
+        if (!_polePosition.racing)
+        {
             m_Rigidbody.velocity = Vector3.zero;
-            return; }
+            return;
+        }
 
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
-        InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1)*2;
+        InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1) * 2;
         InputBrake = Mathf.Clamp(InputBrake, 0, 1);
 
         float steering = maxSteeringAngle * InputSteering;

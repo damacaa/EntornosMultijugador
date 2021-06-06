@@ -107,9 +107,8 @@ public class PolePositionManager : NetworkBehaviour
         numPlayers = _players.Count;
         raceStart = true;
         StopCoroutine(DecreaseCountdownCoroutine());
-        StartCoroutine(DecreaseCountdownCoroutine());
+        //StartCoroutine(DecreaseCountdownCoroutine());
         RpcUpdateCountdownUI(countdownTimer);
-
     }
 
     /// <summary>
@@ -263,13 +262,14 @@ public class PolePositionManager : NetworkBehaviour
     [Client]
     IEnumerator DecreaseCountdownCoroutine()
     {
-        while (countdownTimer > 0)
+        while (countdownTimer > 1)
         {
             yield return new WaitForSeconds(1f);
             countdownTimer--;
             Debug.Log(countdownTimer);
             UpdateCountdownUI();
         }
+        yield return null;
     }
 
     /// <summary>
