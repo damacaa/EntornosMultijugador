@@ -152,7 +152,7 @@ public class PlayerController : NetworkBehaviour
 
     public void FixedUpdate()
     {
-        if (isClient)
+        if (isLocalPlayer)
         {
             controlMovement(InputSteering, InputAcceleration, InputBrake);
         }
