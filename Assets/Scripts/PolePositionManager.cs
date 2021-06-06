@@ -90,6 +90,10 @@ public class PolePositionManager : NetworkBehaviour
 
             if (racing)
             {
+                if (_players.Count == 1 && !isTrainingRace)
+                {
+                    Finish();
+                }
                 totalTime += Time.deltaTime;
                 UpdateRaceProgress();
                 if (CheckFinish())
@@ -131,6 +135,7 @@ public class PolePositionManager : NetworkBehaviour
             if (_players[i].CurrentLapCountingFromFinishLine == laps + 1)
             {
                 Debug.Log("Vencedor: " + _players[i].name + totalTime);
+                
                 totalTime = 0;
                 return true;
             }
@@ -174,6 +179,7 @@ public class PolePositionManager : NetworkBehaviour
     private void Finish()
     {
         Debug.Log("Fin");
+        RpcChangeFromGameToEndHUD();
         hasStarted = true;
     }
 
@@ -249,6 +255,12 @@ public class PolePositionManager : NetworkBehaviour
     void RpcChangeFromRoomToGameHUD()
     {
         _uiManager.ActivateInGameHUD();
+    }
+
+    [ClientRpc]
+    void RpcChangeFromGameToEndHUD()
+    {
+        _uiManager.ActivateEndRaceHud();
     }
 
 
