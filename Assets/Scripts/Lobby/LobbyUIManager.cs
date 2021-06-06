@@ -17,10 +17,13 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private Button buttonServer;
     [SerializeField] private InputField inputFieldIP;
     [SerializeField] private InputField playerName;
+    [SerializeField] private Dropdown colorSelecter;
     [SerializeField] private Text carColor;
 
     public GameObject nameAndColorPrefab;
     private ColorAndName colorAndName;
+
+    public Color[] playerColors;
 
 
     private void Awake()
@@ -44,6 +47,16 @@ public class LobbyUIManager : MonoBehaviour
         }
 
         if (colorAndName.Name != "") { playerName.text = colorAndName.Name; }
+        if (colorAndName.color != Color.clear)
+        {
+            for (int i = 0; i < colorSelecter.options.Count; i++)
+            {
+                if (colorAndName.color.Equals(playerColors[i]))
+                {
+                    colorSelecter.value = i;
+                }
+            }
+        }
     }
 
     public void SetColor()
@@ -91,17 +104,21 @@ public class LobbyUIManager : MonoBehaviour
         Color car = Color.red;
 
         var color = GetCarColor();
-        if (color == "Verde")
+
+        switch (color)
         {
-            car = Color.green;
-        }
-        else if (color == "Amarillo")
-        {
-            car = Color.yellow;
-        }
-        else if (color == "Blanco")
-        {
-            car = Color.white;
+            case "Verde":
+                car = playerColors[1];
+                break;
+            case "Amarillo":
+                car = playerColors[2];
+                break;
+            case "Blanco":
+                car = playerColors[3];
+                break;
+            default:
+                car = playerColors[0];
+                break;
         }
 
         return car;
