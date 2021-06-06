@@ -27,8 +27,10 @@ public class PolePositionManager : NetworkBehaviour
 
     [Header("RaceProgress")]
     string myRaceOrder = "";
-    //Boolean que indica si ha empezado la carrera
+    //Boolean que indica si se esta corriendo
     [SyncVar] public bool racing = false;
+    public bool raceStart = false;
+    public bool hasStarted = false;
 
 
     #region Variables de Tiempo
@@ -75,16 +77,15 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
-        racing = true;
+        //racing = true;
     }
 
 
-    public bool waiting = true;
     private void Update()
     {
         if (isServer)
         {
-            if (_players.Count == 0)
+            if (!raceStart)
                 return;
 
             if (racing)
@@ -94,13 +95,14 @@ public class PolePositionManager : NetworkBehaviour
                 if (CheckFinish())
                 {
                     racing = false;
+                    raceStart = false;
                     Finish();
                     ResetPlayers();
                 }
             }
-            else if (waiting)
+            else if(!hasStarted)
             {
-                waiting = false;
+                hasStarted = true;
                 ResetPlayers();
             }
         }
@@ -117,7 +119,7 @@ public class PolePositionManager : NetworkBehaviour
         if (everyOneIsReady)
         {
             numPlayers = _players.Count;
-            racing = true;
+            raceStart = true;
             RpcChangeFromRoomToGameHUD();
         }
     }
@@ -143,7 +145,7 @@ public class PolePositionManager : NetworkBehaviour
         {
 
             _players[i].CurrentLapCountingFromFinishLine = 1;
-            _players[i].CurrentLapSegments = -1;
+            _players[i].CurrentLapSegments = 0;
 
             _players[i].CurrentLapTime = 0;
             _players[i].TotalLapTime = 0;
@@ -172,6 +174,7 @@ public class PolePositionManager : NetworkBehaviour
     private void Finish()
     {
         Debug.Log("Fin");
+        hasStarted = true;
     }
 
     public void AddPlayer(PlayerInfo player)

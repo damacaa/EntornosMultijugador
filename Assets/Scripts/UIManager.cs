@@ -49,17 +49,17 @@ public class UIManager : MonoBehaviour
     {
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
         if (!_polePositionManager) _polePositionManager = FindObjectOfType<PolePositionManager>();
-        circuitLaps = FindObjectOfType<CircuitController>().circuitLaps;
+        circuitLaps = _polePositionManager.laps;
     }
-
     private void Start()
     {
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
+
         playButton.onClick.AddListener(() => ButtonPlay());
         practiceButton.onClick.AddListener(() => ButtonPractise());
-        readyButton.onClick.AddListener(() => ButtonPlay());//cambiarlo para poner qeu un jugador esta listo
+
         ActivateMainMenu();
     }
 
@@ -174,10 +174,10 @@ public class UIManager : MonoBehaviour
         else
         {
             playButton.gameObject.SetActive(false);
+            readyButton.gameObject.SetActive(true);
             notReadyButton.gameObject.SetActive(localPlayer.isReady);
-            readyButton.gameObject.SetActive(!localPlayer.isReady);
-            readyButton.onClick.AddListener(() => localPlayer.CmdSetReady(true));
-            notReadyButton.onClick.AddListener(() => localPlayer.CmdSetReady(false));
+            readyButton.onClick.AddListener(() => ButtonReady(localPlayer));
+            notReadyButton.onClick.AddListener(() => ButtonNotReady(localPlayer));
         }
 
     }
@@ -215,9 +215,23 @@ public class UIManager : MonoBehaviour
     public void ButtonPractise()
     {
         m_NetworkManager.StartHost();
-        m_NetworkManager.networkAddress = inputFieldIP_Wait.text;
+        //m_NetworkManager.networkAddress = inputFieldIP_Wait.text;
         roomHUD.SetActive(false);
         ActivateInGameHUD();
+        _polePositionManager.StartRace();
+    }
+
+    private void ButtonReady(PlayerInfo player)
+    {
+        player.CmdSetReady(true);
+        readyButton.gameObject.SetActive(false);
+        notReadyButton.gameObject.SetActive(true);
+    }
+    private void ButtonNotReady(PlayerInfo player)
+    {
+        player.CmdSetReady(false);
+        readyButton.gameObject.SetActive(true);
+        notReadyButton.gameObject.SetActive(false);
     }
     private void StartServer()
     {
