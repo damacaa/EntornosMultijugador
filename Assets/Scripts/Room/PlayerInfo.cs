@@ -119,7 +119,7 @@ public class PlayerInfo : NetworkBehaviour
     }
 
     //Gizmos
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
 
@@ -128,7 +128,7 @@ public class PlayerInfo : NetworkBehaviour
 
         Handles.Label(transform.position + transform.right + Vector3.up, segment.ToString());
         Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());
-    }
+    }*/
 
 
     /// <summary>
