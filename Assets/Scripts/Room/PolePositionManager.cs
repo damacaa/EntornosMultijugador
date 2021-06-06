@@ -37,6 +37,8 @@ public class PolePositionManager : NetworkBehaviour
     //Tiempo Total de la carrera
     [SyncVar] private float totalTime = 0;
 
+    private int countdownTimer = 3;
+
     #endregion
 
 
@@ -67,7 +69,7 @@ public class PolePositionManager : NetworkBehaviour
         if (_players.Count == 0)
             return;
 
-        //Debug.Log(_players.Count);
+
         if (racing)
         {
             
@@ -107,7 +109,8 @@ public class PolePositionManager : NetworkBehaviour
         numPlayers = _players.Count;
         raceStart = true;
         RpcChangeFromRoomToGameHUD();
-
+        StartCoroutine("DecreaseCountdownCoroutine");
+        RpcUpdateCountdownUI(countdownTimer);
 
     }
 
@@ -196,6 +199,23 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    [Server]
+    void UpdateCountdownUI()
+    {
+        RpcUpdateCountdownUI(countdownTimer);
+    }
+
+    [Client]
+    IEnumerator DecreaseCountdownCoroutine()
+    {
+        while (countdownTimer > 0)
+        {
+            yield return new WaitForSeconds(2);
+            countdownTimer--;
+            UpdateCountdownUI();
+        }
+    }
+
     private class PlayerInfoComparer : Comparer<PlayerInfo>
     {
         public override int Compare(PlayerInfo x, PlayerInfo y)
@@ -233,6 +253,12 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         RpcUpdateUIRaceProgress(myRaceOrder);
+    }
+
+    [ClientRpc]
+    void RpcUpdateCountdownUI(int seconds)
+    {
+        _uiManager.UpdateCountdown(seconds);
     }
 
     [ClientRpc]

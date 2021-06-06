@@ -27,6 +27,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject endRaceHUD;
     [SerializeField] private Text playerNameWinner;
     [SerializeField] private Text winnerTime;
+    [SerializeField] private Text countdown;
     [SerializeField] private Button rematchButton;
     [SerializeField] private Button exitButton;
 
@@ -95,6 +96,27 @@ public class UIManager : MonoBehaviour
     public void UpdateRanking(string ranking)
     {
         textPosition.text = ranking;
+    }
+
+    public void UpdateCountdown(int countDownSeconds)
+    {
+        if (countdown != null && countdown.gameObject.activeSelf) 
+        {
+            if (countDownSeconds == 0)
+            {
+                countdown.text = "START!";
+                StartCoroutine("HideCountDown");
+            }
+            else
+            {
+                countdown.text = countdown.ToString();
+            }
+        }
+    }
+    IEnumerator HideCountdown()
+    {
+        yield return new WaitForSeconds(1f);
+        countdown.gameObject.SetActive(false);
     }
 
     public void ShowCrashedWarning(bool hasCrashed)
