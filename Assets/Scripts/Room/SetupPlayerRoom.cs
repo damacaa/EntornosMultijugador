@@ -76,7 +76,7 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         _polePositionManager = FindObjectOfType<PolePositionManager>();
         _uiManager = FindObjectOfType<UIManager>();
 
-        if (isLocalPlayer)//////////////////
+        if (isLocalPlayer || true)//////////////////
         {
             _playerController.enabled = true;
             ConfigureCamera();
