@@ -467,11 +467,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3128670718595818425, guid: 07f113e7fb86df34880c6e00c4c35d9d,
         type: 3}
-      propertyPath: minPlayers
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3128670718595818425, guid: 07f113e7fb86df34880c6e00c4c35d9d,
-        type: 3}
       propertyPath: onlineScene
       value: Assets/_Scenes/SalaEspera.unity
       objectReference: {fileID: 0}
