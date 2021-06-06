@@ -62,32 +62,34 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Update()
     {
-        if (_players.Count == 0)
-            return;
-
-        if (racing)
+        if (isServer)
         {
-            
-            if (_players.Count == 1 && !isTrainingRace)
+            if (_players.Count == 0)
+                return;
+
+            if (racing)
             {
-                Finish();
+
+                if (_players.Count == 1 && !isTrainingRace)
+                {
+                    VictoryByDefault();
+                }
+                totalTime += Time.deltaTime;
+                UpdateRaceProgress();
+                if (CheckFinish())
+                {
+                    racing = false;
+                    raceStart = false;
+                    Finish();
+                    ResetRace();
+                }
             }
-            totalTime += Time.deltaTime;
-            UpdateRaceProgress();
-            if (CheckFinish())
+            else if (!hasStarted)
             {
-                racing = false;
-                raceStart = false;
-                Finish();
+                hasStarted = true;
                 ResetRace();
             }
         }
-        else if (!hasStarted )
-        {
-            hasStarted = true;
-            ResetRace();
-        }
-
     }
 
     [Server]
@@ -109,9 +111,9 @@ public class PolePositionManager : NetworkBehaviour
         Debug.Log(countdownTimer);
         for (int i = 0; i < _players.Count; ++i)
         {
-
-            _players[i].CurrentLapSegments = -1;
-            _players[i].CurrentLapCountingFromFinishLine = 0;
+            _players[i].Segment = 0;
+            _players[i].CurrentLapSegments = 0;
+            _players[i].CurrentLapCountingFromFinishLine = 1;
 
             _players[i].CurrentLapTime = 0;
             _players[i].TotalLapTime = 0;
@@ -137,8 +139,7 @@ public class PolePositionManager : NetworkBehaviour
         {
             if (_players[i].CurrentLapCountingFromFinishLine == laps + 1)
             {
-                Debug.Log("Vencedor: " + _players[i].name + totalTime);
-                //AQUI AÑADIR TIEMPO DE LA PERSONA QUE GANA
+                RpcShowWinner(_players[i].Name, totalTime);
                 totalTime = 0;
                 return true;
             }
@@ -146,11 +147,24 @@ public class PolePositionManager : NetworkBehaviour
         return false;
     }
 
+    [ClientRpc]
+    private void RpcShowWinner(string name, float time)
+    {
+        _uiManager.UpdateWinner(name, time);
+    }
+
     private void Finish()
     {
         Debug.Log("Fin");
         RpcChangeFromGameToEndHUD();
-        hasStarted = true;
+        //hasStarted = true;
+    }
+
+    private void VictoryByDefault()
+    {
+        racing = false;
+        RpcChangeFromGameToEndHUD();
+        RpcShowWinner(_players[0].Name, totalTime);
     }
 
     public void AddPlayer(PlayerInfo player)
@@ -177,7 +191,7 @@ public class PolePositionManager : NetworkBehaviour
     public void RemovePlayer(PlayerInfo player)
     {
         int playerIndex = _players.IndexOf(player);
-        if (playerIndex >-1)
+        if (playerIndex > -1)
         {
             _players.RemoveAt(playerIndex);
         }
@@ -197,7 +211,8 @@ public class PolePositionManager : NetworkBehaviour
 
 
     [ClientRpc]
-    void RpcDecreaseCountDown() {
+    void RpcDecreaseCountDown()
+    {
         StartCoroutine(DecreaseCountdownCoroutine());
     }
 
@@ -295,7 +310,7 @@ public class PolePositionManager : NetworkBehaviour
         this._debuggingSpheres[id].transform.position = carProj;
 
         _players[id].Segment = segIdx;
-        minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLapSegments + 1);
+        minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLapSegments);
 
         return minArcL;
     }

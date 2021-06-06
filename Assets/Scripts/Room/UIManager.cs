@@ -94,7 +94,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateCountdown(int countDownSeconds)
     {
-        if (countdown != null && countdown.gameObject.activeSelf) 
+        if (countdown != null && countdown.gameObject.activeSelf)
         {
             if (countDownSeconds == 0)
             {
@@ -166,5 +166,12 @@ public class UIManager : MonoBehaviour
             rematchButton.gameObject.SetActive(false);
             exitButton.onClick.AddListener(() => m_NetworkManager.StopClient());
         }
+    }
+
+    public void UpdateWinner(string name, float time)
+    {
+        playerNameWinner.text = "WINNER: " + name;
+        winnerTime.text = "TIME: " +
+                Math.Truncate(time / 60) + ":" + Math.Round(time % 60, 2);
     }
 }

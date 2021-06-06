@@ -20,9 +20,11 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private Text carColor;
 
     public GameObject nameAndColorPrefab;
+    private ColorAndName colorAndName;
+
 
     private void Awake()
-    { 
+    {
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
     }
 
@@ -31,27 +33,23 @@ public class LobbyUIManager : MonoBehaviour
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
+
+        colorAndName = FindObjectOfType<ColorAndName>();
+
+        if (!colorAndName)
+        {
+            GameObject g = GameObject.Instantiate(nameAndColorPrefab);
+            colorAndName = g.GetComponent<ColorAndName>();
+            DontDestroyOnLoad(g);
+        }
+
+        if (colorAndName.Name != "") { playerName.text = colorAndName.Name; }
     }
 
     public void SetColor()
     {
-        /*LobbyPlayer[] players = FindObjectsOfType<LobbyPlayer>();
-
-        foreach (LobbyPlayer p in players)
-        {
-            if (p.isLocalPlayer)
-            {
-                p.color = GetCarSelected();
-            }
-        }*/
-
-        GameObject g = GameObject.Instantiate(nameAndColorPrefab);
-        ColorAndName c = g.GetComponent<ColorAndName>();
-
-        c.color = GetSelectedColor();
-        c.Name = GetPlayerName();
-
-        DontDestroyOnLoad(g);
+        colorAndName.color = GetSelectedColor();
+        colorAndName.Name = GetPlayerName();
     }
 
     private void StartHost()

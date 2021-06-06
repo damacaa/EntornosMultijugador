@@ -33,7 +33,7 @@ public class LobbyPlayer : NetworkRoomPlayer
     public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
         ColorAndName colorAndName = FindObjectOfType<ColorAndName>();
-        if (colorAndName == null) { Debug.Log("Caca"); }
+        if (colorAndName == null) { Debug.Log("Color no encontrado"); }
         else
         {
 

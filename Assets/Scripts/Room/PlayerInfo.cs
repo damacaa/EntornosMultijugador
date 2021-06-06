@@ -23,7 +23,7 @@ public class PlayerInfo : NetworkBehaviour
     public int MaxCheckPoints;
 
     [SyncVar(hook = nameof(UpdateTime))] public float CurrentLapTime = 0;
-    [SyncVar]public float TotalLapTime = 0;
+    [SyncVar] public float TotalLapTime = 0;
 
     public PlayerController controller;
     public float InitialDistToFinish = 0;
@@ -94,13 +94,13 @@ public class PlayerInfo : NetworkBehaviour
 
     private void OnDrawGizmos()
     {
-       /* Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
+        Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
 
         Handles.Label(transform.position - transform.right + Vector3.up, CurrentLapSegments.ToString());
         Handles.Label(transform.position - transform.right + 2 * Vector3.up, CurrentLapCountingFromFinishLine.ToString());
 
         Handles.Label(transform.position + transform.right + Vector3.up, segment.ToString());
-        Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());*/
+        Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());
     }
 
     public override void OnStartLocalPlayer()
@@ -164,8 +164,8 @@ public class PlayerInfo : NetworkBehaviour
         if (isLocalPlayer)
         {
             _uiManager.UpdateTime("TIME: " +
-                Math.Round(CurrentLapTime / 60) + ":" + Math.Round(CurrentLapTime % 60, 2)
-            + "/" + Math.Round(TotalLapTime / 60) + ":" + Math.Round(TotalLapTime % 60, 2));
+                Math.Truncate(CurrentLapTime / 60) + ":" + Math.Round(CurrentLapTime % 60, 2)
+            + "/" + Math.Truncate(TotalLapTime / 60) + ":" + Math.Round(TotalLapTime % 60, 2));
         }
     }
 }
