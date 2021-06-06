@@ -53,7 +53,6 @@ public class UIManager : NetworkBehaviour
     {
         _polePositionManager.ResetHUD();
         _polePositionManager.ResetRace();
-        _polePositionManager.StartRace();
         countdown.gameObject.SetActive(true);
     }
 
@@ -122,6 +121,7 @@ public class UIManager : NetworkBehaviour
     /// Actualiza la cuenta atras de la salida
     /// </summary>
     /// <param name="countDownSeconds">Segundos restantes hasta el final de la cuenta atras</param>
+    [Client]
     public void UpdateCountdown(int countDownSeconds)
     {
         if (countdown != null && countdown.gameObject.activeSelf)
@@ -134,7 +134,6 @@ public class UIManager : NetworkBehaviour
             else
             {
                 countdown.text = countDownSeconds.ToString();
-                Debug.Log(countDownSeconds);
             }
         }
     }
