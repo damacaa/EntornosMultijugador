@@ -47,7 +47,6 @@ public class LobbyPlayer : NetworkRoomPlayer
                 }
             }
 
-            Destroy(colorAndName);
         }
     }
 }
