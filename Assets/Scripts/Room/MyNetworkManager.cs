@@ -47,6 +47,13 @@ public class MyNetworkManager : NetworkRoomManager
 
     }
 
+    public override void OnRoomClientDisconnect(NetworkConnection conn)
+    {
+        base.OnRoomClientDisconnect(conn);
+        Debug.Log("Jugador Desconectado dela sala");
+    }
+    
+
     /*public override void OnStartClient()
     {
         base.OnStartClient();

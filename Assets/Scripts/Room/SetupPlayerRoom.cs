@@ -160,4 +160,9 @@ public class SetupPlayerRoom : NetworkRoomPlayer
     {
         SetCarColor(newC);
     }
+
+    private void OnDestroy()
+    {
+        _polePositionManager.RemovePlayer(_playerInfo);
+    }
 }

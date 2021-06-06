@@ -187,6 +187,15 @@ public class PolePositionManager : NetworkBehaviour
 
     }
 
+    public void RemovePlayer(PlayerInfo player)
+    {
+        int playerIndex = _players.IndexOf(player);
+        if (playerIndex >-1)
+        {
+            _players.RemoveAt(playerIndex);
+        }
+    }
+
     private class PlayerInfoComparer : Comparer<PlayerInfo>
     {
         public override int Compare(PlayerInfo x, PlayerInfo y)

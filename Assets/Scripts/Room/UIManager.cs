@@ -48,7 +48,7 @@ public class UIManager : MonoBehaviour
 
     public void ButtonRematch()
     {
-        m_NetworkManager.StartClient();
+        _polePositionManager.StartRace();
         //m_NetworkManager.networkAddress = inputFieldIP_Wait.text;//Sustituir por algo!!!!!!!!!
         ActivateInGameHUD();
     }
@@ -67,6 +67,7 @@ public class UIManager : MonoBehaviour
 
     public void ButtonExit()
     {
+        m_NetworkManager.StopServer();
         Application.Quit();
     }
 
