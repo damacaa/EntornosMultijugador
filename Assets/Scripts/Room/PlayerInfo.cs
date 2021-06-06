@@ -130,8 +130,8 @@ public class PlayerInfo : NetworkBehaviour
         {
             Debug.Log("onHostAuth");
 
-            _uiManager.setRoomHUDButtons(this);
-            _uiManager.ActivateRoomHUD();
+            //_uiManager.setRoomHUDButtons(this);
+            //_uiManager.ActivateRoomHUD();
         }
     }
 

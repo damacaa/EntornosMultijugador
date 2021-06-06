@@ -41,30 +41,32 @@ public class SetupPlayerRoom : NetworkRoomPlayer
     public override void OnStartClient()
     {
         base.OnStartClient();
-        _playerInfo.ID = _id;
+        /*_playerInfo.ID = _id;
 
         string nameFromUI = _uiManager.GetPlayerName();
         if(nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
         CmdChangeName(nameFromUI);
 
         _playerInfo.CurrentLapSegments = 0;
-        _polePositionManager.AddPlayer(_playerInfo);
+        _polePositionManager.AddPlayer(_playerInfo);*/
     }
 
     /// <summary>
     /// Called when the local player object has been set up.
     /// <para>This happens after OnStartClient(), as it is triggered by an ownership message from the server. This is an appropriate place to activate components or functionality that should only be active for the local player, such as cameras and input.</para>
     /// </summary>
-    public override void OnStartLocalPlayer()
+    /*public override void OnStartLocalPlayer()
     {
         int colorId = _uiManager.GetCarSelected();
         if (isClient)
         {
             CmdChangeColor(colorId);
         }
-    }
+    }*/
 
     #endregion
+
+
 
     private void Awake()
     {
@@ -73,19 +75,12 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         _networkManager = FindObjectOfType<MyNetworkManager>();
         _polePositionManager = FindObjectOfType<PolePositionManager>();
         _uiManager = FindObjectOfType<UIManager>();
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (isLocalPlayer)
+        if (isLocalPlayer)//////////////////
         {
             _playerController.enabled = true;
-
             ConfigureCamera();
         }
-
-        //readyToBegin = true;
     }
 
     private void Update()

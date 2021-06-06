@@ -68,7 +68,9 @@ public class PolePositionManager : NetworkBehaviour
         if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
         //ELIMINAMOS LA GENERACION DE ESFERAS INNECESARIAS
 
-        _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
+        if (_networkManager == null) Debug.Log("CAca");
+
+            _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
         for (int i = 0; i < _networkManager.maxConnections; ++i)
         {
             _debuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -186,13 +188,13 @@ public class PolePositionManager : NetworkBehaviour
             player.isAdmin = true;
             player.transform.position = startingPoints[_players.Count - 1].position;
             player.transform.rotation = startingPoints[_players.Count - 1].rotation;
-            _uiManager.AddPlayerToRoom(player, _players.Count - 1);
+            //_uiManager.AddPlayerToRoom(player, _players.Count - 1);
 
         }
 
         isTrainingRace = _players.Count < 2;
 
-        _uiManager.TrainingOrRacing(isTrainingRace);
+        //_uiManager.TrainingOrRacing(isTrainingRace);
 
     }
 
@@ -245,7 +247,7 @@ public class PolePositionManager : NetworkBehaviour
     [ClientRpc]
     void RpcChangeFromRoomToGameHUD()
     {
-        _uiManager.ActivateInGameHUD();
+        //_uiManager.ActivateInGameHUD();
     }
 
 
