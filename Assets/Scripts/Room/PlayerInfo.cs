@@ -72,7 +72,6 @@ public class PlayerInfo : NetworkBehaviour
         {
             int id = collision.gameObject.GetComponent<Checkpoint>().id;
             if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
-            //
         }
 
         if (collision.gameObject.tag == "Finish")
