@@ -262,7 +262,7 @@ public class PolePositionManager : NetworkBehaviour
     [Client]
     IEnumerator DecreaseCountdownCoroutine()
     {
-        while (countdownTimer > 1)
+        while (countdownTimer > 0)
         {
             yield return new WaitForSeconds(1f);
             countdownTimer--;
