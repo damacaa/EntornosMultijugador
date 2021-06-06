@@ -23,6 +23,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text crashedWarning;
     [SerializeField] private Text backwardWarning;
 
+    [Header("End Race HUD")]
+    [SerializeField] private GameObject endRaceHUD;
+    [SerializeField] private Text playerNameWinner;
+    [SerializeField] private Text winnerTime;
+    [SerializeField] private Button rematchButton;
+    [SerializeField] private Button exitButton;
+
 
     private int circuitLaps;
 
@@ -31,6 +38,36 @@ public class UIManager : MonoBehaviour
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
         if (!_polePositionManager) _polePositionManager = FindObjectOfType<PolePositionManager>();
         circuitLaps = FindObjectOfType<CircuitController>().circuitLaps;
+    }
+
+    private void Start()
+    {
+        rematchButton.onClick.AddListener(() => ButtonRematch());
+        exitButton.onClick.AddListener(() => ButtonExit());
+    }
+
+    public void ButtonRematch()
+    {
+        m_NetworkManager.StartClient();
+        //m_NetworkManager.networkAddress = inputFieldIP_Wait.text;//Sustituir por algo!!!!!!!!!
+        ActivateInGameHUD();
+    }
+
+    public void ActivateInGameHUD()
+    {
+        endRaceHUD.SetActive(false);
+        inGameHUD.SetActive(true);
+    }
+
+    public void ActivateEndRaceHud()
+    {
+        inGameHUD.SetActive(false);
+        endRaceHUD.SetActive(true);
+    }
+
+    public void ButtonExit()
+    {
+        Application.Quit();
     }
 
     public void UpdateSpeed(float speed)
@@ -97,5 +134,19 @@ public class UIManager : MonoBehaviour
             car = 3;
         }
         return car;
+    }
+
+    public void setEndRaceHUDButtons(PlayerInfo localPlayer)
+    {
+        if (localPlayer.isServer)
+        {
+            rematchButton.onClick.AddListener(() => _polePositionManager.StartRace());
+            exitButton.onClick.AddListener(() => m_NetworkManager.StopServer());
+        }
+        else
+        {
+            rematchButton.gameObject.SetActive(false);
+            exitButton.onClick.AddListener(() => m_NetworkManager.StopClient());
+        }
     }
 }

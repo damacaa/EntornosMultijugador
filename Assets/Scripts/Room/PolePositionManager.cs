@@ -79,7 +79,9 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
-        //racing = true;
+        raceStart = true;
+        hasStarted = false;
+        racing = true;
     }
 
 
@@ -108,6 +110,7 @@ public class PolePositionManager : NetworkBehaviour
             }
             else if(!hasStarted)
             {
+                Debug.Log(_players.Count);
                 hasStarted = true;
                 ResetPlayers();
             }
@@ -117,17 +120,17 @@ public class PolePositionManager : NetworkBehaviour
     [Server]
     public void StartRace()
     {
-        bool everyOneIsReady = true;
+        /*bool everyOneIsReady = true;
         foreach (PlayerInfo player in _players)
         {
             everyOneIsReady = player.isReady && everyOneIsReady;
         }
         if (everyOneIsReady)
         {
+        }*/
             numPlayers = _players.Count;
             raceStart = true;
             RpcChangeFromRoomToGameHUD();
-        }
     }
 
     private bool CheckFinish()

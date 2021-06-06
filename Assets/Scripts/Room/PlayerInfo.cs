@@ -53,7 +53,7 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
-    [SyncVar(hook = nameof(UpdateReadyOnUI))] public bool isReady = false;
+    //[SyncVar(hook = nameof(UpdateReadyOnUI))] public bool isReady = false;
     [SyncVar(hook = nameof(onHostAuth))] public bool isAdmin = false;
     public override string ToString()
     {
@@ -111,7 +111,7 @@ public class PlayerInfo : NetworkBehaviour
         //Si el jugador es el host directamente esta listo
         if (isServer)
         {
-            isReady = true;
+            //isReady = true;
         }
 
     }
@@ -119,7 +119,7 @@ public class PlayerInfo : NetworkBehaviour
     [Command]
     public void CmdSetReady(bool isReady)
     {
-        this.isReady = isReady;
+        //this.isReady = isReady;
     }
 
 
@@ -130,17 +130,16 @@ public class PlayerInfo : NetworkBehaviour
         {
             Debug.Log("onHostAuth");
 
-            _uiManager.setRoomHUDButtons(this);
             _uiManager.setEndRaceHUDButtons(this);
-            _uiManager.ActivateRoomHUD();
+            //_uiManager.ActivateRoomHUD();
         }
     }
 
-    [Client]
+    /*[Client]
     void UpdateReadyOnUI(bool oldValue, bool newValue)
     {
         _uiManager.readyMarkers[ID].text = (newValue) ? "Ready":"";
-    }
+    }*/
 
 
     public void UpdateLapUI(int oldValue, int newValue)

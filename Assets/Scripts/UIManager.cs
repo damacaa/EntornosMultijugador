@@ -5,7 +5,7 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+public class UIManagerr : MonoBehaviour
 {
     public bool showGUI = true;
 
@@ -193,7 +193,7 @@ public class UIManager : MonoBehaviour
         {
             playButton.gameObject.SetActive(false);
             readyButton.gameObject.SetActive(true);
-            notReadyButton.gameObject.SetActive(localPlayer.isReady);
+            //notReadyButton.gameObject.SetActive(localPlayer.isReady);
             readyButton.onClick.AddListener(() => ButtonReady(localPlayer));
             notReadyButton.onClick.AddListener(() => ButtonNotReady(localPlayer));
         }
@@ -275,7 +275,7 @@ public class UIManager : MonoBehaviour
     }
     public void ButtonExit()
     {
-        
+        Application.Quit();
     }
 
 
