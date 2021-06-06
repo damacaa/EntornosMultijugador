@@ -19,6 +19,8 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private InputField playerName;
     [SerializeField] private Text carColor;
 
+    public GameObject nameAndColorPrefab;
+
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
@@ -31,13 +33,36 @@ public class LobbyUIManager : MonoBehaviour
         buttonServer.onClick.AddListener(() => StartServer());
     }
 
+    public void SetColor()
+    {
+        /*LobbyPlayer[] players = FindObjectsOfType<LobbyPlayer>();
+
+        foreach (LobbyPlayer p in players)
+        {
+            if (p.isLocalPlayer)
+            {
+                p.color = GetCarSelected();
+            }
+        }*/
+
+        GameObject g = GameObject.Instantiate(nameAndColorPrefab);
+        ColorAndName c = g.GetComponent<ColorAndName>();
+
+        c.color = GetSelectedColor();
+        c.name = GetPlayerName();
+
+        DontDestroyOnLoad(g);
+    }
+
     private void StartHost()
     {
+        SetColor();
         m_NetworkManager.StartHost();
     }
 
     private void StartClient()
     {
+        SetColor();
         m_NetworkManager.StartClient();
         m_NetworkManager.networkAddress = inputFieldIP.text;
     }
@@ -63,22 +88,24 @@ public class LobbyUIManager : MonoBehaviour
     }
 
     //gets car's color selected from client UI
-    public int GetCarSelected()
+    public Color GetSelectedColor()
     {
-        int car = 0;
+        Color car = Color.red;
+
         var color = GetCarColor();
         if (color == "Verde")
         {
-            car = 1;
+            car = Color.green;
         }
         else if (color == "Amarillo")
         {
-            car = 2;
+            car = Color.yellow;
         }
         else if (color == "Blanco")
         {
-            car = 3;
+            car = Color.white;
         }
+
         return car;
     }
 }

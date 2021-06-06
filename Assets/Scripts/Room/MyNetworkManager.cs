@@ -8,6 +8,7 @@ public class MyNetworkManager : NetworkRoomManager
 {
 
     [SerializeField] private UIManager _uiManager;
+
     public new void Start()
     {
         if (!_uiManager) _uiManager = FindObjectOfType<UIManager>();

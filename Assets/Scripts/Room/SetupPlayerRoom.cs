@@ -83,10 +83,43 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         }
     }
 
-    private void Update()
+    public override void OnStartLocalPlayer()
     {
+        base.OnStartLocalPlayer();
 
+        LobbyPlayer[] players = FindObjectsOfType<LobbyPlayer>();
+
+        foreach (LobbyPlayer p in players)
+        {
+            if (p.isLocalPlayer) {
+                if (isClientOnly)
+                {
+                    CmdChangeColorInServer(p.color);
+                    CmdChangeNameInServer(p.name);
+                }
+                else
+                {
+                    _carColor = p.color;
+                    _playerInfo.Name = p.name;
+                }
+            }
+        }
     }
+
+    [Command]
+    private void CmdChangeColorInServer(Color c)
+    {
+        _carColor = c;
+    }
+
+    [Command]
+    private void CmdChangeNameInServer(string n)
+    {
+        _name = n;
+    }
+
+
+
 
     void ConfigureCamera()
     {
@@ -126,7 +159,7 @@ public class SetupPlayerRoom : NetworkRoomPlayer
 
     //changes sync var _carColor in server in order to later replicate this change to all clients
     //[Command]
-    public void CmdChangeColor(int id)
+    /*public void CmdChangeColor(int id)
     {
         int colorIdx = id;
         if (colorIdx == 0)
@@ -148,7 +181,7 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         {
             _carColor = Color.white;
         }
-    }
+    }*/
 
     //updates car color in client
     public void ColorUpdate(Color old, Color newC)

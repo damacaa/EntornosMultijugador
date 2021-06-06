@@ -141,6 +141,8 @@ MonoBehaviour:
   inputFieldIP: {fileID: 8638827621891945347}
   playerName: {fileID: 7572292283219340098}
   carColor: {fileID: 6537988583182971547}
+  nameAndColorPrefab: {fileID: 6164253239773557509, guid: 6f7b6dcca830197408fa2fa7e47ef6e4,
+    type: 3}
 --- !u!4 &32010684 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: f8fdb8cc9ced9cb4194537b575b16097,
@@ -4346,7 +4348,7 @@ GameObject:
   - component: {fileID: 8638827621865683235}
   - component: {fileID: 2269098}
   m_Layer: 0
-  m_Name: UIManager
+  m_Name: LobbyUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

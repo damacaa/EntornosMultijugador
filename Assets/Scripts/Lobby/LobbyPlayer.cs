@@ -6,6 +6,12 @@ using UnityEngine;
 
 public class LobbyPlayer : NetworkRoomPlayer
 {
+    public Color color;
+
+    public override void OnStartLocalPlayer()
+    {
+        
+    }
 
     public override void OnStartClient()
     {
@@ -26,7 +32,24 @@ public class LobbyPlayer : NetworkRoomPlayer
 
     public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
-        // Debug.LogFormat(LogType.Log, "ReadyStateChanged {0}", newReadyState);
+        ColorAndName colorAndName = FindObjectOfType<ColorAndName>();
+        if (colorAndName == null) { Debug.Log("Caca"); }
+        else
+        {
+
+            LobbyPlayer[] players = FindObjectsOfType<LobbyPlayer>();
+            foreach (LobbyPlayer p in players)
+            {
+                if (p.isLocalPlayer)
+                {
+                    p.color = colorAndName.color;
+                    p.name = colorAndName.name;
+                }
+            }
+
+            Destroy(colorAndName);
+        }
     }
+
 }
 
