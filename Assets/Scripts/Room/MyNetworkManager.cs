@@ -8,7 +8,6 @@ public class MyNetworkManager : NetworkRoomManager
 {
 
     [SerializeField] private UIManager _uiManager;
-    [SerializeField] private PolePositionManager _polePositionManager;
 
     public new void Start()
     {
