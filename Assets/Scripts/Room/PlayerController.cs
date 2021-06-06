@@ -83,13 +83,13 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    public delegate void OnSpeedChangeDelegate(float newVal);
+   /* public delegate void OnSpeedChangeDelegate(float newVal);
 
     public event OnSpeedChangeDelegate OnSpeedChangeEvent;
 
 
     public delegate void OnLapChangeDelegate(int newVal);
-    public event OnLapChangeDelegate OnLapChangeEvent;
+    public event OnLapChangeDelegate OnLapChangeEvent;*/
 
     public delegate void OnHasCrashedDelegate(bool newVal);
     public event OnHasCrashedDelegate OnHasCrashedEvent;

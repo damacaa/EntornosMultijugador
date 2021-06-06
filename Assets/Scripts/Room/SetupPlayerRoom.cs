@@ -41,14 +41,14 @@ public class SetupPlayerRoom : NetworkRoomPlayer
     public override void OnStartClient()
     {
         base.OnStartClient();
-        /*_playerInfo.ID = _id;
+        _playerInfo.ID = _id;
 
-        string nameFromUI = _uiManager.GetPlayerName();
-        if(nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 1000); }
-        CmdChangeName(nameFromUI);
+       /* string nameFromUI = FindObjectOfType<LobbyUIManager>().GetPlayerName();
+        if(nameFromUI == "") { nameFromUI = "Player_" + UnityEngine.Random.Range(0, 100); }
+        CmdChangeName(nameFromUI);*/
 
         _playerInfo.CurrentLapSegments = 0;
-        _polePositionManager.AddPlayer(_playerInfo);*/
+        _polePositionManager.AddPlayer(_playerInfo);
     }
 
     /// <summary>
@@ -57,9 +57,10 @@ public class SetupPlayerRoom : NetworkRoomPlayer
     /// </summary>
     /*public override void OnStartLocalPlayer()
     {
-        int colorId = _uiManager.GetCarSelected();
+        //int colorId = FindObjectOfType<LobbyUIManager>().GetCarSelected();
         if (isClient)
         {
+            Debug.Log(colorId);
             CmdChangeColor(colorId);
         }
     }*/
@@ -114,7 +115,7 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         _name = n;
     }
 
-    private void Start()
+    private new void Start()
     {
         if (isLocalPlayer)
         {
@@ -188,5 +189,10 @@ public class SetupPlayerRoom : NetworkRoomPlayer
     public void ColorUpdate(Color old, Color newC)
     {
         SetCarColor(newC);
+    }
+
+    private void OnDestroy()
+    {
+        _polePositionManager.RemovePlayer(_playerInfo);
     }
 }

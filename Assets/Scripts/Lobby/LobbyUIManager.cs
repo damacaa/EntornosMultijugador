@@ -22,7 +22,7 @@ public class LobbyUIManager : MonoBehaviour
     public GameObject nameAndColorPrefab;
 
     private void Awake()
-    {
+    { 
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
     }
 
@@ -49,7 +49,7 @@ public class LobbyUIManager : MonoBehaviour
         ColorAndName c = g.GetComponent<ColorAndName>();
 
         c.color = GetSelectedColor();
-        c.name = GetPlayerName();
+        c.Name = GetPlayerName();
 
         DontDestroyOnLoad(g);
     }
@@ -108,4 +108,5 @@ public class LobbyUIManager : MonoBehaviour
 
         return car;
     }
+
 }

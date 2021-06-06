@@ -43,13 +43,12 @@ public class LobbyPlayer : NetworkRoomPlayer
                 if (p.isLocalPlayer)
                 {
                     p.color = colorAndName.color;
-                    p.name = colorAndName.name;
+                    p.name = colorAndName.Name;
                 }
             }
 
             Destroy(colorAndName);
         }
     }
-
 }
 

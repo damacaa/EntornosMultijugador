@@ -24,8 +24,10 @@ public class MyNetworkLobbyManager : NetworkRoomManager
     {
         // PlayerScore playerScore = gamePlayer.GetComponent<PlayerScore>();
         //playerScore.index = roomPlayer.GetComponent<NetworkRoomPlayer>().index;
+        Debug.Log(roomPlayer.GetComponent<LobbyPlayer>());
         return true;
     }
+
 
     public override void OnRoomStopClient()
     {

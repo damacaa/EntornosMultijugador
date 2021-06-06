@@ -204,7 +204,7 @@ public class UIManagerr : MonoBehaviour
     {
         if (localPlayer.isServer)
         {
-            rematchButton.onClick.AddListener(() => _polePositionManager.StartRace());
+            rematchButton.onClick.AddListener(() => ButtonRematch());
             exitButton.onClick.AddListener(() => m_NetworkManager.StopServer());
         }
         else
@@ -275,6 +275,7 @@ public class UIManagerr : MonoBehaviour
     }
     public void ButtonExit()
     {
+        m_NetworkManager.StopServer();
         Application.Quit();
     }
 

@@ -27,6 +27,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject endRaceHUD;
     [SerializeField] private Text playerNameWinner;
     [SerializeField] private Text winnerTime;
+    [SerializeField] private Text countdown;
     [SerializeField] private Button rematchButton;
     [SerializeField] private Button exitButton;
 
@@ -40,17 +41,17 @@ public class UIManager : MonoBehaviour
         circuitLaps = FindObjectOfType<CircuitController>().circuitLaps;
     }
 
-    private void Start()
-    {
-        rematchButton.onClick.AddListener(() => ButtonRematch());
-        exitButton.onClick.AddListener(() => ButtonExit());
-    }
+    /* private void Start()
+     {
+         //rematchButton.onClick.AddListener(() => ButtonRematch());
+         //exitButton.onClick.AddListener(() => ButtonExit());
+     }*/
 
     public void ButtonRematch()
     {
-        m_NetworkManager.StartClient();
-        //m_NetworkManager.networkAddress = inputFieldIP_Wait.text;//Sustituir por algo!!!!!!!!!
-        ActivateInGameHUD();
+        _polePositionManager.ResetHUD();
+        _polePositionManager.ResetRace();
+        _polePositionManager.StartRace();
     }
 
     public void ActivateInGameHUD()
@@ -63,11 +64,6 @@ public class UIManager : MonoBehaviour
     {
         inGameHUD.SetActive(false);
         endRaceHUD.SetActive(true);
-    }
-
-    public void ButtonExit()
-    {
-        Application.Quit();
     }
 
     public void UpdateSpeed(float speed)
@@ -96,6 +92,28 @@ public class UIManager : MonoBehaviour
         textPosition.text = ranking;
     }
 
+    public void UpdateCountdown(int countDownSeconds)
+    {
+        if (countdown != null && countdown.gameObject.activeSelf) 
+        {
+            if (countDownSeconds == 0)
+            {
+                countdown.text = "START!";
+                StartCoroutine(HideCountdown());
+            }
+            else
+            {
+                countdown.text = countDownSeconds.ToString();
+                Debug.Log(countDownSeconds);
+            }
+        }
+    }
+    IEnumerator HideCountdown()
+    {
+        yield return new WaitForSeconds(1f);
+        countdown.gameObject.SetActive(false);
+    }
+
     public void ShowCrashedWarning(bool hasCrashed)
     {
         crashedWarning.transform.parent.gameObject.SetActive(hasCrashed);
@@ -108,7 +126,7 @@ public class UIManager : MonoBehaviour
 
     public string GetPlayerName()
     {
-        return "Paco";// playerName.text;
+        return FindObjectOfType<InputField>().text;
     }
 
     public string GetCarColor()
@@ -140,8 +158,8 @@ public class UIManager : MonoBehaviour
     {
         if (localPlayer.isServer)
         {
-            rematchButton.onClick.AddListener(() => _polePositionManager.StartRace());
-            exitButton.onClick.AddListener(() => m_NetworkManager.StopServer());
+            rematchButton.onClick.AddListener(() => ButtonRematch());
+            exitButton.onClick.AddListener(() => m_NetworkManager.StopHost());
         }
         else
         {

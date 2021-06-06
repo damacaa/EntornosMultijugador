@@ -13,6 +13,7 @@ public class MyNetworkManager : NetworkRoomManager
     {
         if (!_uiManager) _uiManager = FindObjectOfType<UIManager>();
 
+
 #if UNITY_SERVER
             if (autoStartServerBuild)
             {
@@ -21,6 +22,16 @@ public class MyNetworkManager : NetworkRoomManager
 #endif
     }
 
+
+   /* public override void OnRoomClientSceneChanged(NetworkConnection conn)
+    {
+        base.OnRoomClientSceneChanged(conn);
+        _polePositionManager.AddPlayer(conn.identity.gameObject.GetComponent<PlayerInfo>());
+        *//*foreach (NetworkRoomPlayer player in this.roomSlots)
+        {
+            _polePositionManager.AddPlayer(player.gameObject.GetComponent<PlayerInfo>());
+        }*//*
+    }*/
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
@@ -35,20 +46,11 @@ public class MyNetworkManager : NetworkRoomManager
 
     }
 
-    /*public override void OnStartClient()
+    public override void OnRoomClientDisconnect(NetworkConnection conn)
     {
-        base.OnStartClient();
-        Debug.Log("OnStartClient");
+        base.OnRoomClientDisconnect(conn);
+        Debug.Log("Jugador Desconectado dela sala");
     }
-
-    public override void OnStopClient()
-    {
-        base.OnStopClient();
-        Debug.Log("OnClientError");
-        _uiManager.ActivateMainMenu();
-    }*/
-
-
 
     #endregion client
 
