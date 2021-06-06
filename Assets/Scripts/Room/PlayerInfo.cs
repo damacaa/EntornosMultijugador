@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
-using UnityEditor;
+//using UnityEditor;
 using UnityEngine;
 
 
@@ -121,13 +121,13 @@ public class PlayerInfo : NetworkBehaviour
     //Gizmos
     private void OnDrawGizmos()
     {
-        Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
+        /*Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
 
         Handles.Label(transform.position - transform.right + Vector3.up, CurrentLapSegments.ToString());
         Handles.Label(transform.position - transform.right + 2 * Vector3.up, CurrentLapCountingFromFinishLine.ToString());
 
         Handles.Label(transform.position + transform.right + Vector3.up, segment.ToString());
-        Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());
+        Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());*/
     }
 
 

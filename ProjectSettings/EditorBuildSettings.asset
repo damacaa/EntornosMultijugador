@@ -6,14 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Mirror/Examples/Room/Scenes/OfflineScene.unity
-    guid: 9e6f14982412b2545a0911ebaaa46a23
+    path: Assets/_Scenes/Lobby.unity
+    guid: 75b7ae0800552e941912e837c8d6d48c
   - enabled: 1
     path: Assets/_Scenes/SalaEspera.unity
     guid: 63d284c40216c0a419e5358963469ac4
-  - enabled: 1
-    path: Assets/_Scenes/Lobby.unity
-    guid: 75b7ae0800552e941912e837c8d6d48c
   - enabled: 1
     path: Assets/_Scenes/Game.unity
     guid: 4977971c719697a46b07ca06cf81913d

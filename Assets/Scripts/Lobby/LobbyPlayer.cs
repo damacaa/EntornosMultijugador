@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class LobbyPlayer : NetworkRoomPlayer
 {
-    
+
     public Color color;
 
     public override void OnStartLocalPlayer()
@@ -40,7 +40,8 @@ public class LobbyPlayer : NetworkRoomPlayer
     /// <param name="newReadyState">Nuevo valor de ready</param>
     public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
-        
+        base.ReadyStateChanged(oldReadyState, newReadyState);
+
         ColorAndName colorAndName = FindObjectOfType<ColorAndName>();
         if (colorAndName == null) { Debug.Log("Color no encontrado"); }
         else
