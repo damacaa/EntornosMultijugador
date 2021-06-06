@@ -140,6 +140,7 @@ MonoBehaviour:
   buttonServer: {fileID: 8638827623100153853}
   inputFieldIP: {fileID: 8638827621891945347}
   playerName: {fileID: 7572292283219340098}
+  colorSelecter: {fileID: 0}
   carColor: {fileID: 6537988583182971547}
   nameAndColorPrefab: {fileID: 6164253239773557509, guid: 6f7b6dcca830197408fa2fa7e47ef6e4,
     type: 3}
@@ -477,7 +478,7 @@ PrefabInstance:
     - target: {fileID: 3128670718595818425, guid: 07f113e7fb86df34880c6e00c4c35d9d,
         type: 3}
       propertyPath: maxConnections
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3128670718595818425, guid: 07f113e7fb86df34880c6e00c4c35d9d,
         type: 3}

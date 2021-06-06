@@ -87,8 +87,9 @@ public class MyNetworkManager : NetworkRoomManager
         Debug.Log("OnStopHost");
     }
 
-    public override void OnGUI()
+   /* public override void OnGUI()
     {
+        base.OnGUI();
         if (!showRoomGUI)
             return;
 
@@ -100,13 +101,16 @@ public class MyNetworkManager : NetworkRoomManager
         if (NetworkServer.active && IsSceneActive(GameplayScene))
         {
             GUILayout.BeginArea(new Rect(Screen.width - 150f, 10f, 140f, 30f));
+
             if (GUILayout.Button("Return to Room"))
                 ServerChangeScene(RoomScene);
+
             GUILayout.EndArea();
         }
 
         if (IsSceneActive(RoomScene))
+        {
             GUI.Box(new Rect(x, y, w, h), "PLAYERS");
-    }
-
+        }
+    }*/
 }

@@ -135,7 +135,6 @@ public class SetupPlayer : NetworkBehaviour
         if (colorIdx == 0)
         {
             _carColor = Color.red;
-
         }
         if (colorIdx == 1)
         {
