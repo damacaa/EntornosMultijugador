@@ -8,11 +8,25 @@ using Random = System.Random;
 	API Reference: https://mirror-networking.com/docs/api/Mirror.NetworkBehaviour.html
 */
 
+/// <summary>
+/// Es el primer componente qeu se ejecuta y se encarga de añadir el resto de componentes al jugador
+/// </summary>
 public class SetupPlayerRoom : NetworkRoomPlayer
 {
+    /// <summary>
+    /// Id del jugador
+    /// </summary>
     [SyncVar] private int _id;
+    
+    /// <summary>
+    /// GO del coche
+    /// </summary>
     [SerializeField] private GameObject _carBody;
+
+    //Color del coche
     [SyncVar(hook = nameof(ColorUpdate))] private Color _carColor = Color.black;
+
+    //nombre del jugador
     [SyncVar(hook = nameof(ChangeName))] private string _name;
 
     private UIManager _uiManager;
@@ -68,7 +82,7 @@ public class SetupPlayerRoom : NetworkRoomPlayer
     #endregion
 
 
-
+    //referencias
     private void Awake()
     {
 
@@ -78,6 +92,15 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         _polePositionManager = FindObjectOfType<PolePositionManager>();
         _uiManager = FindObjectOfType<UIManager>();
 
+    }
+
+    private new void Start()
+    {
+        if (isLocalPlayer)
+        {
+            _playerController.enabled = true;
+            ConfigureCamera();
+        }
     }
 
     public override void OnStartLocalPlayer()
@@ -103,87 +126,43 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         }
     }
 
+    /// <summary>
+    /// Cambia el color del coche del cliente en el servidor
+    /// </summary>
+    /// <param name="c">color del coche</param>
     [Command]
     private void CmdChangeColorInServer(Color c)
     {
         _carColor = c;
     }
 
+    /// <summary>
+    /// Cambia el nombre del cliente en el servidor
+    /// </summary>
+    /// <param name="n">Nombre del jugador</param>
     [Command]
     private void CmdChangeNameInServer(string n)
     {
         _name = n;
     }
 
-    private new void Start()
-    {
-        if (isLocalPlayer)
-        {
-            _playerController.enabled = true;
-            ConfigureCamera();
-        }
-    }
+   
     void ConfigureCamera()
     {
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
     }
 
-    public UIManager GetUi()
-    {
-        return _uiManager;
-    }
-
-    //change name function
-
+    //change name hook function
     void ChangeName(string oldName, string newName)
     {
         _playerInfo.Name = newName;
     }
-
-
 
     public void SetCarColor(Color newColor)
     {
         _carBody.GetComponent<MeshRenderer>().materials[1].color = newColor;
     }
 
-    public Material GetActualCarColor()
-    {
-        return _carBody.GetComponent<MeshRenderer>().materials[1];
-    }
-
-    //[Command]
-    public void CmdChangeName(string newName)
-    {
-        _name = newName;
-    }
-
-
-    //changes sync var _carColor in server in order to later replicate this change to all clients
-    //[Command]
-    /*public void CmdChangeColor(int id)
-    {
-        int colorIdx = id;
-        if (colorIdx == 0)
-        {
-            _carColor = Color.red;
-
-        }
-        if (colorIdx == 1)
-        {
-            _carColor = Color.green;
-
-        }
-        if (colorIdx == 2)
-        {
-            _carColor = Color.yellow;
-
-        }
-        if (colorIdx == 3)
-        {
-            _carColor = Color.white;
-        }
-    }*/
 
     //updates car color in client
     public void ColorUpdate(Color old, Color newC)
@@ -191,6 +170,9 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         SetCarColor(newC);
     }
 
+    /// <summary>
+    /// Al desconectarse un cliente del servidor se destruye este componente, en ese momento se borra de la lista de jugadores
+    /// </summary>
     private void OnDestroy()
     {
         _polePositionManager.RemovePlayer(_playerInfo);

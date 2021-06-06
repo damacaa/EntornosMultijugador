@@ -255,13 +255,13 @@ public class UIManagerr : MonoBehaviour
 
     private void ButtonReady(PlayerInfo player)
     {
-        player.CmdSetReady(true);
+       // player.CmdSetReady(true);
         readyButton.gameObject.SetActive(false);
         notReadyButton.gameObject.SetActive(true);
     }
     private void ButtonNotReady(PlayerInfo player)
     {
-        player.CmdSetReady(false);
+        //player.CmdSetReady(false);
         readyButton.gameObject.SetActive(true);
         notReadyButton.gameObject.SetActive(false);
     }
