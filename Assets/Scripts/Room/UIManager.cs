@@ -108,7 +108,7 @@ public class UIManager : MonoBehaviour
 
     public string GetPlayerName()
     {
-        return "Paco";// playerName.text;
+        return FindObjectOfType<InputField>().text;
     }
 
     public string GetCarColor()

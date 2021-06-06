@@ -23,7 +23,7 @@ public class PlayerInfo : NetworkBehaviour
     public int MaxCheckPoints;
 
     [SyncVar(hook = nameof(UpdateTime))] public float CurrentLapTime = 0;
-    public float TotalLapTime = 0;
+    [SyncVar]public float TotalLapTime = 0;
 
     public PlayerController controller;
     public float InitialDistToFinish = 0;

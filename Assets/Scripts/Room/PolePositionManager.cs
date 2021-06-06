@@ -34,34 +34,12 @@ public class PolePositionManager : NetworkBehaviour
 
 
     #region Variables de Tiempo
-    //Tiempo de la vuelta actual
-    [SyncVar] private float lapTime = 0;
     //Tiempo Total de la carrera
     [SyncVar] private float totalTime = 0;
 
     #endregion
 
-    #region Comprobaciones
-    //Variable que indica si el localPlayer esta yendo en direccion contraria
-    private bool goingBackwards = false;
 
-
-    //Boolean que indica si ha acabado la carrera
-    private bool hasRaceEnded = false;
-    #endregion
-
-    #region Eventos
-
-    public delegate void OnRaceStartDelegate(bool newVal);
-    public event OnRaceStartDelegate OnRaceStartEvent;
-
-    public delegate void OnRaceEndDelegate(bool newVal);
-    public event OnRaceEndDelegate OnRaceEndEvent;
-
-
-
-
-    #endregion
 
     private void Awake()
     {
@@ -81,15 +59,6 @@ public class PolePositionManager : NetworkBehaviour
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
-        /*raceStart = true;
-        hasStarted = false;
-        racing = true;*/
-
-        foreach (PlayerInfo player in playersAux)
-        {
-            _players.Add(player);
-        }
-
     }
 
     private void Update()
@@ -98,9 +67,10 @@ public class PolePositionManager : NetworkBehaviour
         if (_players.Count == 0)
             return;
 
-        Debug.Log(_players.Count);
+        //Debug.Log(_players.Count);
         if (racing)
         {
+            
             if (_players.Count == 1 && !isTrainingRace)
             {
                 Finish();
@@ -137,6 +107,8 @@ public class PolePositionManager : NetworkBehaviour
         numPlayers = _players.Count;
         raceStart = true;
         RpcChangeFromRoomToGameHUD();
+
+
     }
 
     private bool CheckFinish()
@@ -206,7 +178,6 @@ public class PolePositionManager : NetworkBehaviour
             player.isAdmin = true;
             player.transform.position = startingPoints[_players.Count - 1].position;
             player.transform.rotation = startingPoints[_players.Count - 1].rotation;
-            //_uiManager.AddPlayerToRoom(player, _players.Count - 1);
 
         }
 
@@ -297,9 +268,4 @@ public class PolePositionManager : NetworkBehaviour
         return minArcL;
     }
 
-    [ClientRpc]
-    void showCosa(float s)
-    {
-        Debug.Log(s);
-    }
 }

@@ -21,6 +21,8 @@ public class LobbyUIManager : MonoBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(gameObject);
+      
         m_NetworkManager = FindObjectOfType<MyNetworkManager>();
     }
 
@@ -81,4 +83,5 @@ public class LobbyUIManager : MonoBehaviour
         }
         return car;
     }
+
 }
