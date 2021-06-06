@@ -70,17 +70,13 @@ public class SetupPlayerRoom : NetworkRoomPlayer
 
     private void Awake()
     {
+
         _playerInfo = GetComponent<PlayerInfo>();
         _playerController = GetComponent<PlayerController>();
         _networkManager = FindObjectOfType<MyNetworkManager>();
         _polePositionManager = FindObjectOfType<PolePositionManager>();
         _uiManager = FindObjectOfType<UIManager>();
 
-        if (isLocalPlayer || true)//////////////////
-        {
-            _playerController.enabled = true;
-            ConfigureCamera();
-        }
     }
 
     public override void OnStartLocalPlayer()
@@ -118,9 +114,14 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         _name = n;
     }
 
-
-
-
+    private void Start()
+    {
+        if (isLocalPlayer)
+        {
+            _playerController.enabled = true;
+            ConfigureCamera();
+        }
+    }
     void ConfigureCamera()
     {
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
@@ -131,7 +132,7 @@ public class SetupPlayerRoom : NetworkRoomPlayer
         return _uiManager;
     }
 
-    //change name function 
+    //change name function
 
     void ChangeName(string oldName, string newName)
     {
