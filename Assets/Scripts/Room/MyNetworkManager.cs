@@ -4,9 +4,13 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
+/// <summary>
+/// Network Manager qeu hereda de NetworkRoomManager, lo que proporciona una base sobre la que hemos organizado las salas.
+/// </summary>
 public class MyNetworkManager : NetworkRoomManager
 {
-
+    ///referencia al HUD del Menu
     [SerializeField] private UIManager _uiManager;
 
     public new void Start()
@@ -22,23 +26,14 @@ public class MyNetworkManager : NetworkRoomManager
 #endif
     }
 
-
-   /* public override void OnRoomClientSceneChanged(NetworkConnection conn)
-    {
-        base.OnRoomClientSceneChanged(conn);
-        _polePositionManager.AddPlayer(conn.identity.gameObject.GetComponent<PlayerInfo>());
-        *//*foreach (NetworkRoomPlayer player in this.roomSlots)
-        {
-            _polePositionManager.AddPlayer(player.gameObject.GetComponent<PlayerInfo>());
-        }*//*
-    }*/
+    #region client
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
         Debug.Log("OnClientConnect");
     }
 
-    #region client
+
     public override void OnClientDisconnect(NetworkConnection conn)
     {
         base.OnClientDisconnect(conn);
@@ -52,7 +47,7 @@ public class MyNetworkManager : NetworkRoomManager
         Debug.Log("Jugador Desconectado dela sala");
     }
 
-    #endregion client
+    #endregion 
 
     #region server
     public override void OnServerConnect(NetworkConnection conn)
@@ -74,6 +69,8 @@ public class MyNetworkManager : NetworkRoomManager
 
 
     #endregion server
+
+    #region host
 
     public override void OnStartHost()
     {
@@ -109,4 +106,5 @@ public class MyNetworkManager : NetworkRoomManager
             GUI.Box(new Rect(x, y, w, h), "PLAYERS");
     }
 
+    #endregion
 }
