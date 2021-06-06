@@ -210,7 +210,7 @@ MonoBehaviour:
   axleInfos:
   - leftWheel: {fileID: 7529074410251188952}
     rightWheel: {fileID: 2399590223335585634}
-    motor: 0
+    motor: 1
     steering: 1
   - leftWheel: {fileID: 6283861155603876286}
     rightWheel: {fileID: 2814993475587467073}

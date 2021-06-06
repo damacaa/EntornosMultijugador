@@ -21,7 +21,7 @@ public class PlayerInfoT : MonoBehaviour
     public int MaxCheckPoints;
 
     public float CurrentLapTime = 0;
-    public float TotalLapTime = 0;
+    public float BestLapTime = 0;
 
     public PlayerControllerT controller;
     public float InitialDistToFinish = 0;
@@ -62,11 +62,18 @@ public class PlayerInfoT : MonoBehaviour
         if (_uiManager == null) _uiManager = FindObjectOfType<UIManagerT>();
     }
 
+    private void Update()
+    {
+        _uiManager.UpdateTime("TIME: " +
+            Math.Truncate(CurrentLapTime / 60) + ":" + Math.Round(CurrentLapTime % 60, 2)
+        + "/" + Math.Truncate(BestLapTime / 60) + ":" + Math.Round(BestLapTime % 60, 2));
+    }
+
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.tag == "CheckPoint")
         {
-            int id = collision.gameObject.GetComponent<CheckpointT>().id;
+            int id = collision.gameObject.GetComponent<Checkpoint>().id;
             if (id - LastCheckPoint == 1) { LastCheckPoint = id; }
         }
 
@@ -77,6 +84,11 @@ public class PlayerInfoT : MonoBehaviour
             {
                 if (CurrentLapCountingFromFinishLine <= CurrentLapSegments + 1)
                 {
+                    if(CurrentLapTime<BestLapTime || BestLapTime == 0)
+                    {
+                        BestLapTime = CurrentLapTime;
+                    }
+
                     CurrentLapTime = 0;
                     CurrentLapCountingFromFinishLine = CurrentLapSegments + 2;
                 }
@@ -88,28 +100,8 @@ public class PlayerInfoT : MonoBehaviour
         }
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
-
-    //    Handles.Label(transform.position - transform.right + Vector3.up, CurrentLapSegments.ToString());
-    //    Handles.Label(transform.position - transform.right + 2 * Vector3.up, CurrentLapCountingFromFinishLine.ToString());
-
-    //    Handles.Label(transform.position + transform.right + Vector3.up, segment.ToString());
-    //    Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());
-    //}
-
     public void UpdateLapUI(int oldValue, int newValue)
     {
         _uiManager.UpdateLap(this, newValue);
-    }
-
-
-    public void UpdateTime(float old, float time)
-    {
-
-        _uiManager.UpdateTime("TIME: " +
-            Math.Truncate(CurrentLapTime / 60) + ":" + Math.Round(CurrentLapTime % 60, 2)
-        + "/" + Math.Truncate(TotalLapTime / 60) + ":" + Math.Round(TotalLapTime % 60, 2));
     }
 }

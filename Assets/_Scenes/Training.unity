@@ -345,7 +345,6 @@ MonoBehaviour:
   openRoom: 1
   racing: 0
   raceStart: 0
-  hasStarted: 0
 --- !u!1 &329774477
 GameObject:
   m_ObjectHideFlags: 0
@@ -705,7 +704,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circuitLaps: 3
   checkpoints: []
-  checkpointPrefab: {fileID: 2841112928178906458, guid: 99a8078cf850113469b987be3e4a4360,
+  checkpointPrefab: {fileID: 3128289906544822387, guid: c8d65251c61719343856437c30da9b08,
     type: 3}
 --- !u!1 &816176601
 GameObject:
@@ -2329,7 +2328,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &8638827622105791476
 MonoBehaviour:
   m_ObjectHideFlags: 0
