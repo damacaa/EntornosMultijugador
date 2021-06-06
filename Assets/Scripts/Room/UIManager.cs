@@ -105,11 +105,12 @@ public class UIManager : MonoBehaviour
             if (countDownSeconds == 0)
             {
                 countdown.text = "START!";
-                StartCoroutine("HideCountDown");
+                StartCoroutine(HideCountdown());
             }
             else
             {
-                countdown.text = countdown.ToString();
+                countdown.text = countDownSeconds.ToString();
+                Debug.Log(countDownSeconds);
             }
         }
     }

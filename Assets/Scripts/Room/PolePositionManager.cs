@@ -107,8 +107,8 @@ public class PolePositionManager : NetworkBehaviour
         {
         }*/
         numPlayers = _players.Count;
-        raceStart = true;
-        RpcChangeFromRoomToGameHUD();
+        //RpcChangeFromRoomToGameHUD();
+        StopCoroutine("DecreaseCountdownCoroutine");
         StartCoroutine("DecreaseCountdownCoroutine");
         RpcUpdateCountdownUI(countdownTimer);
 
@@ -145,7 +145,7 @@ public class PolePositionManager : NetworkBehaviour
 
             _players[i].controller.ResetToStart(startingPoints[i]);
 
-            StartCoroutine(DelayStart(3f));
+            StartCoroutine(DecreaseCountdownCoroutine());
         }
     }
 
@@ -203,6 +203,11 @@ public class PolePositionManager : NetworkBehaviour
     void UpdateCountdownUI()
     {
         RpcUpdateCountdownUI(countdownTimer);
+        if (countdownTimer == 0)
+        {
+            Debug.Log("Fin de la cuenta atras");
+            racing = true;
+        }
     }
 
     [Client]
@@ -212,6 +217,7 @@ public class PolePositionManager : NetworkBehaviour
         {
             yield return new WaitForSeconds(2);
             countdownTimer--;
+            Debug.Log(countdownTimer);
             UpdateCountdownUI();
         }
     }
