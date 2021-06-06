@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ColorAndName : MonoBehaviour
 {
-    public string name;
+    public string Name;
     public Color color;
     // Start is called before the first frame update
     void Start()

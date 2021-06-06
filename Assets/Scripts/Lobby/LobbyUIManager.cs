@@ -49,7 +49,7 @@ public class LobbyUIManager : MonoBehaviour
         ColorAndName c = g.GetComponent<ColorAndName>();
 
         c.color = GetSelectedColor();
-        c.name = GetPlayerName();
+        c.Name = GetPlayerName();
 
         DontDestroyOnLoad(g);
     }
