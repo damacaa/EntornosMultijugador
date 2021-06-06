@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PolePositionManagerT : MonoBehaviour
 {
@@ -28,12 +29,11 @@ public class PolePositionManagerT : MonoBehaviour
     //Boolean que indica si se esta corriendo
     public bool racing = false;
     public bool raceStart = false;
-    public bool hasStarted = false;
 
 
     #region Variables de Tiempo
     //Tiempo Total de la carrera
- private float totalTime = 0;
+    private float totalTime = 0;
 
     private int countdownTimer = 3;
 
@@ -46,38 +46,18 @@ public class PolePositionManagerT : MonoBehaviour
         if (_circuitController == null) _circuitController = FindObjectOfType<CircuitControllerT>();
         if (_uiManager == null) _uiManager = FindObjectOfType<UIManagerT>();
         if (playersAux == null) playersAux = FindObjectsOfType<PlayerInfoT>();
-
     }
 
     private void Update()
     {
-
-        if (_players.Count == 0)
-        {
-        }
-     
-       
-
         if (racing)
         {
-
-            if (_players.Count == 1 && !isTrainingRace)
-            {
-                VictoryByDefault();
-            }
             totalTime += Time.deltaTime;
             UpdateRaceProgress();
-            if (CheckFinish())
-            {
-                racing = false;
-                raceStart = false;
-                Finish();
-                ResetRace();
-            }
         }
-        else if (!hasStarted)
+        else if (!raceStart)
         {
-            hasStarted = true;
+            raceStart = true;
             ResetRace();
         }
 
@@ -105,8 +85,6 @@ public class PolePositionManagerT : MonoBehaviour
             _players[i].CurrentLapCountingFromFinishLine = 1;
 
             _players[i].CurrentLapTime = 0;
-            _players[i].TotalLapTime = 0;
-
 
             _players[i].LastCheckPoint = _circuitController.checkpoints.Count - 1;
 
@@ -143,8 +121,10 @@ public class PolePositionManagerT : MonoBehaviour
 
     private void Finish()
     {
+        racing = false;
         Debug.Log("Fin");
         RpcChangeFromGameToEndHUD();
+        SceneManager.LoadScene(0);
         //hasStarted = true;
     }
 
@@ -216,28 +196,8 @@ public class PolePositionManagerT : MonoBehaviour
     public void UpdateRaceProgress()
     {
         // Update car arc-lengths
-
-        for (int i = 0; i < _players.Count; ++i)
-        {
-            _players[i].controller.DistToFinish = ComputeCarArcLength(i); //Distancia restante hasta la meta
-            _players[i].TotalLapTime += Time.deltaTime;
-            _players[i].CurrentLapTime += Time.deltaTime;
-        }
-
-        _players.Sort(new PlayerInfoComparerT());
-
-        myRaceOrder = "";
-
-        for (int i = 0; i < _players.Count; i++)
-        {
-            myRaceOrder += _players[i].Name;
-            if (i < _players.Count - 1)
-            {
-                myRaceOrder += '\n';
-            }
-        }
-
-        RpcUpdateUIRaceProgress(myRaceOrder);
+        _players[0].controller.DistToFinish = ComputeCarArcLength(0); //Distancia restante hasta la meta
+        _players[0].CurrentLapTime += Time.deltaTime;
     }
 
     void RpcUpdateCountdownUI(int seconds)
@@ -279,6 +239,14 @@ public class PolePositionManagerT : MonoBehaviour
         minArcL -= _circuitController.CircuitLength * (laps - _players[id].CurrentLapSegments);
 
         return minArcL;
+    }
+
+    void OnGUI()
+    {
+        if (GUILayout.Button("Menu"))
+        {
+            Finish();
+        }
     }
 
 }

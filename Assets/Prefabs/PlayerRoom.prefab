@@ -183,6 +183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  controller: {fileID: 0}
   Name: 
   CurrentLapSegments: 0
   CurrentLapCountingFromFinishLine: 0
@@ -190,8 +191,6 @@ MonoBehaviour:
   MaxCheckPoints: 0
   CurrentLapTime: 0
   TotalLapTime: 0
-  controller: {fileID: 0}
-  InitialDistToFinish: 0
   isAdmin: 0
 --- !u!114 &1137246169109603126
 MonoBehaviour:
@@ -226,7 +225,6 @@ MonoBehaviour:
   slipLimit: 0.2
   goingBackwards: 0
   distToFinish: 0
-  InitialDistToFinish: 0
 --- !u!114 &6346869062069434778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,7 +284,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   showRoomGUI: 1
-  readyToBegin: 0
+  readyToBegin: 1
   index: 0
   _carBody: {fileID: 3920702165282228366}
 --- !u!1 &3266956378083433421
