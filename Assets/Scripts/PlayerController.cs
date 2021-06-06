@@ -160,7 +160,7 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
     #region Movimiento
-    //[Command]
+    [Command]
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
         if (!_polePosition.racing) {
@@ -354,7 +354,7 @@ public class PlayerController : NetworkBehaviour
     }
 
 
-    //[Command]
+    [Command]
     public void CmdReset()
     {
         Debug.Log("Digo al server que resetee");

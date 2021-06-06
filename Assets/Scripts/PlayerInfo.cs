@@ -53,7 +53,7 @@ public class PlayerInfo : NetworkBehaviour
         }
     }
 
-    [SyncVar] public bool isReady = false;
+    [SyncVar(hook = nameof(UpdateReadyOnUI))] public bool isReady = false;
     [SyncVar(hook = nameof(onHostAuth))] public bool isAdmin = false;
     public override string ToString()
     {
@@ -95,13 +95,13 @@ public class PlayerInfo : NetworkBehaviour
 
     private void OnDrawGizmos()
     {
-        Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
+       /* Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
 
         Handles.Label(transform.position - transform.right + Vector3.up, CurrentLapSegments.ToString());
         Handles.Label(transform.position - transform.right + 2 * Vector3.up, CurrentLapCountingFromFinishLine.ToString());
 
         Handles.Label(transform.position + transform.right + Vector3.up, segment.ToString());
-        Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());
+        Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());*/
     }
 
     public override void OnStartLocalPlayer()
@@ -116,7 +116,7 @@ public class PlayerInfo : NetworkBehaviour
 
     }
 
-    //[Command]
+    [Command]
     public void CmdSetReady(bool isReady)
     {
         this.isReady = isReady;
@@ -131,11 +131,18 @@ public class PlayerInfo : NetworkBehaviour
             Debug.Log("onHostAuth");
 
             _uiManager.setRoomHUDButtons(this);
+            _uiManager.setEndRaceHUDButtons(this);
             _uiManager.ActivateRoomHUD();
         }
     }
 
     [Client]
+    void UpdateReadyOnUI(bool oldValue, bool newValue)
+    {
+        _uiManager.readyMarkers[ID].text = (newValue) ? "Ready":"";
+    }
+
+
     public void UpdateLapUI(int oldValue, int newValue)
     {
         _uiManager.UpdateLap(this, newValue);

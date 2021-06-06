@@ -477,11 +477,12 @@ MonoBehaviour:
   - {fileID: 313464659}
   - {fileID: 1030217891}
   numPlayers: 0
-  laps: 1
+  laps: 2
   isTrainingRace: 1
   openRoom: 1
   racing: 0
-  waiting: 1
+  raceStart: 0
+  hasStarted: 0
 --- !u!4 &1839589614
 Transform:
   m_ObjectHideFlags: 0
@@ -836,15 +837,6 @@ MonoBehaviour:
   - {fileID: 1508097745644926054, guid: 5072a857a53abd84fb1d73c8f2020806, type: 3}
   - {fileID: 1508097745644926054, guid: 24b6af07c4b82434db1948349caef327, type: 3}
   - {fileID: 1508097745644926054, guid: 8f070dfe7fbc3e244b4a1ad0c0034c14, type: 3}
-  showRoomGUI: 1
-  minPlayers: 1
-  roomPlayerPrefab: {fileID: 2136360778268727316, guid: b593432de05352341ac4eb15ba14f0e2,
-    type: 3}
-  RoomScene: Assets/_Scenes/Game.unity
-  GameplayScene: Assets/_Scenes/Game.unity
-  _allPlayersReady: 0
-  roomSlots: []
-  clientIndex: 0
   _uiManager: {fileID: 0}
 --- !u!114 &2140735092
 MonoBehaviour:
