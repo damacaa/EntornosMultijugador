@@ -345,7 +345,6 @@ MonoBehaviour:
   openRoom: 1
   racing: 0
   raceStart: 0
-  hasStarted: 0
 --- !u!1 &329774477
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,6 +676,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8474872383302133633, guid: fe77c58e015b8d64f9bfa4d903ef0ccc,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 8474872383302133633, guid: fe77c58e015b8d64f9bfa4d903ef0ccc,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8474872383302133633, guid: fe77c58e015b8d64f9bfa4d903ef0ccc,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.a
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8474872383302133635, guid: fe77c58e015b8d64f9bfa4d903ef0ccc,
         type: 3}
       propertyPath: m_Name
@@ -705,7 +719,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   circuitLaps: 3
   checkpoints: []
-  checkpointPrefab: {fileID: 2841112928178906458, guid: 99a8078cf850113469b987be3e4a4360,
+  checkpointPrefab: {fileID: 3128289906544822387, guid: c8d65251c61719343856437c30da9b08,
     type: 3}
 --- !u!1 &816176601
 GameObject:
@@ -1378,7 +1392,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 0.5112582, b: 0.2783019, a: 1}
   m_Intensity: 1
   m_Range: 152.89854
   m_SpotAngle: 124.2994
@@ -2329,7 +2343,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &8638827622105791476
 MonoBehaviour:
   m_ObjectHideFlags: 0

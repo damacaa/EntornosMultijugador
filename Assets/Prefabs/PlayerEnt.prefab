@@ -767,7 +767,7 @@ MonoBehaviour:
   LastCheckPoint: 0
   MaxCheckPoints: 0
   CurrentLapTime: 0
-  TotalLapTime: 0
+  BestLapTime: 0
   controller: {fileID: 0}
   InitialDistToFinish: 0
 --- !u!114 &113660389999622877
@@ -797,7 +797,7 @@ MonoBehaviour:
   engineBrake: 1e+12
   footBrake: 1e+24
   topSpeed: 200
-  downForce: 100
+  downForce: 1000
   slipLimit: 0.2
   goingBackwards: 0
   distToFinish: 0

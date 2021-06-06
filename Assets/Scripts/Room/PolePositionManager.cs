@@ -270,6 +270,7 @@ public class PolePositionManager : NetworkBehaviour
             Debug.Log(countdownTimer);
             UpdateCountdownUI();
         }
+        yield return null;
     }
 
     /// <summary>

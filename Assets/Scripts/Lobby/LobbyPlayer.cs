@@ -8,30 +8,7 @@ using UnityEngine;
 /// </summary>
 public class LobbyPlayer : NetworkRoomPlayer
 {
-    
     public Color color;
-
-    public override void OnStartLocalPlayer()
-    {
-
-    }
-
-    public override void OnStartClient()
-    {
-        // Debug.LogFormat(LogType.Log, "OnStartClient {0}", SceneManager.GetActiveScene().path);
-
-        base.OnStartClient();
-    }
-
-    public override void OnClientEnterRoom()
-    {
-        // Debug.LogFormat(LogType.Log, "OnClientEnterRoom {0}", SceneManager.GetActiveScene().path);
-    }
-
-    public override void OnClientExitRoom()
-    {
-        // Debug.LogFormat(LogType.Log, "OnClientExitRoom {0}", SceneManager.GetActiveScene().path);
-    }
 
     /// <summary>
     /// Funcion que se llama al cambiar el estado de la variable ready
@@ -40,11 +17,9 @@ public class LobbyPlayer : NetworkRoomPlayer
     /// <param name="newReadyState">Nuevo valor de ready</param>
     public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
-        
+
         ColorAndName colorAndName = FindObjectOfType<ColorAndName>();
-        if (colorAndName == null) { Debug.Log("Color no encontrado"); }
-        else
-        {
+        if (colorAndName != null && newReadyState) {
 
             LobbyPlayer[] players = FindObjectsOfType<LobbyPlayer>();
             foreach (LobbyPlayer p in players)
@@ -59,4 +34,3 @@ public class LobbyPlayer : NetworkRoomPlayer
         }
     }
 }
-

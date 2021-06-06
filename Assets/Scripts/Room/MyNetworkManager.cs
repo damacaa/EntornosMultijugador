@@ -47,7 +47,7 @@ public class MyNetworkManager : NetworkRoomManager
         Debug.Log("Jugador Desconectado dela sala");
     }
 
-    #endregion 
+    #endregion
 
     #region server
     public override void OnServerConnect(NetworkConnection conn)
@@ -83,28 +83,5 @@ public class MyNetworkManager : NetworkRoomManager
         base.OnStopHost();
         Debug.Log("OnStopHost");
     }
-
-    public override void OnGUI()
-    {
-        if (!showRoomGUI)
-            return;
-
-        int w = Screen.width - 10;
-        int h = Screen.width / 2;
-        int x = (Screen.width / 2) - (w / 2);
-        int y = (Screen.height / 2) - (h / 2);
-
-        if (NetworkServer.active && IsSceneActive(GameplayScene))
-        {
-            GUILayout.BeginArea(new Rect(Screen.width - 150f, 10f, 140f, 30f));
-            if (GUILayout.Button("Return to Room"))
-                ServerChangeScene(RoomScene);
-            GUILayout.EndArea();
-        }
-
-        if (IsSceneActive(RoomScene))
-            GUI.Box(new Rect(x, y, w, h), "PLAYERS");
-    }
-
-    #endregion
 }
+#endregion

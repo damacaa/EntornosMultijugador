@@ -18,7 +18,7 @@ public class CircuitControllerT : MonoBehaviour
 
     public int numPoints { get; set; }
 
-    public List<CheckpointT> checkpoints = new List<CheckpointT>();
+    public List<Checkpoint> checkpoints = new List<Checkpoint>();
     public GameObject checkpointPrefab;
 
     void Awake()
@@ -45,7 +45,7 @@ public class CircuitControllerT : MonoBehaviour
         for (int i = 0; i < (_pathPos.Length - 1) / spacing; i++)
         {
             GameObject gO = GameObject.Instantiate(checkpointPrefab, _pathPos[i * spacing], Quaternion.LookRotation(_pathPos[(i + 1) * spacing] - _pathPos[i * spacing]));
-            CheckpointT cP = gO.GetComponent<CheckpointT>();
+            Checkpoint cP = gO.GetComponent<Checkpoint>();
             cP.id = i;//Asigna un id
             checkpoints.Add(cP);
         }
