@@ -10,7 +10,7 @@ public class PlayerControllerT : MonoBehaviour
 {
     #region Variables
 
-    [Header("Movement")] public List<AxleInfo> axleInfos;
+    [Header("Movement")] public List<AxleInfoT> axleInfos;
     public float forwardMotorTorque = 100000;
     public float backwardMotorTorque = 50000;
     public float maxSteeringAngle = 15;
@@ -115,11 +115,10 @@ public class PlayerControllerT : MonoBehaviour
 
     public void Update()
     {
-     
             InputAcceleration = _input.Player.Acceleration.ReadValue<float>();
             InputSteering = _input.Player.Steering.ReadValue<float>();
             InputBrake = _input.Player.Jump.ReadValue<float>();
-            //Speed = m_Rigidbody.velocity.magnitude;
+            Speed = m_Rigidbody.velocity.magnitude;
 
             float r = Mathf.Abs(transform.localRotation.eulerAngles.z);
             Crashed = r > 90 && r < 270;
@@ -149,17 +148,21 @@ public class PlayerControllerT : MonoBehaviour
 
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
-        if (!_polePosition.racing) {
-            m_Rigidbody.velocity = Vector3.zero;
-            return; }
+        //if (!_polePosition.racing) {
+        //    m_Rigidbody.velocity = Vector3.zero;
+        //    return; }
+
 
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1)*2;
         InputBrake = Mathf.Clamp(InputBrake, 0, 1);
-
+        Debug.Log(InputAcceleration);
+        Debug.Log(InputSteering);
+        Debug.Log(InputBrake);
+        Debug.Log("");
         float steering = maxSteeringAngle * InputSteering;
 
-        foreach (AxleInfo axleInfo in axleInfos)
+        foreach (AxleInfoT axleInfo in axleInfos)
         {
             if (axleInfo.steering)
             {
@@ -219,7 +222,7 @@ public class PlayerControllerT : MonoBehaviour
     {
         float steering = maxSteeringAngle * InputSteering;
 
-        foreach (AxleInfo axleInfo in axleInfos)
+        foreach (AxleInfoT axleInfo in axleInfos)
         {
             if (axleInfo.steering)
             {
@@ -321,15 +324,15 @@ public class PlayerControllerT : MonoBehaviour
     //NUEVO
 
     //enables o not the controller when object attached to it is activated or desactivated
-    //private void OnEnable()
-    //{
-    //    _input.Enable();
-    //}
+    private void OnEnable()
+    {
+        
+    }
 
-    //private void OnDisable()
-    //{
-    //    _input.Disable();
-    //}
+    private void OnDisable()
+    {
+       _input.Disable();
+    }
 
     //get input Controller
     public _InputController GetInput()
