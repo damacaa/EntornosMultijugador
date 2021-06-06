@@ -4,10 +4,16 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Network Manager qeu hereda de NetworkRoomManager, lo que proporciona una base sobre la que hemos organizado las salas.
+/// </summary>
 public class MyNetworkLobbyManager : NetworkRoomManager
 {
 
+    ///referencia al HUD del Menu
     [SerializeField] private LobbyUIManager _uiManager;
+
+    bool showStartButton;
     public override void OnRoomServerConnect(NetworkConnection conn)
     {
         if (!_uiManager) _uiManager = FindObjectOfType<LobbyUIManager>();
@@ -39,35 +45,7 @@ public class MyNetworkLobbyManager : NetworkRoomManager
         base.OnRoomStopServer();
     }
 
-    /*private void Update()
-    {
-        if (roomSlots.Count > 1)
-        {
-            foreach (NetworkRoomPlayer roomPlayer in roomSlots)
-            {
-                if (roomPlayer == null)
-                    continue;
 
-                // find the game-player object for this connection, and destroy it
-                NetworkIdentity identity = roomPlayer.GetComponent<NetworkIdentity>();
-
-                if (NetworkServer.active)
-                {
-                    // re-add the room object
-                    roomPlayer.GetComponent<NetworkRoomPlayer>().readyToBegin = false;
-                    NetworkServer.ReplacePlayerForConnection(identity.connectionToClient, roomPlayer.gameObject);
-                }
-            }
-
-            allPlayersReady = false;
-            base.ServerChangeScene(GameplayScene);
-        }
-    }*/
-
-
-
-
-    bool showStartButton;
 
     public override void OnRoomServerPlayersReady()
     {

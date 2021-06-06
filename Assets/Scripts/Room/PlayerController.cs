@@ -9,6 +9,9 @@ using UnityEditor;
 	API Reference: https://mirror-networking.com/docs/api/Mirror.NetworkBehaviour.html
 */
 
+/// <summary>
+/// Controlador de player que recoge los inputs y se los manda al servidor para poder pintar por pantalla
+/// </summary>
 public class PlayerController : NetworkBehaviour
 {
     #region Variables
@@ -23,6 +26,7 @@ public class PlayerController : NetworkBehaviour
     public float downForce = 100f;
     public float slipLimit = 0.2f;
 
+    //Rotacion e Inputs
     private float CurrentRotation { get; set; }
     private float InputAcceleration { get; set; }
     private float InputSteering { get; set; }
@@ -30,14 +34,18 @@ public class PlayerController : NetworkBehaviour
 
     private Rigidbody m_Rigidbody;
     private PlayerInfo _playerInfo;
-    
-    private float m_SteerHelper = 0.8f;
-    [SyncVar(hook = nameof(UpdateSpeed))] private float m_CurrentSpeed = 0;
-
-    public bool goingBackwards = false;
-
     private UIManager _uiManager;
+    private PolePositionManager _polePosition;
+    
+    [SyncVar(hook = nameof(UpdateSpeed))] private float m_CurrentSpeed = 0;
+    private float m_SteerHelper = 0.8f;
 
+    //Variable que indica si el localPlayer va marcha atras.
+    public bool goingBackwards = false;
+  
+    private float BackwardsTimeout = 0;
+
+    //Distancia a recorrer para acbar todas la vueltas del circuito
     public float distToFinish;
     public float DistToFinish
     {
@@ -55,8 +63,6 @@ public class PlayerController : NetworkBehaviour
             distToFinish = value;
         }
     }
-    public float InitialDistToFinish;
-    private float BackwardsTimeout = 0;
 
 
     //Variable que indica si el localPlayer se ha chocado
@@ -73,7 +79,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private float Speed
+    public float Speed
     {
         get { return m_CurrentSpeed; }
         set
@@ -83,24 +89,17 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-   /* public delegate void OnSpeedChangeDelegate(float newVal);
-
-    public event OnSpeedChangeDelegate OnSpeedChangeEvent;
-
-
-    public delegate void OnLapChangeDelegate(int newVal);
-    public event OnLapChangeDelegate OnLapChangeEvent;*/
-
+    //Evento en caso de Chocar
     public delegate void OnHasCrashedDelegate(bool newVal);
     public event OnHasCrashedDelegate OnHasCrashedEvent;
 
     private _InputController _input; //call our own action controller
 
-    PolePositionManager _polePosition;
     #endregion Variables
 
     #region Unity Callbacks
 
+    //Referencias
     public void Awake()
     {
         _input = new _InputController();
@@ -117,6 +116,9 @@ public class PlayerController : NetworkBehaviour
         _input.Player.Restart.performed += ctx => CmdReset();
     }
 
+    /// <summary>
+    /// Se comprueban los inputs del cliente
+    /// </summary>
     public void Update()
     {
         if (isClient)
@@ -143,15 +145,13 @@ public class PlayerController : NetworkBehaviour
                 GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
                 OnGoingBackwardsEventHandler(false);
             }
-
-
-            
-
         }
     }
 
+    
     public void FixedUpdate()
     {
+        //Si el objeto el cliente propio del jugador local se llama a la funcion qeu calcula el movimiento
         if (isLocalPlayer)
         {
             controlMovement(InputSteering, InputAcceleration, InputBrake);
@@ -159,10 +159,20 @@ public class PlayerController : NetworkBehaviour
     }
 
     #endregion
+
+
+
     #region Movimiento
+    /// <summary>
+    /// Desde el Cliente se llama al servidor para qeu ejecute lso calculos de movimiento.
+    /// </summary>
+    /// <param name="InputSteering">Entrada de aceleracion</param>
+    /// <param name="InputAcceleration">Entrada de giro</param>
+    /// <param name="InputBrake">Entrada de freno</param>
     [Command]
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
+        //Si no se esta correindo la carrera velocidad = 0
         if (!_polePosition.racing) {
             m_Rigidbody.velocity = Vector3.zero;
             return; }
@@ -224,12 +234,16 @@ public class PlayerController : NetworkBehaviour
         AddDownForce();
         TractionControl();
 
-        //_playerInfo.UpdateSpeed(m_Rigidbody.velocity.magnitude);
-        //controlMovementInClient(InputSteering, InputAcceleration, InputBrake);
+        //Calculo final de la velocidad
         Speed = m_Rigidbody.velocity.magnitude;
     }
 
-
+    /// <summary>
+    /// Tras calcular el movimiento, el servidor avisa a todos los clientes para que muestren por pantalla sus calculos de movimiento
+    /// </summary>
+    /// <param name="InputSteering"></param>
+    /// <param name="InputAcceleration"></param>
+    /// <param name="InputBrake"></param>
     [ClientRpc]
     void controlMovementInClient(float InputSteering, float InputAcceleration, float InputBrake)
     {
@@ -353,18 +367,20 @@ public class PlayerController : NetworkBehaviour
         return _input;
     }
 
-
+    /// <summary>
+    /// EL cliente llama al servidor para qeu calcule la posicion de reseteo al chocar
+    /// </summary>
     [Command]
     public void CmdReset()
     {
-        Debug.Log("Digo al server que resetee");
-            Reset();
+        //Debug.Log("Digo al server que resetee");
+        Reset();
     }
 
     //if we collide and we are not able to continue playing the car flips
     private void Reset()
     {
-        Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche
+        //Debug.Log("Puesto al sitio"); //aqui deberia rotar el coche
         CircuitController cC = FindObjectOfType<CircuitController>();
         int i = GetComponent<PlayerInfo>().LastCheckPoint;
 
@@ -375,6 +391,11 @@ public class PlayerController : NetworkBehaviour
         transform.rotation = cC.checkpoints[i].transform.rotation;
     }
 
+
+    /// <summary>
+    /// Resetea la posicion y rotacion del PlayerController a las iniciales
+    /// </summary>
+    /// <param name="t"></param>
     public void ResetToStart(Transform t)
     {
         m_Rigidbody.velocity = Vector3.zero;
@@ -382,25 +403,37 @@ public class PlayerController : NetworkBehaviour
         transform.rotation = t.rotation;
     }
 
+
+    /// <summary>
+    /// Al chocar con un objeto se calcula, solo si es servidor, la posicion de reseteos
+    /// </summary>
+    /// <param name="collision">Objeto con el que se choca</param>
     private void OnCollisionEnter(Collision collision)
     {
         if (isServer && collision.relativeVelocity.magnitude > 10f)
         {
-            Debug.Log("Server: " + collision.gameObject.name);
+            //Debug.Log("Server: " + collision.gameObject.name);
             Reset();
         }
     }
 
+    ///Eventos en caso de choque
     void OnHasCrashedEventHandler(bool hasCrashed)
     {
         _uiManager.ShowCrashedWarning(hasCrashed);
     }
 
+    //Evento en caso de ir marcha atras
     void OnGoingBackwardsEventHandler(bool goingBackwards)
     {
         _uiManager.ShowBackwardsWarning(goingBackwards);
     }
 
+    /// <summary>
+    /// hook que se llama cada vez que se modifica el valor de la variable m_CurrentSpeed y se muestra en el InGameHUD
+    /// </summary>
+    /// <param name="old">Antigua velocidad</param>
+    /// <param name="speed">Nueva Velocidad</param>
     [Client]
     public void UpdateSpeed(float old, float speed)
     {
