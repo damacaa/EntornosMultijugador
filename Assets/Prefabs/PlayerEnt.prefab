@@ -770,7 +770,6 @@ MonoBehaviour:
   TotalLapTime: 0
   controller: {fileID: 0}
   InitialDistToFinish: 0
-  isAdmin: 0
 --- !u!114 &113660389999622877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -783,7 +782,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4982b68bdb5f7b04783ef4ede90870fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  axleInfos: []
+  axleInfos:
+  - leftWheel: {fileID: 4946819674885125508}
+    rightWheel: {fileID: 4231558430946098302}
+    motor: 1
+    steering: 1
+  - leftWheel: {fileID: 8807396202949433252}
+    rightWheel: {fileID: 5662309153237836925}
+    motor: 1
+    steering: 0
   forwardMotorTorque: 100000
   backwardMotorTorque: 50000
   maxSteeringAngle: 15

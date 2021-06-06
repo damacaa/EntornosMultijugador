@@ -148,18 +148,14 @@ public class PlayerControllerT : MonoBehaviour
 
     void controlMovement(float InputSteering, float InputAcceleration, float InputBrake)
     {
-        //if (!_polePosition.racing) {
-        //    m_Rigidbody.velocity = Vector3.zero;
-        //    return; }
+        if (!_polePosition.racing) {
+            m_Rigidbody.velocity = Vector3.zero;
+           return; }
 
 
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1)*2;
         InputBrake = Mathf.Clamp(InputBrake, 0, 1);
-        Debug.Log(InputAcceleration);
-        Debug.Log(InputSteering);
-        Debug.Log(InputBrake);
-        Debug.Log("");
         float steering = maxSteeringAngle * InputSteering;
 
         foreach (AxleInfoT axleInfo in axleInfos)
