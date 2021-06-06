@@ -21,7 +21,7 @@ public class PolePositionManager : NetworkBehaviour
     int currentPlayers;
 
     private readonly List<PlayerInfo> _players = new List<PlayerInfo>();
-
+    private PlayerInfo[] playersAux;
     public bool isTrainingRace = true;
     public bool openRoom = true;
 
@@ -68,53 +68,59 @@ public class PolePositionManager : NetworkBehaviour
         if (_networkManager == null) _networkManager = FindObjectOfType<MyNetworkManager>();
         if (_circuitController == null) _circuitController = FindObjectOfType<CircuitController>();
         if (_uiManager == null) _uiManager = FindObjectOfType<UIManager>();
+        if (playersAux == null) playersAux = FindObjectsOfType<PlayerInfo>();
+
         //ELIMINAMOS LA GENERACION DE ESFERAS INNECESARIAS
 
         if (_networkManager == null) Debug.Log("CAca");
 
-            _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
+        _debuggingSpheres = new GameObject[_networkManager.maxConnections]; //deberia ser solo 1 la del jugador y se pasan todas al server para que calcule quien va primero
         for (int i = 0; i < _networkManager.maxConnections; ++i)
         {
             _debuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _debuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
 
-        raceStart = true;
+        /*raceStart = true;
         hasStarted = false;
-        racing = true;
-    }
+        racing = true;*/
 
+        foreach (PlayerInfo player in playersAux)
+        {
+            _players.Add(player);
+        }
+
+    }
 
     private void Update()
     {
-        if (isServer)
-        {
-            if (!raceStart)
-                return;
 
-            if (racing)
+        if (_players.Count == 0)
+            return;
+
+        Debug.Log(_players.Count);
+        if (racing)
+        {
+            if (_players.Count == 1 && !isTrainingRace)
             {
-                if (_players.Count == 1 && !isTrainingRace)
-                {
-                    Finish();
-                }
-                totalTime += Time.deltaTime;
-                UpdateRaceProgress();
-                if (CheckFinish())
-                {
-                    racing = false;
-                    raceStart = false;
-                    Finish();
-                    ResetPlayers();
-                }
+                Finish();
             }
-            else if(!hasStarted)
+            totalTime += Time.deltaTime;
+            UpdateRaceProgress();
+            if (CheckFinish())
             {
-                Debug.Log(_players.Count);
-                hasStarted = true;
+                racing = false;
+                raceStart = false;
+                Finish();
                 ResetPlayers();
             }
         }
+        else if (!hasStarted)
+        {
+            hasStarted = true;
+            ResetPlayers();
+        }
+
     }
 
     [Server]
@@ -128,9 +134,9 @@ public class PolePositionManager : NetworkBehaviour
         if (everyOneIsReady)
         {
         }*/
-            numPlayers = _players.Count;
-            raceStart = true;
-            RpcChangeFromRoomToGameHUD();
+        numPlayers = _players.Count;
+        raceStart = true;
+        RpcChangeFromRoomToGameHUD();
     }
 
     private bool CheckFinish()
@@ -140,7 +146,7 @@ public class PolePositionManager : NetworkBehaviour
             if (_players[i].CurrentLapCountingFromFinishLine == laps + 1)
             {
                 Debug.Log("Vencedor: " + _players[i].name + totalTime);
-                
+
                 totalTime = 0;
                 return true;
             }

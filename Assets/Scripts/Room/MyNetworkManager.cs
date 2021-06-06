@@ -8,9 +8,12 @@ public class MyNetworkManager : NetworkRoomManager
 {
 
     [SerializeField] private UIManager _uiManager;
+    [SerializeField] private PolePositionManager _polePositionManager;
+
     public new void Start()
     {
         if (!_uiManager) _uiManager = FindObjectOfType<UIManager>();
+        if (!_polePositionManager) _polePositionManager = FindObjectOfType<PolePositionManager>();
 
 #if UNITY_SERVER
             if (autoStartServerBuild)
@@ -20,6 +23,16 @@ public class MyNetworkManager : NetworkRoomManager
 #endif
     }
 
+
+   /* public override void OnRoomClientSceneChanged(NetworkConnection conn)
+    {
+        base.OnRoomClientSceneChanged(conn);
+        _polePositionManager.AddPlayer(conn.identity.gameObject.GetComponent<PlayerInfo>());
+        *//*foreach (NetworkRoomPlayer player in this.roomSlots)
+        {
+            _polePositionManager.AddPlayer(player.gameObject.GetComponent<PlayerInfo>());
+        }*//*
+    }*/
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
