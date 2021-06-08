@@ -655,11 +655,6 @@ PrefabInstance:
       objectReference: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 8474872383302133633, guid: fe77c58e015b8d64f9bfa4d903ef0ccc,
         type: 3}
-      propertyPath: m_Parameters.colorGradient.atime1
-      value: 65535
-      objectReference: {fileID: 0}
-    - target: {fileID: 8474872383302133633, guid: fe77c58e015b8d64f9bfa4d903ef0ccc,
-        type: 3}
       propertyPath: m_Parameters.colorGradient.key0.a
       value: 0
       objectReference: {fileID: 0}

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
-using UnityEditor;
+//using UnityEditor;
 using UnityEngine;
 
 
@@ -91,7 +91,7 @@ public class PlayerInfo : NetworkBehaviour
 
     //Al detectar un trigger
     private void OnTriggerEnter(Collider collision)
-    {   
+    {
         //Si es un checkpoint y es el siguiente al ultimo que pasó esta recorriendo el circuito correctamente
         if (collision.gameObject.tag == "CheckPoint")
         {
@@ -119,26 +119,32 @@ public class PlayerInfo : NetworkBehaviour
     }
 
     //Gizmos
-    /*private void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
-        Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
+        /*Handles.Label(transform.position + transform.right, controller.DistToFinish.ToString());
 
         Handles.Label(transform.position - transform.right + Vector3.up, CurrentLapSegments.ToString());
         Handles.Label(transform.position - transform.right + 2 * Vector3.up, CurrentLapCountingFromFinishLine.ToString());
 
         Handles.Label(transform.position + transform.right + Vector3.up, segment.ToString());
-        Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());
-    }*/
+        Handles.Label(transform.position + transform.right + 2 * Vector3.up, LastCheckPoint.ToString());*/
+    }
 
+
+    /// <summary>
+    /// Prepara los botones segun el tipo de jugador qeu sea, Host o Client
+    /// </summary>
+    /// <param name="oldvalue">Valor antiguo</param>
+    /// <param name="newvalue">Valor Nuevo</param>
     [Client]
     void isHost(bool oldvalue, bool newvalue)
     {
-        if (newvalue && isLocalPlayer)
+        if (newvalue && isLocalPlayer && isServer)
         {
             Debug.Log("onHostAuth");
 
             _uiManager.setEndRaceHUDButtons(this);
-            //_uiManager.ActivateRoomHUD();
+
         }
     }
 
@@ -150,7 +156,7 @@ public class PlayerInfo : NetworkBehaviour
     /// <param name="newValue">Vuelta que caba de empezar</param>
     public void UpdateLapUI(int oldValue, int newValue)
     {
-        _uiManager.UpdateLap( newValue);
+        _uiManager.UpdateLap(newValue);
     }
 
     /// <summary>
