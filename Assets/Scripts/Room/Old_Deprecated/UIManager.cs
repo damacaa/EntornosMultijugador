@@ -187,7 +187,7 @@ public class UIManagerr : MonoBehaviour
             readyButton.gameObject.SetActive(false);
             notReadyButton.gameObject.SetActive(false);
             playButton.gameObject.SetActive(true);
-            playButton.onClick.AddListener(() => _polePositionManager.StartRace());
+            playButton.onClick.AddListener(() => _polePositionManager.ResetRace());
         }
         else
         {
@@ -250,7 +250,7 @@ public class UIManagerr : MonoBehaviour
         //m_NetworkManager.networkAddress = inputFieldIP_Wait.text;
         roomHUD.SetActive(false);
         ActivateInGameHUD();
-        _polePositionManager.StartRace();
+        _polePositionManager.CmdResetRace();
     }
 
     private void ButtonReady(PlayerInfo player)
