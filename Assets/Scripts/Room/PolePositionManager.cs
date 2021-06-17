@@ -73,16 +73,14 @@ public class PolePositionManager : NetworkBehaviour
 
             if (racing)
             {
-                if (_players.Count == 1 && false)//Lo ponogo para debugear
+                if (_players.Count == 1)
                 {
                     VictoryByDefault();
                 }
 
-
                 if (CheckFinish())
                 {
                     Finish();
-                    //ResetRace();
                 }
                 else
                 {

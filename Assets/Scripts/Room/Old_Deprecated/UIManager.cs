@@ -187,7 +187,7 @@ public class UIManagerr : MonoBehaviour
             readyButton.gameObject.SetActive(false);
             notReadyButton.gameObject.SetActive(false);
             playButton.gameObject.SetActive(true);
-            playButton.onClick.AddListener(() => _polePositionManager.CmdResetRace());
+            playButton.onClick.AddListener(() => _polePositionManager.ResetRace());
         }
         else
         {
